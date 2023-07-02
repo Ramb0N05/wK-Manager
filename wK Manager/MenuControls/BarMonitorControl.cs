@@ -11,6 +11,7 @@ using System.Windows.Forms;
 using wK_Manager.Base;
 using ScreenInformation;
 using wK_Manager.Forms;
+using System.Net;
 
 namespace wK_Manager.MenuControls
 {
@@ -18,6 +19,9 @@ namespace wK_Manager.MenuControls
     {
         private const int IdentifyTimeout = 3000;
         private List<string> VisibleMonitorIdentifiers = new();
+        private FolderBrowserDialog fbd = new();
+        private OpenFileDialog ofd = new();
+        private HttpClient wc = new();
 
         public BarMonitorControl()
         {
@@ -43,6 +47,17 @@ namespace wK_Manager.MenuControls
                 displayButton.MouseDown += OnMonitorRightClick;
                 displaysFlowLayoutPanel.Controls.Add(displayButton);
             }
+
+            fbd.ShowNewFolderButton = true;
+            ofd.AddExtension = true;
+            ofd.CheckFileExists = true;
+            ofd.CheckPathExists = true;
+            ofd.Filter = "VLC Player|vlc.exe";
+            ofd.Multiselect = false;
+            ofd.DefaultExt = "exe";
+            ofd.OkRequiresInteraction = true;
+            ofd.ValidateNames = true;
+            ofd.Title = "VLC Pfad auswählen ...";
         }
 
         private void OnMonitorToggle(object? sender, EventArgs e)
@@ -88,6 +103,80 @@ namespace wK_Manager.MenuControls
             {
                 f.Close();
                 VisibleMonitorIdentifiers.Remove(f.Name);
+            }
+        }
+
+        private void lockSettingsCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            if (sender is not null and CheckBox cb)
+            {
+                displaysGroupBox.Enabled = !cb.Checked;
+                diashowGroupBox.Enabled = !cb.Checked;
+                identifyLabel.Enabled = !cb.Checked;
+                vlcPathTextBox.Enabled = !cb.Checked;
+                vlcPathButton.Enabled = !cb.Checked;
+                vlcPathLabel.Enabled = !cb.Checked;
+            }
+        }
+
+        private void localPathButton_Click(object sender, EventArgs e)
+        {
+            fbd.InitialDirectory = localPathTextBox.Text != null && localPathTextBox.Text.Trim() != string.Empty
+                ? localPathTextBox.Text
+                : Environment.GetFolderPath(Environment.SpecialFolder.MyPictures);
+
+            if (fbd.ShowDialog() == DialogResult.OK && Directory.Exists(fbd.SelectedPath))
+            {
+                localPathTextBox.Text = fbd.SelectedPath;
+            }
+        }
+
+        private void vlcPathButton_Click(object sender, EventArgs e)
+        {
+            ofd.InitialDirectory = vlcPathTextBox.Text != null && vlcPathTextBox.Text.Trim() != string.Empty
+                ? vlcPathTextBox.Text
+                : Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles);
+
+            if (ofd.ShowDialog() == DialogResult.OK && File.Exists(ofd.FileName))
+            {
+                vlcPathTextBox.Text = ofd.FileName;
+            }
+        }
+
+        private void presentButton_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void stopButton_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private async void remotePathTextBox_TextChanged(object sender, EventArgs e)
+        {
+            if (sender is not null and TextBox tb)
+            {
+                if (tb.Text.Trim() != string.Empty)
+                {
+                    Uri? uri = Uri.IsWellFormedUriString(tb.Text, UriKind.Absolute) ? new(tb.Text) : null;
+                    HttpResponseMessage? response = uri != null ? await wc.GetAsync(uri) : null;
+
+                    if (response != null && response.IsSuccessStatusCode)
+                    {
+                        remotePathStatusLabel.ForeColor = Color.DarkGreen;
+                        remotePathStatusLabel.Text = "OK";
+
+                        //TODO
+                    }
+                    else
+                    {
+                        remotePathStatusLabel.ForeColor = Color.DarkRed;
+                        remotePathStatusLabel.Text = "Fehler";
+                    }
+                }
+                else
+                    remotePathStatusLabel.Text = string.Empty;
             }
         }
     }
