@@ -12,18 +12,26 @@ using wK_Manager.Base;
 using ScreenInformation;
 using wK_Manager.Forms;
 using System.Net;
+using System.Net.Http.Headers;
+using System.Text.Json;
+using SharpRambo.ExtensionsLib;
 
 namespace wK_Manager.MenuControls
 {
-    public partial class BarMonitorControl : WKMenuControl
+    public partial class BarMonitorControl : WKMenuControl<BarMonitorControlConfig>
     {
         private const int IdentifyTimeout = 3000;
+        private const string displayButtonPostfix = "_display";
+
         private List<string> VisibleMonitorIdentifiers = new();
         private FolderBrowserDialog fbd = new();
         private OpenFileDialog ofd = new();
-        private HttpClient wc = new();
+        private HttpClient httpCli = new();
 
-        public BarMonitorControl()
+        public BarMonitorControlConfig Config = new();
+        public readonly string ConfigFilePath = MainForm.Config.GetUserConfigFilePath(BarMonitorControlConfig.ConfigFileName);
+
+        public BarMonitorControl() : base()
         {
             InitializeComponent();
 
@@ -38,26 +46,82 @@ namespace wK_Manager.MenuControls
                     Appearance = Appearance.Button,
                     AutoSize = true,
                     MinimumSize = new Size(5, itemHeight),
-                    Name = monitor.MonitorInformation.TargetId.ToString() + "_display",
+                    Name = monitor.MonitorInformation.TargetId.ToString() + displayButtonPostfix,
                     Tag = monitor,
                     Text = monitor.MonitorInformation.SourceId.ToString() + " - " + monitor.MonitorInformation.FriendlyName
                 };
+
+                /*if (monitor.MonitorInformation.TargetId == config.MonitorTargetID)
+                    displayButton.Checked = true;*/
 
                 displayButton.CheckedChanged += OnMonitorToggle;
                 displayButton.MouseDown += OnMonitorRightClick;
                 displaysFlowLayoutPanel.Controls.Add(displayButton);
             }
 
-            fbd.ShowNewFolderButton = true;
             ofd.AddExtension = true;
             ofd.CheckFileExists = true;
             ofd.CheckPathExists = true;
-            ofd.Filter = "VLC Player|vlc.exe";
             ofd.Multiselect = false;
-            ofd.DefaultExt = "exe";
             ofd.OkRequiresInteraction = true;
+            ofd.RestoreDirectory = false;
             ofd.ValidateNames = true;
-            ofd.Title = "VLC Pfad auswählen ...";
+        }
+
+        public override void ConfigToControls(BarMonitorControlConfig config)
+        {
+            bool detectedMonitor = false;
+            foreach (Control c in displaysFlowLayoutPanel.Controls)
+            {
+                if (c.Name == config.MonitorTargetID + displayButtonPostfix && c is CheckBox cb)
+                {
+                    cb.Checked = true;
+                    detectedMonitor = true;
+                    break;
+                }
+            }
+
+            if (!detectedMonitor)
+            {
+                foreach (Control c in displaysFlowLayoutPanel.Controls)
+                {
+                    if (c is CheckBox cb && c.Tag != null && c.Tag is DisplaySource monitor && monitor.MonitorInformation.SourceId == config.MonitorSourceID)
+                    {
+                        cb.Checked = true;
+                        detectedMonitor = true;
+                        break;
+                    }
+                }
+            }
+
+            localPathTextBox.Text = config.LocalDiashowPath;
+            remotePathTextBox.Text = config.RemoteDiashowPath;
+            autoGetCheckBox.Checked = config.AutoObtainDiashow;
+            vlcPathTextBox.Text = config.VLCPath;
+            lockSettingsCheckBox.Checked = config.LockedConifg;
+        }
+
+        public override BarMonitorControlConfig? ConfigFromControls()
+        {
+            BarMonitorControlConfig config = new();
+
+            foreach (Control c in displaysFlowLayoutPanel.Controls)
+            {
+                if (c is CheckBox cb && c.Tag != null && c.Tag is DisplaySource monitor && cb.Checked)
+                {
+                    config.MonitorSourceID = monitor.MonitorInformation.SourceId;
+                    config.MonitorTargetID = monitor.MonitorInformation.TargetId;
+                    break;
+                }
+            }
+
+            config.LocalDiashowPath = localPathTextBox.Text;
+            config.RemoteDiashowPath = remotePathTextBox.Text;
+            config.AutoObtainDiashow = autoGetCheckBox.Checked;
+            config.VLCPath = vlcPathTextBox.Text;
+            config.LockedConifg = lockSettingsCheckBox.Checked;
+
+            return config;
         }
 
         private void OnMonitorToggle(object? sender, EventArgs e)
@@ -121,26 +185,28 @@ namespace wK_Manager.MenuControls
 
         private void localPathButton_Click(object sender, EventArgs e)
         {
+            fbd.Reset();
+            fbd.ShowNewFolderButton = true;
             fbd.InitialDirectory = localPathTextBox.Text != null && localPathTextBox.Text.Trim() != string.Empty
                 ? localPathTextBox.Text
                 : Environment.GetFolderPath(Environment.SpecialFolder.MyPictures);
 
             if (fbd.ShowDialog() == DialogResult.OK && Directory.Exists(fbd.SelectedPath))
-            {
                 localPathTextBox.Text = fbd.SelectedPath;
-            }
         }
 
         private void vlcPathButton_Click(object sender, EventArgs e)
         {
+            ofd.DefaultExt = "exe";
+            ofd.Filter = "VLC Player|vlc.exe";
+            ofd.Title = "VLC Pfad auswählen ...";
+
             ofd.InitialDirectory = vlcPathTextBox.Text != null && vlcPathTextBox.Text.Trim() != string.Empty
                 ? vlcPathTextBox.Text
                 : Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles);
 
             if (ofd.ShowDialog() == DialogResult.OK && File.Exists(ofd.FileName))
-            {
                 vlcPathTextBox.Text = ofd.FileName;
-            }
         }
 
         private void presentButton_Click(object sender, EventArgs e)
@@ -159,15 +225,10 @@ namespace wK_Manager.MenuControls
             {
                 if (tb.Text.Trim() != string.Empty)
                 {
-                    Uri? uri = Uri.IsWellFormedUriString(tb.Text, UriKind.Absolute) ? new(tb.Text) : null;
-                    HttpResponseMessage? response = uri != null ? await wc.GetAsync(uri) : null;
-
-                    if (response != null && response.IsSuccessStatusCode)
+                    if (await validateRemotePath(tb.Text))
                     {
                         remotePathStatusLabel.ForeColor = Color.DarkGreen;
                         remotePathStatusLabel.Text = "OK";
-
-                        //TODO
                     }
                     else
                     {
@@ -178,6 +239,29 @@ namespace wK_Manager.MenuControls
                 else
                     remotePathStatusLabel.Text = string.Empty;
             }
+        }
+
+        private async Task<bool> validateRemotePath(string remotePath)
+        {
+            Uri? uri = Uri.IsWellFormedUriString(remotePath, UriKind.Absolute) ? new(remotePath) : null;
+            HttpResponseMessage? response = null;
+
+            try
+            {
+                response = uri != null ? await httpCli.GetAsync(uri, HttpCompletionOption.ResponseHeadersRead) : null;
+            }
+            catch (Exception) { }
+
+            if (response == null || !response.IsSuccessStatusCode)
+                return false;
+
+            MediaTypeHeaderValue? contentType = response.Content.Headers.ContentType;
+            return contentType != null && Properties.Settings.Default.acceptedDiashowContentTypes.Contains(contentType.MediaType);
+        }
+
+        private async void BarMonitorControl_Load(object sender, EventArgs e)
+        {
+            await LoadConfig(ConfigFilePath);
         }
     }
 }

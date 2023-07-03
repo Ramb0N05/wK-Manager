@@ -80,6 +80,8 @@
             menuImageList.ImageStream = (ImageListStreamer)resources.GetObject("menuImageList.ImageStream");
             menuImageList.TransparentColor = Color.Transparent;
             menuImageList.Images.SetKeyName(0, "device-tv");
+            menuImageList.Images.SetKeyName(1, "cog");
+            menuImageList.Images.SetKeyName(2, "sign-info");
             // 
             // menuTabControl
             // 
@@ -99,6 +101,7 @@
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(800, 450);
             Controls.Add(mainSplitContainer);
+            Icon = (Icon)resources.GetObject("$this.Icon");
             MinimumSize = new Size(370, 250);
             Name = "MainForm";
             Text = "wK Manager";
