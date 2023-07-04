@@ -6,16 +6,16 @@ using System.Threading.Tasks;
 
 namespace wK_Manager.Base
 {
-    public interface IWKMenuControl<CType> where CType : new()
+    public interface IWKMenuControl : IContainerControl
     {
-        public string MenuImageKey { get; set; }
-        public string MenuItemName { get; set; }
-        public int MenuItemOrder { get; set; }
+        public abstract string MenuImageKey { get; set; }
+        public abstract string MenuItemName { get; set; }
+        public abstract int MenuItemOrder { get; set; }
 
-        public Task<CType> LoadConfig(string configFilePath);
-        public Task<CType> SaveConfig(string configFilePath);
+        public Task<bool> LoadConfig(string configFilePath);
+        public Task<bool> SaveConfig(string configFilePath);
 
-        public void ConfigToControls(CType config);
-        public CType? ConfigFromControls();
+        public void ConfigToControls(IWKMenuControlConfig config);
+        public IWKMenuControlConfig? ConfigFromControls();
     }
 }

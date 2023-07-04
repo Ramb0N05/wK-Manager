@@ -1,81 +1,82 @@
 ﻿using SharpRambo.ExtensionsLib;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
 using wK_Manager.MenuControls;
 
 namespace wK_Manager.Base
 {
-    public class WKMenuControl<CType> : UserControl, IWKMenuControl<CType> where CType : new()
-    {
+    public class WKMenuControl_Design : UserControl, IWKMenuControl {
         [Category("wK")]
         [Description("Set the displayed image in menu.")]
         [Browsable(true), EditorBrowsable(EditorBrowsableState.Always)]
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
-        public string MenuImageKey { get; set; } = string.Empty;
+        public virtual string MenuImageKey { get; set; } = string.Empty;
 
         [Category("wK")]
         [Description("Set the displayed name in menu.")]
         [Browsable(true), EditorBrowsable(EditorBrowsableState.Always)]
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
-        public string MenuItemName { get; set; } = string.Empty;
+        public virtual string MenuItemName { get; set; } = string.Empty;
 
         [Category("wK")]
         [Description("Set the displayed order in menu.")]
         [Browsable(true), EditorBrowsable(EditorBrowsableState.Always)]
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
-        public int MenuItemOrder { get; set; } = 0;
+        public virtual int MenuItemOrder { get; set; } = 0;
+
+        public virtual Task<bool> LoadConfig(string _)
+            => throw new NotImplementedException();
+
+        public virtual Task<bool> SaveConfig(string _)
+            => throw new NotImplementedException();
+
+        public virtual void ConfigToControls(IWKMenuControlConfig _)
+            => throw new NotImplementedException();
+
+        public virtual IWKMenuControlConfig? ConfigFromControls()
+            => throw new NotImplementedException();
+    }
+
+    [TypeDescriptionProvider(typeof(AbstractControlDescriptionProvider<WKMenuControl, WKMenuControl_Design>))]
+    public abstract class WKMenuControl : UserControl, IWKMenuControl
+    {
+        public virtual string MenuImageKey { get; set; } = string.Empty;
+        public virtual string MenuItemName { get; set; } = string.Empty;
+        public virtual int MenuItemOrder { get; set; } = 0;
+
+        public abstract IWKMenuControlConfig Config { get; set; }
 
         public WKMenuControl() : base()
-        {
-            Dock = DockStyle.Fill;
-            Padding = new(2, 5, 5, 5);
-        }
+        { }
 
-        public virtual async Task<CType> LoadConfig(string configFilePath)
+        public virtual async Task<bool> LoadConfig(string configFilePath)
         {
-            CType? config = new();
-
-            if (File.Exists(configFilePath))
+            if (Config != null && await Config.Load(configFilePath))
             {
-                FileStream jsonFile = File.OpenRead(configFilePath);
-                config = await JsonSerializer.DeserializeAsync<CType>(jsonFile);
-                jsonFile.Close();
+                ConfigToControls(Config);
+                return true;
             }
             else
-            {
-                FileStream jsonFile = File.Open(configFilePath, FileMode.Create);
-                await JsonSerializer.SerializeAsync(jsonFile, config, new JsonSerializerOptions() { WriteIndented = true });
-                jsonFile.Close();
-            }
-
-            if (config == null)
-                throw new NullReferenceException(nameof(config));
-
-            ConfigToControls(config);
-            return config;
+                return false;
         }
 
-        public virtual async Task<CType> SaveConfig(string configFilePath)
+        public virtual async Task<bool> SaveConfig(string configFilePath)
         {
             string configFileDir = Path.GetDirectoryName(configFilePath) ?? throw new ArgumentException(nameof(configFilePath));
 
-            if (!Path.Exists(configFileDir))
+            if (!configFileDir.IsNull() && !Path.Exists(configFileDir))
                 new DirectoryInfo(configFileDir).CreateAnyway();
 
-            CType config = ConfigFromControls() ?? throw new NullReferenceException(nameof(ConfigFromControls));
-
-            FileStream jsonFile = File.Open(configFilePath, FileMode.Create);
-            await JsonSerializer.SerializeAsync(jsonFile, config, new JsonSerializerOptions() { WriteIndented = true });
-            jsonFile.Close();
-
-            return config;
+            Config = ConfigFromControls() ?? throw new NullReferenceException(nameof(ConfigFromControls));
+            return await Config.Save(configFilePath);
         }
 
-        public virtual void ConfigToControls(CType config)
+        public virtual void ConfigToControls(IWKMenuControlConfig config)
             => throw new NotImplementedException();
 
-        public virtual CType? ConfigFromControls()
+        public virtual IWKMenuControlConfig? ConfigFromControls()
             => throw new NotImplementedException();
     }
 }

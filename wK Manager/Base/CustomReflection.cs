@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.DirectoryServices.ActiveDirectory;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
@@ -29,6 +31,14 @@ namespace wK_Manager.Base
         public static T? GetPropValue<T>(this object @instance, string propName)
         {
             return (T?)@instance.GetType().GetProperty(propName)?.GetValue(@instance, null);
+        }
+
+        public static bool IsNullable(this PropertyInfo propertyInfo)
+        {
+            Type propertyType = propertyInfo.PropertyType;
+
+            return (propertyType.IsGenericType && propertyType.GetGenericTypeDefinition() == typeof(Nullable<>))
+                || Nullable.GetUnderlyingType(propertyType) != null;
         }
     }
 }

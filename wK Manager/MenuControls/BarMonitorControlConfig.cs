@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using wK_Manager.Base;
@@ -10,7 +11,7 @@ using wK_Manager.Base;
 namespace wK_Manager.MenuControls
 {
     [JsonObject(MemberSerialization = MemberSerialization.OptOut)]
-    public class BarMonitorControlConfig : GenericWKMenuControlConfig
+    public class BarMonitorControlConfig : WKMenuControlConfig
     {
         [JsonIgnore]
         public const string ConfigFileName = "bar_monitor.json";
@@ -21,7 +22,7 @@ namespace wK_Manager.MenuControls
         public int MonitorSourceID { get; set; }
 
         [JsonProperty(Required = Required.Always)]
-        [DefaultValue(0)]
+        [DefaultValue(typeof(uint), "0")]
         public uint MonitorTargetID { get; set; }
 
         [JsonProperty(Required = Required.Always)]

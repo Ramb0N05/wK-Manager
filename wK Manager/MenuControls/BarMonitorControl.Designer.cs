@@ -49,20 +49,23 @@
             stopButton = new Button();
             presentButton = new Button();
             lockSettingsCheckBox = new CheckBox();
+            tableLayoutPanel3 = new TableLayoutPanel();
+            saveButton = new Button();
             displaysGroupBox.SuspendLayout();
             diashowGroupBox.SuspendLayout();
             tableLayoutPanel1.SuspendLayout();
             presentGroupBox.SuspendLayout();
             tableLayoutPanel2.SuspendLayout();
+            tableLayoutPanel3.SuspendLayout();
             SuspendLayout();
             // 
             // displaysGroupBox
             // 
             displaysGroupBox.Controls.Add(displaysFlowLayoutPanel);
             displaysGroupBox.Dock = DockStyle.Top;
-            displaysGroupBox.Location = new Point(2, 5);
+            displaysGroupBox.Location = new Point(0, 0);
             displaysGroupBox.Name = "displaysGroupBox";
-            displaysGroupBox.Size = new Size(1182, 100);
+            displaysGroupBox.Size = new Size(1029, 100);
             displaysGroupBox.TabIndex = 0;
             displaysGroupBox.TabStop = false;
             displaysGroupBox.Text = "Monitor Auswahl";
@@ -72,15 +75,15 @@
             displaysFlowLayoutPanel.Dock = DockStyle.Fill;
             displaysFlowLayoutPanel.Location = new Point(3, 19);
             displaysFlowLayoutPanel.Name = "displaysFlowLayoutPanel";
-            displaysFlowLayoutPanel.Size = new Size(1176, 78);
+            displaysFlowLayoutPanel.Size = new Size(1023, 78);
             displaysFlowLayoutPanel.TabIndex = 0;
             // 
             // identifyLabel
             // 
             identifyLabel.Dock = DockStyle.Top;
-            identifyLabel.Location = new Point(2, 105);
+            identifyLabel.Location = new Point(0, 100);
             identifyLabel.Name = "identifyLabel";
-            identifyLabel.Size = new Size(1182, 15);
+            identifyLabel.Size = new Size(1029, 15);
             identifyLabel.TabIndex = 1;
             identifyLabel.Text = "(Rechtsklick zum identifizieren)";
             identifyLabel.TextAlign = ContentAlignment.TopRight;
@@ -89,9 +92,9 @@
             // 
             diashowGroupBox.Controls.Add(tableLayoutPanel1);
             diashowGroupBox.Dock = DockStyle.Top;
-            diashowGroupBox.Location = new Point(2, 120);
+            diashowGroupBox.Location = new Point(0, 115);
             diashowGroupBox.Name = "diashowGroupBox";
-            diashowGroupBox.Size = new Size(1182, 125);
+            diashowGroupBox.Size = new Size(1029, 125);
             diashowGroupBox.TabIndex = 2;
             diashowGroupBox.TabStop = false;
             diashowGroupBox.Text = "Diashow beziehen";
@@ -117,14 +120,14 @@
             tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 33.3333321F));
             tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 33.3333321F));
             tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 33.3333321F));
-            tableLayoutPanel1.Size = new Size(1176, 103);
+            tableLayoutPanel1.Size = new Size(1023, 103);
             tableLayoutPanel1.TabIndex = 0;
             // 
             // localPathButton
             // 
             localPathButton.Anchor = AnchorStyles.None;
             localPathButton.AutoSize = true;
-            localPathButton.Location = new Point(1090, 4);
+            localPathButton.Location = new Point(937, 4);
             localPathButton.Name = "localPathButton";
             localPathButton.Size = new Size(75, 25);
             localPathButton.TabIndex = 3;
@@ -137,7 +140,7 @@
             remotePathTextBox.Anchor = AnchorStyles.Left | AnchorStyles.Right;
             remotePathTextBox.Location = new Point(87, 39);
             remotePathTextBox.Name = "remotePathTextBox";
-            remotePathTextBox.Size = new Size(990, 23);
+            remotePathTextBox.Size = new Size(837, 23);
             remotePathTextBox.TabIndex = 3;
             remotePathTextBox.TextChanged += remotePathTextBox_TextChanged;
             // 
@@ -167,7 +170,7 @@
             // 
             autoGetCheckBox.Anchor = AnchorStyles.Right;
             autoGetCheckBox.AutoSize = true;
-            autoGetCheckBox.Location = new Point(865, 76);
+            autoGetCheckBox.Location = new Point(712, 76);
             autoGetCheckBox.Name = "autoGetCheckBox";
             autoGetCheckBox.Size = new Size(212, 19);
             autoGetCheckBox.TabIndex = 5;
@@ -178,7 +181,7 @@
             // 
             getButton.Anchor = AnchorStyles.None;
             getButton.AutoSize = true;
-            getButton.Location = new Point(1083, 73);
+            getButton.Location = new Point(930, 73);
             getButton.Name = "getButton";
             getButton.Size = new Size(90, 25);
             getButton.TabIndex = 4;
@@ -191,14 +194,14 @@
             localPathTextBox.Location = new Point(87, 5);
             localPathTextBox.Name = "localPathTextBox";
             localPathTextBox.ReadOnly = true;
-            localPathTextBox.Size = new Size(990, 23);
+            localPathTextBox.Size = new Size(837, 23);
             localPathTextBox.TabIndex = 2;
             // 
             // remotePathStatusLabel
             // 
             remotePathStatusLabel.Anchor = AnchorStyles.Left | AnchorStyles.Right;
             remotePathStatusLabel.AutoSize = true;
-            remotePathStatusLabel.Location = new Point(1083, 43);
+            remotePathStatusLabel.Location = new Point(930, 43);
             remotePathStatusLabel.Name = "remotePathStatusLabel";
             remotePathStatusLabel.Size = new Size(90, 15);
             remotePathStatusLabel.TabIndex = 6;
@@ -208,9 +211,9 @@
             // 
             presentGroupBox.Controls.Add(tableLayoutPanel2);
             presentGroupBox.Dock = DockStyle.Top;
-            presentGroupBox.Location = new Point(2, 245);
+            presentGroupBox.Location = new Point(0, 240);
             presentGroupBox.Name = "presentGroupBox";
-            presentGroupBox.Size = new Size(1182, 100);
+            presentGroupBox.Size = new Size(1029, 100);
             presentGroupBox.TabIndex = 3;
             presentGroupBox.TabStop = false;
             presentGroupBox.Text = "Präsentieren";
@@ -232,7 +235,7 @@
             tableLayoutPanel2.RowCount = 2;
             tableLayoutPanel2.RowStyles.Add(new RowStyle());
             tableLayoutPanel2.RowStyles.Add(new RowStyle());
-            tableLayoutPanel2.Size = new Size(1176, 78);
+            tableLayoutPanel2.Size = new Size(1023, 78);
             tableLayoutPanel2.TabIndex = 0;
             // 
             // vlcPathLabel
@@ -252,14 +255,14 @@
             vlcPathTextBox.Location = new Point(67, 4);
             vlcPathTextBox.Name = "vlcPathTextBox";
             vlcPathTextBox.ReadOnly = true;
-            vlcPathTextBox.Size = new Size(1023, 23);
+            vlcPathTextBox.Size = new Size(870, 23);
             vlcPathTextBox.TabIndex = 5;
             // 
             // vlcPathButton
             // 
             vlcPathButton.Anchor = AnchorStyles.None;
             vlcPathButton.AutoSize = true;
-            vlcPathButton.Location = new Point(1097, 3);
+            vlcPathButton.Location = new Point(944, 3);
             vlcPathButton.Name = "vlcPathButton";
             vlcPathButton.Size = new Size(75, 25);
             vlcPathButton.TabIndex = 6;
@@ -273,7 +276,7 @@
             stopButton.AutoSize = true;
             stopButton.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point);
             stopButton.ForeColor = Color.DarkRed;
-            stopButton.Location = new Point(1096, 42);
+            stopButton.Location = new Point(943, 42);
             stopButton.Name = "stopButton";
             stopButton.Size = new Size(77, 25);
             stopButton.TabIndex = 7;
@@ -287,7 +290,7 @@
             presentButton.AutoSize = true;
             presentButton.Font = new Font("Segoe UI", 15F, FontStyle.Bold, GraphicsUnit.Point);
             presentButton.ForeColor = Color.DarkGreen;
-            presentButton.Location = new Point(925, 35);
+            presentButton.Location = new Point(772, 35);
             presentButton.Name = "presentButton";
             presentButton.Size = new Size(165, 38);
             presentButton.TabIndex = 8;
@@ -297,22 +300,50 @@
             // 
             // lockSettingsCheckBox
             // 
+            lockSettingsCheckBox.Anchor = AnchorStyles.Left | AnchorStyles.Right;
             lockSettingsCheckBox.AutoSize = true;
-            lockSettingsCheckBox.Dock = DockStyle.Bottom;
-            lockSettingsCheckBox.Location = new Point(2, 798);
+            lockSettingsCheckBox.Location = new Point(3, 5);
             lockSettingsCheckBox.Name = "lockSettingsCheckBox";
-            lockSettingsCheckBox.Size = new Size(1182, 19);
+            lockSettingsCheckBox.Size = new Size(467, 19);
             lockSettingsCheckBox.TabIndex = 4;
             lockSettingsCheckBox.Text = "Sperre Einstellungen";
             lockSettingsCheckBox.UseVisualStyleBackColor = true;
             lockSettingsCheckBox.CheckedChanged += lockSettingsCheckBox_CheckedChanged;
+            // 
+            // tableLayoutPanel3
+            // 
+            tableLayoutPanel3.ColumnCount = 3;
+            tableLayoutPanel3.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
+            tableLayoutPanel3.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50.0000076F));
+            tableLayoutPanel3.ColumnStyles.Add(new ColumnStyle());
+            tableLayoutPanel3.Controls.Add(lockSettingsCheckBox, 0, 0);
+            tableLayoutPanel3.Controls.Add(saveButton, 2, 0);
+            tableLayoutPanel3.Dock = DockStyle.Bottom;
+            tableLayoutPanel3.Location = new Point(0, 598);
+            tableLayoutPanel3.Name = "tableLayoutPanel3";
+            tableLayoutPanel3.RowCount = 1;
+            tableLayoutPanel3.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
+            tableLayoutPanel3.Size = new Size(1029, 30);
+            tableLayoutPanel3.TabIndex = 5;
+            // 
+            // saveButton
+            // 
+            saveButton.Anchor = AnchorStyles.None;
+            saveButton.AutoSize = true;
+            saveButton.Location = new Point(950, 3);
+            saveButton.Name = "saveButton";
+            saveButton.Size = new Size(75, 24);
+            saveButton.TabIndex = 5;
+            saveButton.Text = "Speichern";
+            saveButton.UseVisualStyleBackColor = true;
+            saveButton.Click += saveButton_Click;
             // 
             // BarMonitorControl
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             AutoScroll = true;
-            Controls.Add(lockSettingsCheckBox);
+            Controls.Add(tableLayoutPanel3);
             Controls.Add(presentGroupBox);
             Controls.Add(diashowGroupBox);
             Controls.Add(identifyLabel);
@@ -320,7 +351,7 @@
             MenuImageKey = "device-tv";
             MenuItemName = "Kneipe Monitor";
             Name = "BarMonitorControl";
-            Size = new Size(1189, 822);
+            Size = new Size(1029, 628);
             Load += BarMonitorControl_Load;
             displaysGroupBox.ResumeLayout(false);
             diashowGroupBox.ResumeLayout(false);
@@ -329,8 +360,9 @@
             presentGroupBox.ResumeLayout(false);
             tableLayoutPanel2.ResumeLayout(false);
             tableLayoutPanel2.PerformLayout();
+            tableLayoutPanel3.ResumeLayout(false);
+            tableLayoutPanel3.PerformLayout();
             ResumeLayout(false);
-            PerformLayout();
         }
 
         #endregion
@@ -356,5 +388,7 @@
         private Button presentButton;
         private CheckBox lockSettingsCheckBox;
         private Label remotePathStatusLabel;
+        private TableLayoutPanel tableLayoutPanel3;
+        private Button saveButton;
     }
 }

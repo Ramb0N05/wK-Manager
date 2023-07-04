@@ -16,11 +16,12 @@ using wK_Manager.Base;
 
 namespace wK_Manager.MenuControls
 {
-    public partial class SettingsControl : WKMenuControl<MainConfig>
+    public partial class SettingsControl : WKMenuControl
     {
         private FolderBrowserDialog fbd = new();
         private OpenFileDialog ofd = new();
 
+        public override IWKMenuControlConfig Config { get => MainForm.Config; set => MainForm.Config = value as MainConfig ?? throw new NullReferenceException(nameof(MainConfig)); }
         public string ConfigFilePath = MainConfig.ConfigFilePath;
 
         public SettingsControl()
@@ -65,32 +66,24 @@ namespace wK_Manager.MenuControls
             checkPermissionLabel.Visible = !confDirIsWritable;
         }
 
-        public override Task<MainConfig> LoadConfig(string configFilePath)
+        public override Task<bool> LoadConfig(string configFilePath)
         {
             ConfigToControls(MainForm.Config);
-            return new Task<MainConfig>(() => MainForm.Config);
+            return new Task<bool>(() => true);
         }
 
-        /*public override async Task<MainConfig> SaveConfig(string configFilePath)
+        public override void ConfigToControls(IWKMenuControlConfig config)
         {
-            MainConfig config = ConfigFromControls() ?? throw new NullReferenceException(nameof(ConfigFromControls));
+            if (config is MainConfig conf)
+            {
+                userConfigPathTextBox.Text = conf.UserConfigDirectory ?? string.Empty;
+                sevenZipPathTextBox.Text = conf.SevenZipPath ?? string.Empty;
 
-            FileStream jsonFile = File.OpenWrite(configFilePath);
-            await JsonSerializer.SerializeAsync(jsonFile, config, new JsonSerializerOptions() { WriteIndented = true });
-            jsonFile.Close();
-
-            return config;
-        }*/
-
-        public override void ConfigToControls(MainConfig config)
-        {
-            userConfigPathTextBox.Text = config.UserConfigDirectory ?? string.Empty;
-            sevenZipPathTextBox.Text = config.SevenZipPath ?? string.Empty;
-
-            if (config.StartupWindowName != null && config.StartupWindowName.Trim() != string.Empty)
-                startWindowComboBox.SelectedItem = MainForm.MenuItems.First((i) => i.Key == config.StartupWindowName).Value;
-            else
-                startWindowComboBox.SelectedIndex = 0;
+                if (conf.StartupWindowName != null && conf.StartupWindowName.Trim() != string.Empty)
+                    startWindowComboBox.SelectedItem = MainForm.MenuItems.First((i) => i.Key == conf.StartupWindowName).Value;
+                else
+                    startWindowComboBox.SelectedIndex = 0;
+            }
         }
 
         public override MainConfig? ConfigFromControls()
@@ -131,22 +124,22 @@ namespace wK_Manager.MenuControls
                 userConfigPathTextBox.Text = fbd.SelectedPath;
         }
 
-        private void SettingsControl_Load(object sender, EventArgs e)
+        private async void SettingsControl_Load(object sender, EventArgs e)
         {
             foreach (KeyValuePair<string, string> item in MainForm.MenuItems)
                 startWindowComboBox.Items.Add(item.Value);
 
-            LoadConfig(ConfigFilePath);
+            await LoadConfig(ConfigFilePath);
         }
 
         private async void saveButton_Click(object sender, EventArgs e)
         {
-            MainForm.Config = await SaveConfig(ConfigFilePath);
+            await SaveConfig(ConfigFilePath);
         }
 
-        private void defaultsButton_Click(object sender, EventArgs e)
+        private async void defaultsButton_Click(object sender, EventArgs e)
         {
-            LoadConfig(ConfigFilePath);
+            await LoadConfig(ConfigFilePath);
         }
     }
 }

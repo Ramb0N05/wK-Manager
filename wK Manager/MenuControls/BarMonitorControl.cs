@@ -18,7 +18,7 @@ using SharpRambo.ExtensionsLib;
 
 namespace wK_Manager.MenuControls
 {
-    public partial class BarMonitorControl : WKMenuControl<BarMonitorControlConfig>
+    public partial class BarMonitorControl : WKMenuControl
     {
         private const int IdentifyTimeout = 3000;
         private const string displayButtonPostfix = "_display";
@@ -28,7 +28,8 @@ namespace wK_Manager.MenuControls
         private OpenFileDialog ofd = new();
         private HttpClient httpCli = new();
 
-        public BarMonitorControlConfig Config = new();
+        private BarMonitorControlConfig config = new();
+        public override IWKMenuControlConfig Config { get => config; set => config = value as BarMonitorControlConfig ?? new(); }
         public readonly string ConfigFilePath = MainForm.Config.GetUserConfigFilePath(BarMonitorControlConfig.ConfigFileName);
 
         public BarMonitorControl() : base()
@@ -68,43 +69,44 @@ namespace wK_Manager.MenuControls
             ofd.ValidateNames = true;
         }
 
-        public override void ConfigToControls(BarMonitorControlConfig config)
+        public override void ConfigToControls(IWKMenuControlConfig config)
         {
-            bool detectedMonitor = false;
-            foreach (Control c in displaysFlowLayoutPanel.Controls)
+            if (config is BarMonitorControlConfig conf)
             {
-                if (c.Name == config.MonitorTargetID + displayButtonPostfix && c is CheckBox cb)
-                {
-                    cb.Checked = true;
-                    detectedMonitor = true;
-                    break;
-                }
-            }
-
-            if (!detectedMonitor)
-            {
+                bool detectedMonitor = false;
                 foreach (Control c in displaysFlowLayoutPanel.Controls)
                 {
-                    if (c is CheckBox cb && c.Tag != null && c.Tag is DisplaySource monitor && monitor.MonitorInformation.SourceId == config.MonitorSourceID)
+                    if (c.Name == conf.MonitorTargetID + displayButtonPostfix && c is CheckBox cb)
                     {
                         cb.Checked = true;
                         detectedMonitor = true;
                         break;
                     }
                 }
-            }
 
-            localPathTextBox.Text = config.LocalDiashowPath;
-            remotePathTextBox.Text = config.RemoteDiashowPath;
-            autoGetCheckBox.Checked = config.AutoObtainDiashow;
-            vlcPathTextBox.Text = config.VLCPath;
-            lockSettingsCheckBox.Checked = config.LockedConifg;
+                if (!detectedMonitor)
+                {
+                    foreach (Control c in displaysFlowLayoutPanel.Controls)
+                    {
+                        if (c is CheckBox cb && c.Tag != null && c.Tag is DisplaySource monitor && monitor.MonitorInformation.SourceId == conf.MonitorSourceID)
+                        {
+                            cb.Checked = true;
+                            detectedMonitor = true;
+                            break;
+                        }
+                    }
+                }
+
+                localPathTextBox.Text = conf.LocalDiashowPath;
+                remotePathTextBox.Text = conf.RemoteDiashowPath;
+                autoGetCheckBox.Checked = conf.AutoObtainDiashow;
+                vlcPathTextBox.Text = conf.VLCPath;
+                lockSettingsCheckBox.Checked = conf.LockedConifg;
+            }
         }
 
-        public override BarMonitorControlConfig? ConfigFromControls()
+        public override IWKMenuControlConfig? ConfigFromControls()
         {
-            BarMonitorControlConfig config = new();
-
             foreach (Control c in displaysFlowLayoutPanel.Controls)
             {
                 if (c is CheckBox cb && c.Tag != null && c.Tag is DisplaySource monitor && cb.Checked)
@@ -180,6 +182,7 @@ namespace wK_Manager.MenuControls
                 vlcPathTextBox.Enabled = !cb.Checked;
                 vlcPathButton.Enabled = !cb.Checked;
                 vlcPathLabel.Enabled = !cb.Checked;
+                saveButton.Enabled = !cb.Checked;
             }
         }
 
@@ -262,6 +265,11 @@ namespace wK_Manager.MenuControls
         private async void BarMonitorControl_Load(object sender, EventArgs e)
         {
             await LoadConfig(ConfigFilePath);
+        }
+
+        private async void saveButton_Click(object sender, EventArgs e)
+        {
+            await SaveConfig(ConfigFilePath);
         }
     }
 }

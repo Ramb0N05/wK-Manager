@@ -1,6 +1,4 @@
 using SharpRambo.ExtensionsLib;
-using System.Text.Json;
-using System.Text.Json.Nodes;
 using System.Windows.Forms;
 using wK_Manager.Base;
 
@@ -8,7 +6,7 @@ namespace wK_Manager
 {
     public partial class MainForm : Form
     {
-        public static MainConfig Config = new();
+        public static MainConfig Config { get; set; } = new();
         public static IEnumerable<KeyValuePair<string, string>> MenuItems { get; private set; } = Array.Empty<KeyValuePair<string, string>>();
 
         private const string menuItemTabPostfix = "_tab";
@@ -16,49 +14,41 @@ namespace wK_Manager
 
         public MainForm()
         {
-            if (File.Exists(MainConfig.ConfigFilePath))
-            {
-                string json = File.ReadAllText(MainConfig.ConfigFilePath);
-                object? conf = JsonSerializer.Deserialize(json, typeof(MainConfig));
-                Config = conf != null ? (MainConfig)conf : throw new NullReferenceException(nameof(conf));
-            }
-            else
-            {
-                string json = JsonSerializer.Serialize(Config, typeof(MainConfig), new JsonSerializerOptions() { WriteIndented = true });
-                File.WriteAllText(MainConfig.ConfigFilePath, json);
-            }
+            InitializeComponent();
+            menuListView.Visible = false;
+            menuTabControl.Visible = false;
 
-            Type controlType = typeof(WKMenuControl<>);
+            
+        }
+
+        private async void MainForm_Load(object sender, EventArgs e)
+        {
+            await Config.Load(MainConfig.ConfigFilePath);
+
+            Type controlType = typeof(IWKMenuControl);
             IEnumerable<Type> controls = controlType.Assembly.GetTypes().Where(t => t.ImplementsOrDerives(controlType) &&
                                                                                     t.Namespace == menuControlsNamespace);
-            InitializeComponent();
 
             List<ListViewItem> rawItems = new();
             foreach (Type c in controls)
             {
-                object cInstance = Activator.CreateInstance(c) ?? throw new NullReferenceException();
+                WKMenuControl cInstance = (WKMenuControl?)Activator.CreateInstance(c) ?? throw new NullReferenceException();
 
-                string? cName = cInstance.GetPropValue<string>("Name");
-                string? cMenuItemName = cInstance.GetPropValue<string>("MenuItemName");
-
-                if (cName == null)
-                    break;
-
-                string cMenuImageKey = cInstance.GetPropValue<string>("MenuImageKey") ?? string.Empty;
-                int cMenuItemOrder = cInstance.GetPropValue<int?>("MenuItemOrder") ?? 0;
-
-                string menuItemName = cMenuItemName ?? cName ?? string.Empty;
-                string tabName = cName + menuItemTabPostfix;
-                ListViewItem item = new(menuItemName) {
-                    ImageKey = cMenuImageKey,
-                    Name = cMenuItemOrder.ToString() + "_" + menuItemName.Trim(),
+                string menuItemName = cInstance.MenuItemName ?? cInstance.Name;
+                string tabName = cInstance.Name + menuItemTabPostfix;
+                ListViewItem item = new(menuItemName)
+                {
+                    ImageKey = cInstance.MenuImageKey,
+                    Name = cInstance.MenuItemOrder.ToString() + "_" + menuItemName.Trim(),
                     Tag = tabName
                 };
 
                 rawItems.Add(item);
 
                 TabPage tab = new(menuItemName) { AutoScroll = true, Name = tabName };
-                tab.Controls.Add(cInstance as Control);
+                cInstance.Dock = DockStyle.Fill;
+                cInstance.Padding = new(2, 5, 5, 5);
+                tab.Controls.Add(cInstance);
                 menuTabControl.TabPages.Add(tab);
             }
 
@@ -78,11 +68,10 @@ namespace wK_Manager
                 DirectoryInfo configDir = new(Config.UserConfigDirectory);
                 configDir.CreateAnyway();
             }
-        }
 
-        private void MainForm_Load(object sender, EventArgs e)
-        {
-
+            menuListView.Visible = true;
+            menuTabControl.Visible = true;
+            menuListView.Select();
         }
 
         private void menuListView_ItemSelectionChanged(object sender, ListViewItemSelectionChangedEventArgs e)

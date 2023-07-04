@@ -24,9 +24,14 @@
     <PackageProjectUrl>https://github.com/Ramb0N05/wK-Manager</PackageProjectUrl>
     <PackageId>$(RootNamespace)</PackageId>
 	<NeutralLanguage>de</NeutralLanguage>
+	<Configurations>Debug;Release;Design</Configurations>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DebugType>portable</DebugType>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Design|AnyCPU'">
     <DebugType>portable</DebugType>
   </PropertyGroup>
 

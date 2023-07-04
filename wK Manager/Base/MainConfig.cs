@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 namespace wK_Manager.Base
 {
     [JsonObject(MemberSerialization.OptOut)]
-    public class MainConfig : GenericWKMenuControlConfig
+    public class MainConfig : WKMenuControlConfig
     {
         [JsonIgnore]
         public static readonly string ConfigFilePath = Path.Combine(Application.StartupPath, Properties.Settings.Default.mainConfigName);

@@ -70,14 +70,14 @@
             settingsTableLayoutPanel.Controls.Add(sevenZipPathButton, 9, 1);
             settingsTableLayoutPanel.Controls.Add(startWindowComboBox, 1, 2);
             settingsTableLayoutPanel.Dock = DockStyle.Top;
-            settingsTableLayoutPanel.Location = new Point(2, 5);
+            settingsTableLayoutPanel.Location = new Point(0, 0);
             settingsTableLayoutPanel.Name = "settingsTableLayoutPanel";
             settingsTableLayoutPanel.RowCount = 4;
             settingsTableLayoutPanel.RowStyles.Add(new RowStyle(SizeType.Percent, 25F));
             settingsTableLayoutPanel.RowStyles.Add(new RowStyle(SizeType.Percent, 25F));
             settingsTableLayoutPanel.RowStyles.Add(new RowStyle(SizeType.Percent, 25F));
             settingsTableLayoutPanel.RowStyles.Add(new RowStyle(SizeType.Percent, 25F));
-            settingsTableLayoutPanel.Size = new Size(0, 121);
+            settingsTableLayoutPanel.Size = new Size(1096, 121);
             settingsTableLayoutPanel.TabIndex = 0;
             // 
             // label2
@@ -98,7 +98,7 @@
             userConfigPathTextBox.Location = new Point(132, 3);
             userConfigPathTextBox.Name = "userConfigPathTextBox";
             userConfigPathTextBox.ReadOnly = true;
-            userConfigPathTextBox.Size = new Size(1, 23);
+            userConfigPathTextBox.Size = new Size(874, 23);
             userConfigPathTextBox.TabIndex = 4;
             // 
             // label3
@@ -116,7 +116,7 @@
             // 
             userConfigPathButton.Anchor = AnchorStyles.None;
             userConfigPathButton.AutoSize = true;
-            userConfigPathButton.Location = new Point(-76, 3);
+            userConfigPathButton.Location = new Point(1015, 3);
             userConfigPathButton.Name = "userConfigPathButton";
             userConfigPathButton.Size = new Size(75, 24);
             userConfigPathButton.TabIndex = 5;
@@ -142,14 +142,14 @@
             sevenZipPathTextBox.Location = new Point(132, 33);
             sevenZipPathTextBox.Name = "sevenZipPathTextBox";
             sevenZipPathTextBox.ReadOnly = true;
-            sevenZipPathTextBox.Size = new Size(1, 23);
+            sevenZipPathTextBox.Size = new Size(874, 23);
             sevenZipPathTextBox.TabIndex = 1;
             // 
             // sevenZipPathButton
             // 
             sevenZipPathButton.Anchor = AnchorStyles.None;
             sevenZipPathButton.AutoSize = true;
-            sevenZipPathButton.Location = new Point(-76, 33);
+            sevenZipPathButton.Location = new Point(1015, 33);
             sevenZipPathButton.Name = "sevenZipPathButton";
             sevenZipPathButton.Size = new Size(75, 24);
             sevenZipPathButton.TabIndex = 2;
@@ -165,7 +165,7 @@
             startWindowComboBox.FormattingEnabled = true;
             startWindowComboBox.Location = new Point(132, 63);
             startWindowComboBox.Name = "startWindowComboBox";
-            startWindowComboBox.Size = new Size(1, 23);
+            startWindowComboBox.Size = new Size(874, 23);
             startWindowComboBox.TabIndex = 7;
             // 
             // tableLayoutPanel2
@@ -180,18 +180,18 @@
             tableLayoutPanel2.Controls.Add(checkPermissionPictureBox, 0, 0);
             tableLayoutPanel2.Controls.Add(checkPermissionLabel, 1, 0);
             tableLayoutPanel2.Dock = DockStyle.Bottom;
-            tableLayoutPanel2.Location = new Point(2, 121);
+            tableLayoutPanel2.Location = new Point(0, 615);
             tableLayoutPanel2.Name = "tableLayoutPanel2";
             tableLayoutPanel2.RowCount = 1;
             tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
-            tableLayoutPanel2.Size = new Size(0, 30);
+            tableLayoutPanel2.Size = new Size(1096, 30);
             tableLayoutPanel2.TabIndex = 1;
             // 
             // saveButton
             // 
             saveButton.Anchor = AnchorStyles.None;
             saveButton.AutoSize = true;
-            saveButton.Location = new Point(-77, 3);
+            saveButton.Location = new Point(1018, 3);
             saveButton.Name = "saveButton";
             saveButton.Size = new Size(75, 24);
             saveButton.TabIndex = 1;
@@ -203,7 +203,7 @@
             // 
             defaultsButton.Anchor = AnchorStyles.None;
             defaultsButton.AutoSize = true;
-            defaultsButton.Location = new Point(-170, 3);
+            defaultsButton.Location = new Point(925, 3);
             defaultsButton.Name = "defaultsButton";
             defaultsButton.Size = new Size(87, 24);
             defaultsButton.TabIndex = 0;
@@ -230,7 +230,7 @@
             checkPermissionLabel.ForeColor = Color.DarkRed;
             checkPermissionLabel.Location = new Point(33, 0);
             checkPermissionLabel.Name = "checkPermissionLabel";
-            checkPermissionLabel.Size = new Size(1, 30);
+            checkPermissionLabel.Size = new Size(886, 30);
             checkPermissionLabel.TabIndex = 3;
             checkPermissionLabel.Text = "Kein Schreibzugriff auf die Einstellungen möglich!\r\nStarte die Anwendung mit erhöten Rechten neu.";
             // 
@@ -245,7 +245,7 @@
             MenuItemName = "Einstellungen";
             MenuItemOrder = 990;
             Name = "SettingsControl";
-            Size = new Size(0, 0);
+            Size = new Size(1096, 645);
             Load += SettingsControl_Load;
             settingsTableLayoutPanel.ResumeLayout(false);
             settingsTableLayoutPanel.PerformLayout();

@@ -48,7 +48,7 @@
             tableLayoutPanel1.Controls.Add(productInfoLabel, 1, 1);
             tableLayoutPanel1.Controls.Add(licenseTextBox, 0, 3);
             tableLayoutPanel1.Dock = DockStyle.Fill;
-            tableLayoutPanel1.Location = new Point(2, 5);
+            tableLayoutPanel1.Location = new Point(0, 0);
             tableLayoutPanel1.Name = "tableLayoutPanel1";
             tableLayoutPanel1.RowCount = 4;
             tableLayoutPanel1.RowStyles.Add(new RowStyle());
@@ -56,16 +56,16 @@
             tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Absolute, 20F));
             tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
             tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Absolute, 20F));
-            tableLayoutPanel1.Size = new Size(0, 0);
+            tableLayoutPanel1.Size = new Size(956, 654);
             tableLayoutPanel1.TabIndex = 0;
             // 
             // pictureBox1
             // 
             pictureBox1.Anchor = AnchorStyles.None;
             pictureBox1.Image = (Image)resources.GetObject("pictureBox1.Image");
-            pictureBox1.Location = new Point(3, 3);
+            pictureBox1.Location = new Point(429, 3);
             pictureBox1.Name = "pictureBox1";
-            pictureBox1.Size = new Size(1, 96);
+            pictureBox1.Size = new Size(96, 96);
             pictureBox1.SizeMode = PictureBoxSizeMode.AutoSize;
             pictureBox1.TabIndex = 0;
             pictureBox1.TabStop = false;
@@ -74,9 +74,9 @@
             // 
             productInfoLabel.Anchor = AnchorStyles.Left | AnchorStyles.Right;
             productInfoLabel.AutoSize = true;
-            productInfoLabel.Location = new Point(3, 102);
+            productInfoLabel.Location = new Point(321, 102);
             productInfoLabel.Name = "productInfoLabel";
-            productInfoLabel.Size = new Size(1, 1);
+            productInfoLabel.Size = new Size(312, 45);
             productInfoLabel.TabIndex = 1;
             productInfoLabel.Text = "%ProductName%\r\n%ProductVersion%\r\n%Author%";
             productInfoLabel.TextAlign = ContentAlignment.MiddleCenter;
@@ -85,12 +85,12 @@
             // 
             licenseTextBox.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             tableLayoutPanel1.SetColumnSpan(licenseTextBox, 3);
-            licenseTextBox.Location = new Point(3, 125);
+            licenseTextBox.Location = new Point(3, 170);
             licenseTextBox.Multiline = true;
             licenseTextBox.Name = "licenseTextBox";
             licenseTextBox.ReadOnly = true;
             licenseTextBox.ScrollBars = ScrollBars.Vertical;
-            licenseTextBox.Size = new Size(1, 1);
+            licenseTextBox.Size = new Size(950, 481);
             licenseTextBox.TabIndex = 3;
             licenseTextBox.Text = resources.GetString("licenseTextBox.Text");
             licenseTextBox.TextAlign = HorizontalAlignment.Center;
@@ -104,7 +104,7 @@
             MenuItemName = "Info";
             MenuItemOrder = 999;
             Name = "InfoControl";
-            Size = new Size(0, 0);
+            Size = new Size(956, 654);
             tableLayoutPanel1.ResumeLayout(false);
             tableLayoutPanel1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).EndInit();
