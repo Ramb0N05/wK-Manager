@@ -1,4 +1,7 @@
-﻿namespace wK_Manager.MenuControls
+﻿using System.Drawing;
+using System.Windows.Forms;
+
+namespace wK_Manager.Plugins.MenuControls
 {
     partial class BarMonitorControl
     {
@@ -37,25 +40,29 @@
             remotePathTextBox = new TextBox();
             label2 = new Label();
             label3 = new Label();
-            autoGetCheckBox = new CheckBox();
-            getButton = new Button();
+            autoObtainCheckBox = new CheckBox();
+            obtainButton = new Button();
             localPathTextBox = new TextBox();
             remotePathStatusLabel = new Label();
             presentGroupBox = new GroupBox();
             tableLayoutPanel2 = new TableLayoutPanel();
-            vlcPathLabel = new Label();
-            vlcPathTextBox = new TextBox();
-            vlcPathButton = new Button();
-            stopButton = new Button();
+            shuffleCheckBox = new CheckBox();
+            intervalNumericUpDown = new NumericUpDown();
+            repeatCheckBox = new CheckBox();
+            intervalLabel = new Label();
             presentButton = new Button();
+            stopButton = new Button();
             lockSettingsCheckBox = new CheckBox();
             tableLayoutPanel3 = new TableLayoutPanel();
             saveButton = new Button();
+            defaultsButton = new Button();
+            obtainProgressBar = new ProgressBar();
             displaysGroupBox.SuspendLayout();
             diashowGroupBox.SuspendLayout();
             tableLayoutPanel1.SuspendLayout();
             presentGroupBox.SuspendLayout();
             tableLayoutPanel2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)intervalNumericUpDown).BeginInit();
             tableLayoutPanel3.SuspendLayout();
             SuspendLayout();
             // 
@@ -109,8 +116,8 @@
             tableLayoutPanel1.Controls.Add(remotePathTextBox, 1, 1);
             tableLayoutPanel1.Controls.Add(label2, 0, 0);
             tableLayoutPanel1.Controls.Add(label3, 0, 1);
-            tableLayoutPanel1.Controls.Add(autoGetCheckBox, 1, 2);
-            tableLayoutPanel1.Controls.Add(getButton, 2, 2);
+            tableLayoutPanel1.Controls.Add(autoObtainCheckBox, 1, 2);
+            tableLayoutPanel1.Controls.Add(obtainButton, 2, 2);
             tableLayoutPanel1.Controls.Add(localPathTextBox, 1, 0);
             tableLayoutPanel1.Controls.Add(remotePathStatusLabel, 2, 1);
             tableLayoutPanel1.Dock = DockStyle.Fill;
@@ -166,27 +173,29 @@
             label3.Text = "Remote Pfad:";
             label3.TextAlign = ContentAlignment.MiddleCenter;
             // 
-            // autoGetCheckBox
+            // autoObtainCheckBox
             // 
-            autoGetCheckBox.Anchor = AnchorStyles.Right;
-            autoGetCheckBox.AutoSize = true;
-            autoGetCheckBox.Location = new Point(712, 76);
-            autoGetCheckBox.Name = "autoGetCheckBox";
-            autoGetCheckBox.Size = new Size(212, 19);
-            autoGetCheckBox.TabIndex = 5;
-            autoGetCheckBox.Text = "Beim Starten automatisch beziehen";
-            autoGetCheckBox.UseVisualStyleBackColor = true;
+            autoObtainCheckBox.Anchor = AnchorStyles.Right;
+            autoObtainCheckBox.AutoSize = true;
+            autoObtainCheckBox.Location = new Point(712, 76);
+            autoObtainCheckBox.Name = "autoObtainCheckBox";
+            autoObtainCheckBox.Size = new Size(212, 19);
+            autoObtainCheckBox.TabIndex = 5;
+            autoObtainCheckBox.Text = "Beim Starten automatisch beziehen";
+            autoObtainCheckBox.UseVisualStyleBackColor = true;
+            autoObtainCheckBox.CheckedChanged += autoObtainCheckBox_CheckedChanged;
             // 
-            // getButton
+            // obtainButton
             // 
-            getButton.Anchor = AnchorStyles.None;
-            getButton.AutoSize = true;
-            getButton.Location = new Point(930, 73);
-            getButton.Name = "getButton";
-            getButton.Size = new Size(90, 25);
-            getButton.TabIndex = 4;
-            getButton.Text = "Jetzt beziehen";
-            getButton.UseVisualStyleBackColor = true;
+            obtainButton.Anchor = AnchorStyles.None;
+            obtainButton.AutoSize = true;
+            obtainButton.Location = new Point(930, 73);
+            obtainButton.Name = "obtainButton";
+            obtainButton.Size = new Size(90, 25);
+            obtainButton.TabIndex = 4;
+            obtainButton.Text = "Jetzt beziehen";
+            obtainButton.UseVisualStyleBackColor = true;
+            obtainButton.Click += obtainButton_Click;
             // 
             // localPathTextBox
             // 
@@ -224,51 +233,84 @@
             tableLayoutPanel2.ColumnStyles.Add(new ColumnStyle());
             tableLayoutPanel2.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
             tableLayoutPanel2.ColumnStyles.Add(new ColumnStyle());
-            tableLayoutPanel2.Controls.Add(vlcPathLabel, 0, 0);
-            tableLayoutPanel2.Controls.Add(vlcPathTextBox, 1, 0);
-            tableLayoutPanel2.Controls.Add(vlcPathButton, 2, 0);
-            tableLayoutPanel2.Controls.Add(stopButton, 2, 1);
-            tableLayoutPanel2.Controls.Add(presentButton, 1, 1);
+            tableLayoutPanel2.Controls.Add(shuffleCheckBox, 1, 0);
+            tableLayoutPanel2.Controls.Add(intervalNumericUpDown, 1, 1);
+            tableLayoutPanel2.Controls.Add(repeatCheckBox, 0, 0);
+            tableLayoutPanel2.Controls.Add(intervalLabel, 0, 1);
+            tableLayoutPanel2.Controls.Add(stopButton, 2, 0);
+            tableLayoutPanel2.Controls.Add(presentButton, 2, 1);
             tableLayoutPanel2.Dock = DockStyle.Fill;
             tableLayoutPanel2.Location = new Point(3, 19);
             tableLayoutPanel2.Name = "tableLayoutPanel2";
-            tableLayoutPanel2.RowCount = 2;
+            tableLayoutPanel2.RowCount = 3;
             tableLayoutPanel2.RowStyles.Add(new RowStyle());
             tableLayoutPanel2.RowStyles.Add(new RowStyle());
+            tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
             tableLayoutPanel2.Size = new Size(1023, 78);
             tableLayoutPanel2.TabIndex = 0;
             // 
-            // vlcPathLabel
+            // shuffleCheckBox
             // 
-            vlcPathLabel.Anchor = AnchorStyles.Left | AnchorStyles.Right;
-            vlcPathLabel.AutoSize = true;
-            vlcPathLabel.Location = new Point(3, 8);
-            vlcPathLabel.Name = "vlcPathLabel";
-            vlcPathLabel.Size = new Size(58, 15);
-            vlcPathLabel.TabIndex = 4;
-            vlcPathLabel.Text = "VLC Pfad:";
-            vlcPathLabel.TextAlign = ContentAlignment.MiddleCenter;
+            shuffleCheckBox.Anchor = AnchorStyles.Left | AnchorStyles.Right;
+            shuffleCheckBox.AutoSize = true;
+            shuffleCheckBox.Location = new Point(102, 6);
+            shuffleCheckBox.Name = "shuffleCheckBox";
+            shuffleCheckBox.Size = new Size(747, 19);
+            shuffleCheckBox.TabIndex = 9;
+            shuffleCheckBox.Text = "Zufallswiedergabe";
+            shuffleCheckBox.UseVisualStyleBackColor = true;
+            shuffleCheckBox.CheckedChanged += shuffleCheckBox_CheckedChanged;
             // 
-            // vlcPathTextBox
+            // intervalNumericUpDown
             // 
-            vlcPathTextBox.Anchor = AnchorStyles.Left | AnchorStyles.Right;
-            vlcPathTextBox.Location = new Point(67, 4);
-            vlcPathTextBox.Name = "vlcPathTextBox";
-            vlcPathTextBox.ReadOnly = true;
-            vlcPathTextBox.Size = new Size(870, 23);
-            vlcPathTextBox.TabIndex = 5;
+            intervalNumericUpDown.Anchor = AnchorStyles.Left;
+            intervalNumericUpDown.Location = new Point(102, 34);
+            intervalNumericUpDown.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
+            intervalNumericUpDown.Name = "intervalNumericUpDown";
+            intervalNumericUpDown.Size = new Size(120, 23);
+            intervalNumericUpDown.TabIndex = 13;
+            intervalNumericUpDown.TextAlign = HorizontalAlignment.Center;
+            intervalNumericUpDown.Value = new decimal(new int[] { 1, 0, 0, 0 });
+            intervalNumericUpDown.ValueChanged += intervalNumericUpDown_ValueChanged;
             // 
-            // vlcPathButton
+            // repeatCheckBox
             // 
-            vlcPathButton.Anchor = AnchorStyles.None;
-            vlcPathButton.AutoSize = true;
-            vlcPathButton.Location = new Point(944, 3);
-            vlcPathButton.Name = "vlcPathButton";
-            vlcPathButton.Size = new Size(75, 25);
-            vlcPathButton.TabIndex = 6;
-            vlcPathButton.Text = "...";
-            vlcPathButton.UseVisualStyleBackColor = true;
-            vlcPathButton.Click += vlcPathButton_Click;
+            repeatCheckBox.Anchor = AnchorStyles.Left;
+            repeatCheckBox.AutoSize = true;
+            repeatCheckBox.Location = new Point(3, 6);
+            repeatCheckBox.Name = "repeatCheckBox";
+            repeatCheckBox.Size = new Size(93, 19);
+            repeatCheckBox.TabIndex = 11;
+            repeatCheckBox.Text = "Wiederholen";
+            repeatCheckBox.UseVisualStyleBackColor = true;
+            repeatCheckBox.CheckedChanged += repeatCheckBox_CheckedChanged;
+            // 
+            // intervalLabel
+            // 
+            intervalLabel.Anchor = AnchorStyles.Left | AnchorStyles.Right;
+            intervalLabel.AutoSize = true;
+            intervalLabel.Location = new Point(3, 38);
+            intervalLabel.Name = "intervalLabel";
+            intervalLabel.Size = new Size(93, 15);
+            intervalLabel.TabIndex = 12;
+            intervalLabel.Text = "Intervall (ms):";
+            intervalLabel.TextAlign = ContentAlignment.MiddleLeft;
+            // 
+            // presentButton
+            // 
+            presentButton.Anchor = AnchorStyles.Top;
+            presentButton.AutoSize = true;
+            presentButton.Font = new Font("Segoe UI", 15F, FontStyle.Bold, GraphicsUnit.Point);
+            presentButton.ForeColor = Color.DarkGreen;
+            presentButton.Location = new Point(855, 34);
+            presentButton.Name = "presentButton";
+            tableLayoutPanel2.SetRowSpan(presentButton, 2);
+            presentButton.Size = new Size(165, 38);
+            presentButton.TabIndex = 8;
+            presentButton.Text = "Präsentieren ▶";
+            presentButton.TextAlign = ContentAlignment.TopCenter;
+            presentButton.UseVisualStyleBackColor = true;
+            presentButton.Click += presentButton_Click;
             // 
             // stopButton
             // 
@@ -276,7 +318,7 @@
             stopButton.AutoSize = true;
             stopButton.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point);
             stopButton.ForeColor = Color.DarkRed;
-            stopButton.Location = new Point(943, 42);
+            stopButton.Location = new Point(899, 3);
             stopButton.Name = "stopButton";
             stopButton.Size = new Size(77, 25);
             stopButton.TabIndex = 7;
@@ -284,27 +326,13 @@
             stopButton.UseVisualStyleBackColor = true;
             stopButton.Click += stopButton_Click;
             // 
-            // presentButton
-            // 
-            presentButton.Anchor = AnchorStyles.Right;
-            presentButton.AutoSize = true;
-            presentButton.Font = new Font("Segoe UI", 15F, FontStyle.Bold, GraphicsUnit.Point);
-            presentButton.ForeColor = Color.DarkGreen;
-            presentButton.Location = new Point(772, 35);
-            presentButton.Name = "presentButton";
-            presentButton.Size = new Size(165, 38);
-            presentButton.TabIndex = 8;
-            presentButton.Text = "Präsentieren ▶";
-            presentButton.UseVisualStyleBackColor = true;
-            presentButton.Click += presentButton_Click;
-            // 
             // lockSettingsCheckBox
             // 
             lockSettingsCheckBox.Anchor = AnchorStyles.Left | AnchorStyles.Right;
             lockSettingsCheckBox.AutoSize = true;
             lockSettingsCheckBox.Location = new Point(3, 5);
             lockSettingsCheckBox.Name = "lockSettingsCheckBox";
-            lockSettingsCheckBox.Size = new Size(467, 19);
+            lockSettingsCheckBox.Size = new Size(421, 19);
             lockSettingsCheckBox.TabIndex = 4;
             lockSettingsCheckBox.Text = "Sperre Einstellungen";
             lockSettingsCheckBox.UseVisualStyleBackColor = true;
@@ -312,12 +340,15 @@
             // 
             // tableLayoutPanel3
             // 
-            tableLayoutPanel3.ColumnCount = 3;
+            tableLayoutPanel3.ColumnCount = 4;
             tableLayoutPanel3.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
-            tableLayoutPanel3.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50.0000076F));
+            tableLayoutPanel3.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
             tableLayoutPanel3.ColumnStyles.Add(new ColumnStyle());
+            tableLayoutPanel3.ColumnStyles.Add(new ColumnStyle());
+            tableLayoutPanel3.Controls.Add(saveButton, 3, 0);
+            tableLayoutPanel3.Controls.Add(defaultsButton, 2, 0);
             tableLayoutPanel3.Controls.Add(lockSettingsCheckBox, 0, 0);
-            tableLayoutPanel3.Controls.Add(saveButton, 2, 0);
+            tableLayoutPanel3.Controls.Add(obtainProgressBar, 1, 0);
             tableLayoutPanel3.Dock = DockStyle.Bottom;
             tableLayoutPanel3.Location = new Point(0, 598);
             tableLayoutPanel3.Name = "tableLayoutPanel3";
@@ -337,6 +368,28 @@
             saveButton.Text = "Speichern";
             saveButton.UseVisualStyleBackColor = true;
             saveButton.Click += saveButton_Click;
+            // 
+            // defaultsButton
+            // 
+            defaultsButton.Anchor = AnchorStyles.None;
+            defaultsButton.AutoSize = true;
+            defaultsButton.Location = new Point(857, 3);
+            defaultsButton.Name = "defaultsButton";
+            defaultsButton.Size = new Size(87, 24);
+            defaultsButton.TabIndex = 6;
+            defaultsButton.Text = "Zurücksetzen";
+            defaultsButton.UseVisualStyleBackColor = true;
+            defaultsButton.Click += defaultsButton_Click;
+            // 
+            // obtainProgressBar
+            // 
+            obtainProgressBar.Anchor = AnchorStyles.Left | AnchorStyles.Right;
+            obtainProgressBar.Location = new Point(430, 7);
+            obtainProgressBar.Name = "obtainProgressBar";
+            obtainProgressBar.Size = new Size(421, 15);
+            obtainProgressBar.Style = ProgressBarStyle.Continuous;
+            obtainProgressBar.TabIndex = 7;
+            obtainProgressBar.Visible = false;
             // 
             // BarMonitorControl
             // 
@@ -360,6 +413,7 @@
             presentGroupBox.ResumeLayout(false);
             tableLayoutPanel2.ResumeLayout(false);
             tableLayoutPanel2.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)intervalNumericUpDown).EndInit();
             tableLayoutPanel3.ResumeLayout(false);
             tableLayoutPanel3.PerformLayout();
             ResumeLayout(false);
@@ -375,20 +429,23 @@
         private Label label2;
         private Label label3;
         private TextBox localPathTextBox;
-        private Button getButton;
-        private CheckBox autoGetCheckBox;
+        private Button obtainButton;
+        private CheckBox autoObtainCheckBox;
         private TableLayoutPanel tableLayoutPanel1;
         private Button localPathButton;
         private GroupBox presentGroupBox;
         private TableLayoutPanel tableLayoutPanel2;
-        private Label vlcPathLabel;
-        private TextBox vlcPathTextBox;
-        private Button vlcPathButton;
         private Button stopButton;
         private Button presentButton;
         private CheckBox lockSettingsCheckBox;
         private Label remotePathStatusLabel;
         private TableLayoutPanel tableLayoutPanel3;
         private Button saveButton;
+        private Button defaultsButton;
+        private CheckBox shuffleCheckBox;
+        private CheckBox repeatCheckBox;
+        private Label intervalLabel;
+        private NumericUpDown intervalNumericUpDown;
+        private ProgressBar obtainProgressBar;
     }
 }

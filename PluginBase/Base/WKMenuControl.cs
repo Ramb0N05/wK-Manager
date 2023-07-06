@@ -1,9 +1,5 @@
-﻿using SharpRambo.ExtensionsLib;
-using System.Collections.Specialized;
-using System.ComponentModel;
-using System.Diagnostics.CodeAnalysis;
-using System.Text.Json;
-using wK_Manager.MenuControls;
+﻿using System.ComponentModel;
+using System.Windows.Forms;
 
 namespace wK_Manager.Base
 {
@@ -26,10 +22,10 @@ namespace wK_Manager.Base
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
         public virtual int MenuItemOrder { get; set; } = 0;
 
-        public virtual Task<bool> LoadConfig(string _)
+        public virtual Task<bool> LoadConfig()
             => throw new NotImplementedException();
 
-        public virtual Task<bool> SaveConfig(string _)
+        public virtual Task<bool> SaveConfig()
             => throw new NotImplementedException();
 
         public virtual void ConfigToControls(IWKMenuControlConfig _)
@@ -48,12 +44,12 @@ namespace wK_Manager.Base
 
         public abstract IWKMenuControlConfig Config { get; set; }
 
-        public WKMenuControl() : base()
+        public WKMenuControl(object sender) : base()
         { }
 
-        public virtual async Task<bool> LoadConfig(string configFilePath)
+        public virtual async Task<bool> LoadConfig()
         {
-            if (Config != null && await Config.Load(configFilePath))
+            if (Config != null && await Config.Load())
             {
                 ConfigToControls(Config);
                 return true;
@@ -62,15 +58,10 @@ namespace wK_Manager.Base
                 return false;
         }
 
-        public virtual async Task<bool> SaveConfig(string configFilePath)
+        public virtual async Task<bool> SaveConfig()
         {
-            string configFileDir = Path.GetDirectoryName(configFilePath) ?? throw new ArgumentException(nameof(configFilePath));
-
-            if (!configFileDir.IsNull() && !Path.Exists(configFileDir))
-                new DirectoryInfo(configFileDir).CreateAnyway();
-
             Config = ConfigFromControls() ?? throw new NullReferenceException(nameof(ConfigFromControls));
-            return await Config.Save(configFilePath);
+            return await Config.Save();
         }
 
         public virtual void ConfigToControls(IWKMenuControlConfig config)

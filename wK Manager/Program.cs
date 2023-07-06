@@ -1,3 +1,8 @@
+using SharpRambo.ExtensionsLib;
+using System.Linq;
+using System.Reflection;
+using wK_Manager.Base;
+
 namespace wK_Manager
 {
     internal static class Program
@@ -8,8 +13,6 @@ namespace wK_Manager
         [STAThread]
         static void Main()
         {
-            // To customize application configuration such as set high DPI settings or default font,
-            // see https://aka.ms/applicationconfiguration.
             ApplicationConfiguration.Initialize();
             Application.Run(new MainForm());
         }

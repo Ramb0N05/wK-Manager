@@ -15,7 +15,7 @@ namespace wK_Manager.MenuControls
     {
         public override IWKMenuControlConfig Config { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
-        public InfoControl()
+        public InfoControl(object sender) : base(sender)
         {
             InitializeComponent();
 

@@ -1,11 +1,6 @@
 ﻿using Newtonsoft.Json;
 using SharpRambo.ExtensionsLib;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace wK_Manager.Base
 {
@@ -13,7 +8,7 @@ namespace wK_Manager.Base
     public class MainConfig : WKMenuControlConfig
     {
         [JsonIgnore]
-        public static readonly string ConfigFilePath = Path.Combine(Application.StartupPath, Properties.Settings.Default.mainConfigName);
+        public override string ConfigFilePath { get; set; } = string.Empty;
 
 #pragma warning disable CS8618 // Ein Non-Nullable-Feld muss beim Beenden des Konstruktors einen Wert ungleich NULL enthalten. Erwägen Sie die Deklaration als Nullable.
         [JsonProperty(Required = Required.Always)]
@@ -27,6 +22,19 @@ namespace wK_Manager.Base
         [JsonProperty(Required = Required.Always)]
         [DefaultValue("")]
         public string UserConfigDirectory { get; set; }
+
+        [JsonConstructor]
+        internal MainConfig() {
+            if (ConfigProvider.Global != null && !ConfigProvider.Global.ConfigFilePath.IsNull())
+                ConfigFilePath = ConfigProvider.Global.ConfigFilePath;
+        }
+
+        public MainConfig(string configFilePath)
+        {
+            ConfigFilePath = !configFilePath.IsNull() && File.Exists(configFilePath)
+                ? configFilePath
+                : throw new ArgumentException("Invalid config file path!", nameof(configFilePath));
+        }
 #pragma warning restore CS8618 // Ein Non-Nullable-Feld muss beim Beenden des Konstruktors einen Wert ungleich NULL enthalten. Erwägen Sie die Deklaration als Nullable.
 
         public string GetUserConfigFilePath(string filename)
