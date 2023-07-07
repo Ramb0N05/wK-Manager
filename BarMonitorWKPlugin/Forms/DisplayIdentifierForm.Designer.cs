@@ -63,7 +63,7 @@ namespace wK_Manager.Forms
             ShowInTaskbar = false;
             Text = "DisplayIdentifierForm";
             TopMost = true;
-            Shown += DisplayIdentifierForm_Shown;
+            Shown += displayIdentifierForm_Shown;
             ResumeLayout(false);
         }
 

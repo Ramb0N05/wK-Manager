@@ -65,8 +65,8 @@
             ShowInTaskbar = false;
             SizeGripStyle = SizeGripStyle.Hide;
             Text = "PresenterFrom";
-            FormClosing += PresenterForm_FormClosing;
-            Load += PresenterForm_Load;
+            FormClosing += presenterForm_FormClosing;
+            Load += presenterForm_Load;
             ((System.ComponentModel.ISupportInitialize)presenterPictureBox).EndInit();
             ResumeLayout(false);
         }

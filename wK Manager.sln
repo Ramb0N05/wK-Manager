@@ -4,8 +4,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 17.6.33815.320
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "wK Manager", "wK Manager\wK Manager.csproj", "{4BAB62DA-7131-4D6B-B292-347A298B666A}"
+	ProjectSection(ProjectDependencies) = postProject
+		{25795E81-0F69-42E4-8B31-D60A00B23403} = {25795E81-0F69-42E4-8B31-D60A00B23403}
+	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PluginBase", "PluginBase\PluginBase.csproj", "{718434AB-1E83-4C11-99DB-FB82CD1896BD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Base", "Base\Base.csproj", "{718434AB-1E83-4C11-99DB-FB82CD1896BD}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BarMonitorWKPlugin", "BarMonitorWKPlugin\BarMonitorWKPlugin.csproj", "{25795E81-0F69-42E4-8B31-D60A00B23403}"
 EndProject

@@ -5,25 +5,5 @@
     <Setting Name="mainConfigName" Type="System.String" Scope="Application">
       <Value Profile="(Default)">config.json</Value>
     </Setting>
-    <Setting Name="acceptedDiashowContentTypes" Type="System.Collections.Specialized.StringCollection" Scope="Application">
-      <Value Profile="(Default)">&lt;?xml version="1.0" encoding="utf-16"?&gt;
-&lt;ArrayOfString xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"&gt;
-  &lt;string&gt;application/gzip&lt;/string&gt;
-  &lt;string&gt;application/vnd.ms-cab-compressed&lt;/string&gt;
-  &lt;string&gt;application/x-7z-compressed&lt;/string&gt;
-  &lt;string&gt;application/x-bzip2&lt;/string&gt;
-  &lt;string&gt;application/x-compress&lt;/string&gt;
-  &lt;string&gt;application/x-lzma&lt;/string&gt;
-  &lt;string&gt;application/x-tar&lt;/string&gt;
-  &lt;string&gt;application/x-xz&lt;/string&gt;
-  &lt;string&gt;application/zip&lt;/string&gt;
-&lt;/ArrayOfString&gt;</Value>
-    </Setting>
-    <Setting Name="pluginPaths" Type="System.Collections.Specialized.StringCollection" Scope="User">
-      <Value Profile="(Default)">&lt;?xml version="1.0" encoding="utf-16"?&gt;
-&lt;ArrayOfString xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"&gt;
-  &lt;string&gt;plugins&lt;/string&gt;
-&lt;/ArrayOfString&gt;</Value>
-    </Setting>
   </Settings>
 </SettingsFile>

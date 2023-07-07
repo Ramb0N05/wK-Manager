@@ -1,7 +1,5 @@
-﻿namespace wK_Manager.MenuControls
-{
-    partial class SettingsControl
-    {
+﻿namespace wK_Manager.MenuControls {
+    partial class SettingsControl {
         /// <summary> 
         /// Erforderliche Designervariable.
         /// </summary>
@@ -11,10 +9,8 @@
         /// Verwendete Ressourcen bereinigen.
         /// </summary>
         /// <param name="disposing">True, wenn verwaltete Ressourcen gelöscht werden sollen; andernfalls False.</param>
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing && (components != null))
-            {
+        protected override void Dispose(bool disposing) {
+            if (disposing && (components != null)) {
                 components.Dispose();
             }
             base.Dispose(disposing);
@@ -26,17 +22,13 @@
         /// Erforderliche Methode für die Designerunterstützung. 
         /// Der Inhalt der Methode darf nicht mit dem Code-Editor geändert werden.
         /// </summary>
-        private void InitializeComponent()
-        {
+        private void InitializeComponent() {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SettingsControl));
             settingsTableLayoutPanel = new TableLayoutPanel();
             label2 = new Label();
             userConfigPathTextBox = new TextBox();
             label3 = new Label();
             userConfigPathButton = new Button();
-            label1 = new Label();
-            sevenZipPathTextBox = new TextBox();
-            sevenZipPathButton = new Button();
             startWindowComboBox = new ComboBox();
             tableLayoutPanel2 = new TableLayoutPanel();
             saveButton = new Button();
@@ -63,20 +55,17 @@
             settingsTableLayoutPanel.ColumnStyles.Add(new ColumnStyle());
             settingsTableLayoutPanel.Controls.Add(label2, 0, 0);
             settingsTableLayoutPanel.Controls.Add(userConfigPathTextBox, 1, 0);
-            settingsTableLayoutPanel.Controls.Add(label3, 0, 2);
+            settingsTableLayoutPanel.Controls.Add(label3, 0, 1);
             settingsTableLayoutPanel.Controls.Add(userConfigPathButton, 9, 0);
-            settingsTableLayoutPanel.Controls.Add(label1, 0, 1);
-            settingsTableLayoutPanel.Controls.Add(sevenZipPathTextBox, 1, 1);
-            settingsTableLayoutPanel.Controls.Add(sevenZipPathButton, 9, 1);
-            settingsTableLayoutPanel.Controls.Add(startWindowComboBox, 1, 2);
+            settingsTableLayoutPanel.Controls.Add(startWindowComboBox, 1, 1);
             settingsTableLayoutPanel.Dock = DockStyle.Top;
             settingsTableLayoutPanel.Location = new Point(0, 0);
             settingsTableLayoutPanel.Name = "settingsTableLayoutPanel";
-            settingsTableLayoutPanel.RowCount = 4;
-            settingsTableLayoutPanel.RowStyles.Add(new RowStyle(SizeType.Percent, 25F));
-            settingsTableLayoutPanel.RowStyles.Add(new RowStyle(SizeType.Percent, 25F));
-            settingsTableLayoutPanel.RowStyles.Add(new RowStyle(SizeType.Percent, 25F));
-            settingsTableLayoutPanel.RowStyles.Add(new RowStyle(SizeType.Percent, 25F));
+            settingsTableLayoutPanel.RowCount = 3;
+            settingsTableLayoutPanel.RowStyles.Add(new RowStyle(SizeType.Percent, 33.3333321F));
+            settingsTableLayoutPanel.RowStyles.Add(new RowStyle(SizeType.Percent, 33.3333321F));
+            settingsTableLayoutPanel.RowStyles.Add(new RowStyle(SizeType.Percent, 33.3333321F));
+            settingsTableLayoutPanel.RowStyles.Add(new RowStyle(SizeType.Absolute, 20F));
             settingsTableLayoutPanel.Size = new Size(1096, 121);
             settingsTableLayoutPanel.TabIndex = 0;
             // 
@@ -84,7 +73,7 @@
             // 
             label2.Anchor = AnchorStyles.Left | AnchorStyles.Right;
             label2.AutoSize = true;
-            label2.Location = new Point(3, 0);
+            label2.Location = new Point(3, 5);
             label2.Name = "label2";
             label2.Size = new Size(123, 30);
             label2.TabIndex = 3;
@@ -95,7 +84,7 @@
             // 
             userConfigPathTextBox.Anchor = AnchorStyles.Left | AnchorStyles.Right;
             settingsTableLayoutPanel.SetColumnSpan(userConfigPathTextBox, 8);
-            userConfigPathTextBox.Location = new Point(132, 3);
+            userConfigPathTextBox.Location = new Point(132, 8);
             userConfigPathTextBox.Name = "userConfigPathTextBox";
             userConfigPathTextBox.ReadOnly = true;
             userConfigPathTextBox.Size = new Size(874, 23);
@@ -105,7 +94,7 @@
             // 
             label3.Anchor = AnchorStyles.Left | AnchorStyles.Right;
             label3.AutoSize = true;
-            label3.Location = new Point(3, 67);
+            label3.Location = new Point(3, 52);
             label3.Name = "label3";
             label3.Size = new Size(123, 15);
             label3.TabIndex = 6;
@@ -116,46 +105,13 @@
             // 
             userConfigPathButton.Anchor = AnchorStyles.None;
             userConfigPathButton.AutoSize = true;
-            userConfigPathButton.Location = new Point(1015, 3);
+            userConfigPathButton.Location = new Point(1015, 7);
             userConfigPathButton.Name = "userConfigPathButton";
-            userConfigPathButton.Size = new Size(75, 24);
+            userConfigPathButton.Size = new Size(75, 25);
             userConfigPathButton.TabIndex = 5;
             userConfigPathButton.Text = "...";
             userConfigPathButton.UseVisualStyleBackColor = true;
             userConfigPathButton.Click += userConfigPathButton_Click;
-            // 
-            // label1
-            // 
-            label1.Anchor = AnchorStyles.Left | AnchorStyles.Right;
-            label1.AutoSize = true;
-            label1.Location = new Point(3, 37);
-            label1.Name = "label1";
-            label1.Size = new Size(123, 15);
-            label1.TabIndex = 0;
-            label1.Text = "7-Zip Pfad:";
-            label1.TextAlign = ContentAlignment.MiddleCenter;
-            // 
-            // sevenZipPathTextBox
-            // 
-            sevenZipPathTextBox.Anchor = AnchorStyles.Left | AnchorStyles.Right;
-            settingsTableLayoutPanel.SetColumnSpan(sevenZipPathTextBox, 8);
-            sevenZipPathTextBox.Location = new Point(132, 33);
-            sevenZipPathTextBox.Name = "sevenZipPathTextBox";
-            sevenZipPathTextBox.ReadOnly = true;
-            sevenZipPathTextBox.Size = new Size(874, 23);
-            sevenZipPathTextBox.TabIndex = 1;
-            // 
-            // sevenZipPathButton
-            // 
-            sevenZipPathButton.Anchor = AnchorStyles.None;
-            sevenZipPathButton.AutoSize = true;
-            sevenZipPathButton.Location = new Point(1015, 33);
-            sevenZipPathButton.Name = "sevenZipPathButton";
-            sevenZipPathButton.Size = new Size(75, 24);
-            sevenZipPathButton.TabIndex = 2;
-            sevenZipPathButton.Text = "...";
-            sevenZipPathButton.UseVisualStyleBackColor = true;
-            sevenZipPathButton.Click += sevenZipPathButton_Click;
             // 
             // startWindowComboBox
             // 
@@ -163,7 +119,7 @@
             settingsTableLayoutPanel.SetColumnSpan(startWindowComboBox, 8);
             startWindowComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
             startWindowComboBox.FormattingEnabled = true;
-            startWindowComboBox.Location = new Point(132, 63);
+            startWindowComboBox.Location = new Point(132, 48);
             startWindowComboBox.Name = "startWindowComboBox";
             startWindowComboBox.Size = new Size(874, 23);
             startWindowComboBox.TabIndex = 7;
@@ -246,7 +202,7 @@
             MenuItemOrder = 990;
             Name = "SettingsControl";
             Size = new Size(1096, 645);
-            Load += SettingsControl_Load;
+            Load += settingsControl_Load;
             settingsTableLayoutPanel.ResumeLayout(false);
             settingsTableLayoutPanel.PerformLayout();
             tableLayoutPanel2.ResumeLayout(false);
@@ -258,9 +214,6 @@
         #endregion
 
         private TableLayoutPanel settingsTableLayoutPanel;
-        private Label label1;
-        private TextBox sevenZipPathTextBox;
-        private Button sevenZipPathButton;
         private TableLayoutPanel tableLayoutPanel2;
         private Button defaultsButton;
         private Button saveButton;

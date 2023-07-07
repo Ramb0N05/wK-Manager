@@ -31,39 +31,5 @@ namespace wK_Manager.Properties {
                 return ((string)(this["mainConfigName"]));
             }
         }
-        
-        [global::System.Configuration.ApplicationScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute(@"<?xml version=""1.0"" encoding=""utf-16""?>
-<ArrayOfString xmlns:xsd=""http://www.w3.org/2001/XMLSchema"" xmlns:xsi=""http://www.w3.org/2001/XMLSchema-instance"">
-  <string>application/gzip</string>
-  <string>application/vnd.ms-cab-compressed</string>
-  <string>application/x-7z-compressed</string>
-  <string>application/x-bzip2</string>
-  <string>application/x-compress</string>
-  <string>application/x-lzma</string>
-  <string>application/x-tar</string>
-  <string>application/x-xz</string>
-  <string>application/zip</string>
-</ArrayOfString>")]
-        public global::System.Collections.Specialized.StringCollection acceptedDiashowContentTypes {
-            get {
-                return ((global::System.Collections.Specialized.StringCollection)(this["acceptedDiashowContentTypes"]));
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("<?xml version=\"1.0\" encoding=\"utf-16\"?>\r\n<ArrayOfString xmlns:xsd=\"http://www.w3." +
-            "org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\r\n  <s" +
-            "tring>plugins</string>\r\n</ArrayOfString>")]
-        public global::System.Collections.Specialized.StringCollection pluginPaths {
-            get {
-                return ((global::System.Collections.Specialized.StringCollection)(this["pluginPaths"]));
-            }
-            set {
-                this["pluginPaths"] = value;
-            }
-        }
     }
 }

@@ -9,10 +9,10 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <StartupObject>wK_Manager.Program</StartupObject>
     <IsPublishable>True</IsPublishable>
-    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <GeneratePackageOnBuild>False</GeneratePackageOnBuild>
     <Title>wK Manager</Title>
 	<Authors>RamboNo5</Authors>
-	<Company>windKanal e.V.</Company>
+	<Company>windKanal e.V. ($(Authors))</Company>
     <ApplicationIcon>beer.ico</ApplicationIcon>
     <PackageLicenseExpression>GPL-3.0-only</PackageLicenseExpression>
     <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
@@ -25,18 +25,24 @@
     <PackageId>$(RootNamespace)</PackageId>
 	<NeutralLanguage>de</NeutralLanguage>
 	<Configurations>Debug;Release;Design</Configurations>
+	<AssemblyVersion>$(VersionPrefix)</AssemblyVersion>
+	<FileVersion>$(VersionPrefix)</FileVersion>
+	<EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DebugType>portable</DebugType>
+    <DebugType>none</DebugType>
+    <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Design|AnyCPU'">
-    <DebugType>portable</DebugType>
+    <DebugType>none</DebugType>
+    <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <DebugType>portable</DebugType>
+    <DebugType>none</DebugType>
+    <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
   </PropertyGroup>
 
   <ItemGroup>
@@ -53,7 +59,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="BrettHewitt.MonitorInformation" Version="1.0.2" />
     <PackageReference Include="ExtensionsLib" Version="1.0.1" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="System.Runtime.WindowsRuntime" Version="4.7.0" />
@@ -76,6 +81,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Update="MainForm.resx">
+      <Generator></Generator>
+    </EmbeddedResource>
     <EmbeddedResource Update="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
@@ -94,7 +102,15 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\PluginBase\PluginBase.csproj" />
+    <ProjectReference Include="..\Base\Base.csproj" />
+  </ItemGroup>
+
+  <PropertyGroup Condition="Exists('..\.editorconfig')">
+    <SkipDefaultEditorConfigAsAdditionalFile>true</SkipDefaultEditorConfigAsAdditionalFile>
+  </PropertyGroup>
+
+  <ItemGroup Condition="Exists('..\.editorconfig')">
+    <AdditionalFiles Include="..\.editorconfig" />
   </ItemGroup>
 
 </Project>

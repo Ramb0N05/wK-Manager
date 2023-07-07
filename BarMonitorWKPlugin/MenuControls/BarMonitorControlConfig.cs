@@ -2,11 +2,9 @@
 using System.ComponentModel;
 using wK_Manager.Base;
 
-namespace wK_Manager.Plugins.MenuControls
-{
+namespace wK_Manager.Plugins.MenuControls {
     [JsonObject(MemberSerialization = MemberSerialization.OptOut)]
-    public class BarMonitorControlConfig : WKMenuControlConfig
-    {
+    public class BarMonitorControlConfig : WKMenuControlConfig {
         [JsonIgnore]
         public new const string ConfigFileName = "bar_monitor.json";
 
@@ -14,13 +12,11 @@ namespace wK_Manager.Plugins.MenuControls
         public override string ConfigFilePath { get; set; } = IWKMenuControlConfig.AutoDetect_ConfigFilePath;
 
 #pragma warning disable CS8618 // Ein Non-Nullable-Feld muss beim Beenden des Konstruktors einen Wert ungleich NULL enthalten. Erwägen Sie die Deklaration als Nullable.
-        [JsonProperty(Required = Required.Always)]
-        [DefaultValue(0)]
-        public int MonitorSourceID { get; set; }
+        [JsonProperty(Required = Required.AllowNull)]
+        public uint? MonitorSourceID { get; set; }
 
-        [JsonProperty(Required = Required.Always)]
-        [DefaultValue(typeof(uint), "0")]
-        public uint MonitorTargetID { get; set; }
+        [JsonProperty(Required = Required.AllowNull)]
+        public uint? MonitorTargetID { get; set; }
 
         [JsonProperty(Required = Required.Always)]
         [DefaultValue("")]
@@ -35,7 +31,7 @@ namespace wK_Manager.Plugins.MenuControls
         public bool AutoObtainDiashow { get; set; }
 
         [JsonProperty(Required = Required.Always)]
-        [DefaultValue(typeof(uint), "1")]
+        [DefaultValue(typeof(uint), "5000")]
         public uint Interval { get; set; }
 
         [JsonProperty(Required = Required.Always)]

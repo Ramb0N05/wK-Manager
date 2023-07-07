@@ -405,7 +405,7 @@ namespace wK_Manager.Plugins.MenuControls
             MenuItemName = "Kneipe Monitor";
             Name = "BarMonitorControl";
             Size = new Size(1029, 628);
-            Load += BarMonitorControl_Load;
+            Load += barMonitorControl_Load;
             displaysGroupBox.ResumeLayout(false);
             diashowGroupBox.ResumeLayout(false);
             tableLayoutPanel1.ResumeLayout(false);

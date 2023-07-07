@@ -1,31 +1,27 @@
 ﻿using SharpRambo.ExtensionsLib;
 
-namespace BarMonitorWKPlugin.Forms
-{
-    public partial class PresenterForm : Form
-    {
+namespace BarMonitorWKPlugin.Forms {
+    public partial class PresenterForm : Form {
         public bool CloseOnEnd { get; set; } = false;
         public uint Interval { get; set; } = 5000;
         public bool Repeat { get; set; } = true;
         public bool Shuffle { get; set; } = false;
 
         private uint currentPosition = 0;
-        private DirectoryInfo? diashowDir = null;
+        private readonly DirectoryInfo? diashowDir = null;
         private IEnumerable<string> diashowFiles = Enumerable.Empty<string>();
-        private Dictionary<string, Bitmap> cache = new();
+        private readonly Dictionary<string, Bitmap> cache = new();
 
-        public PresenterForm(string diashowPath, uint interval = 5000)
-        {
+        public PresenterForm(string diashowPath, uint interval = 5000) {
             InitializeComponent();
 
             if (!diashowPath.IsNull())
                 diashowDir = new(diashowPath);
-            
+
             Interval = interval;
         }
 
-        private void PresenterForm_FormClosing(object sender, FormClosingEventArgs e)
-        {
+        private void presenterForm_FormClosing(object sender, FormClosingEventArgs e) {
             if (presenterTimer.Enabled)
                 presenterTimer.Stop();
 
@@ -35,13 +31,10 @@ namespace BarMonitorWKPlugin.Forms
             cache.Clear();
         }
 
-        private async void PresenterForm_Load(object sender, EventArgs e)
-        {
-            if (diashowDir != null && diashowDir.Exists)
-            {
-                await diashowDir.GetFiles().ForEachAsync(async (file) =>
-                {
-                    var mime = MimeMapping.MimeUtility.GetMimeMapping(file.Extension);
+        private async void presenterForm_Load(object sender, EventArgs e) {
+            if (diashowDir != null && diashowDir.Exists) {
+                await diashowDir.GetFiles().ForEachAsync(async (file) => {
+                    string mime = MimeMapping.MimeUtility.GetMimeMapping(file.Extension);
 
                     if (wK_Manager.Plugins.BarMonitorWKPlugin.AcceptedDiashowContentTypes.Contains(mime))
                         diashowFiles = diashowFiles.Append(file.FullName);
@@ -50,22 +43,17 @@ namespace BarMonitorWKPlugin.Forms
                 });
 
                 presenterTimer.Start();
-            }
-            else
+            } else
                 Close();
         }
 
-        private void presenterTimer_Tick(object sender, EventArgs e)
-        {
-            if (!diashowFiles.IsNull())
-            {
-                if (diashowFiles.Count() > 1)
-                {
+        private void presenterTimer_Tick(object sender, EventArgs e) {
+            if (!diashowFiles.IsNull()) {
+                if (diashowFiles.Count() > 1) {
                     if (Shuffle)
                         currentPosition = (uint)new Random().Next(0, diashowFiles.Count());
 
-                    if (currentPosition < diashowFiles.Count())
-                    {
+                    if (currentPosition < diashowFiles.Count()) {
                         string filePath = diashowFiles.ElementAt((int)currentPosition);
 
                         if (!cache.ContainsKey(filePath))
@@ -75,10 +63,8 @@ namespace BarMonitorWKPlugin.Forms
                         currentPosition++;
                     }
 
-                    if (currentPosition >= diashowFiles.Count())
-                    {
-                        if (!Repeat)
-                        {
+                    if (currentPosition >= diashowFiles.Count()) {
+                        if (!Repeat) {
                             if (CloseOnEnd)
                                 Close();
 
@@ -87,9 +73,7 @@ namespace BarMonitorWKPlugin.Forms
 
                         currentPosition = 0;
                     }
-                }
-                else
-                {
+                } else {
                     presenterPictureBox.Image = new Bitmap(diashowFiles.ElementAt((int)currentPosition));
                     presenterTimer.Enabled = false;
                 }
