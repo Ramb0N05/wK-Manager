@@ -1,22 +1,22 @@
 ﻿using wK_Manager.Base;
-using ScreenInformation;
 using wK_Manager.Forms;
 using System.Net.Http.Headers;
 using SharpRambo.ExtensionsLib;
 using BarMonitorWKPlugin.Forms;
 using DotNet.Basics.SevenZip;
 using BarMonitorWKPlugin.Base;
+using WindowsDisplayAPI;
+using System.Collections;
 
 namespace wK_Manager.Plugins.MenuControls {
     public partial class BarMonitorControl : WKMenuControl {
         private const int IdentifyTimeout = 3000;
-        private const string DisplayButtonPostfix = "_display";
-
-        private readonly BarMonitorWKPlugin? sender = null;
-        private PresenterForm? presenter = null;
+        private const string DisplayButtonPrefix = "display_";
 
         private readonly FolderBrowserDialog fbd = new();
         private readonly OpenFileDialog ofd = new();
+        private PresenterForm? presenter = null;
+        private readonly BarMonitorWKPlugin? sender = null;
 
         private BarMonitorControlConfig config = new();
         public override IWKMenuControlConfig Config { get => config; set => config = value as BarMonitorControlConfig ?? new(); }
@@ -44,24 +44,7 @@ namespace wK_Manager.Plugins.MenuControls {
         #region Overrides
         public override void ConfigToControls(IWKMenuControlConfig config) {
             if (config is BarMonitorControlConfig conf) {
-                bool detectedMonitor = false;
-                foreach (Control c in displaysFlowLayoutPanel.Controls) {
-                    if (c.Name == conf.MonitorTargetID + DisplayButtonPostfix && c is CheckBox cb) {
-                        cb.Checked = true;
-                        detectedMonitor = true;
-                        break;
-                    }
-                }
-
-                if (!detectedMonitor) {
-                    foreach (Control c in displaysFlowLayoutPanel.Controls) {
-                        if (c is CheckBox cb && c.Tag != null && c.Tag is DisplaySource monitor && monitor.MonitorInformation.SourceId == conf.MonitorSourceID) {
-                            cb.Checked = true;
-                            detectedMonitor = true;
-                            break;
-                        }
-                    }
-                }
+                _ = selectMonitorFromConfig(conf.DisplayTarget);
 
                 localPathTextBox.Text = conf.LocalDiashowPath;
                 remotePathTextBox.Text = conf.RemoteDiashowPath;
@@ -77,8 +60,7 @@ namespace wK_Manager.Plugins.MenuControls {
         public override IWKMenuControlConfig? ConfigFromControls() {
             DisplayTarget? targetInfo = getSelectedDisplay();
 
-            config.MonitorSourceID = targetInfo?.SourceID ?? 0;
-            config.MonitorTargetID = targetInfo?.TargetID ?? 0;
+            config.DisplayTarget = targetInfo?.Identifier ?? null;
             config.LocalDiashowPath = localPathTextBox.Text;
             config.RemoteDiashowPath = remotePathTextBox.Text;
             config.AutoObtainDiashow = autoObtainCheckBox.Checked;
@@ -92,6 +74,9 @@ namespace wK_Manager.Plugins.MenuControls {
         #endregion
 
         #region Methods
+        private static string getDisplayButtonName(string? displayName)
+            => DisplayButtonPrefix + displayName;
+
         private DisplayTarget? getSelectedDisplay() {
             foreach (Control c in displaysFlowLayoutPanel.Controls)
                 if (c is CheckBox cb && c.Tag != null && c.Tag is DisplayTarget target && cb.Checked)
@@ -200,6 +185,71 @@ namespace wK_Manager.Plugins.MenuControls {
             } else
                 return false;
         }
+
+        private async Task createDisplayTargets() {
+            displaysFlowLayoutPanel.Controls.Clear();
+            IEnumerable<DisplayTarget> targets = await DisplayTarget.Initialize(Display.GetDisplays());
+
+            await targets.ForEachAsync(async (target) => {
+                FontStyle fontStyle = target.IsPrimary ? FontStyle.Bold : FontStyle.Regular;
+
+                CheckBox displayButton = new() {
+                    Appearance = Appearance.Button,
+                    AutoSize = true,
+                    Name = getDisplayButtonName(target.Identifier),
+                    Tag = target,
+                    Text = target.Number + Environment.NewLine + "(" + target.FriendlyName.Replace("&", "&&") + ")",
+                    TextAlign = ContentAlignment.MiddleCenter
+                };
+
+                int itemHeight = displaysFlowLayoutPanel.Height - displaysFlowLayoutPanel.Padding.Vertical -
+                                 displayButton.Padding.Vertical - displayButton.Margin.Vertical;
+
+                displayButton.MinimumSize = new Size(itemHeight, itemHeight);
+                displayButton.Font = new Font(displayButton.Font, fontStyle);
+                displayButton.CheckedChanged += onMonitorToggle;
+                displayButton.MouseDown += onMonitorRightClick;
+                displaysFlowLayoutPanel.Controls.Add(displayButton);
+
+                await Task.CompletedTask;
+            });
+        }
+
+        private async Task selectMonitorFromConfig(string? displayTarget) {
+            if (displayTarget.IsNull())
+                return;
+
+            CheckBox? detectedMonitorCb = await Task.Run(() => {
+                CheckBox? dCb = null;
+
+                foreach (Control c in displaysFlowLayoutPanel.Controls) {
+                    if (c.Name == getDisplayButtonName(displayTarget) && c is CheckBox cb) {
+                        dCb = cb;
+                        break;
+                    }
+                }
+
+                return dCb;
+            });
+
+            if (detectedMonitorCb != null) {
+                await Task.Run(() => {
+                    CheckBox? dCb = null;
+
+                    foreach (Control c in displaysFlowLayoutPanel.Controls) {
+                        if (c is CheckBox cb && c.Tag != null && c.Tag is DisplayTarget monitor && monitor.Identifier == displayTarget) {
+                            dCb = cb;
+                            break;
+                        }
+                    }
+
+                    return dCb;
+                });
+            }
+
+            if (detectedMonitorCb != null)
+                detectedMonitorCb.Checked = true;
+        }
         #endregion
 
         #region EventHandlers
@@ -213,19 +263,10 @@ namespace wK_Manager.Plugins.MenuControls {
 
         private void onMonitorRightClick(object? sender, MouseEventArgs e) {
             if (sender is not null and CheckBox cb && e.Button == MouseButtons.Right) {
-                DisplayTarget? target = cb.Tag as DisplayTarget ?? new DisplayTarget(
-                    area: new Rectangle(),
-                    "Unknown",
-                    "<d:unknown>",
-                    false,
-                    1,
-                    0,
-                    0,
-                    new Rectangle()
-                );
+                DisplayTarget target = cb.Tag as DisplayTarget ?? DisplayTarget.Unknown;
 
                 if (!VisibleMonitorIdentifiers.Any(id => id == target.Identifier)) {
-                    Point monitorLocation = target.GetLocation(new Point(15, 15));
+                    Point monitorLocation = target.GetPosition(new Point(15, 15));
                     Form idForm = new DisplayIdentifierForm(target.Number, target.FriendlyName) {
                         Name = target.Identifier,
                         StartPosition = FormStartPosition.Manual,
@@ -291,7 +332,7 @@ namespace wK_Manager.Plugins.MenuControls {
 
                 presenter = new PresenterForm(diashowPath) {
                     Interval = (uint)intervalNumericUpDown.Value,
-                    Location = selectedTarget?.GetLocation() ?? new Point(0, 0),
+                    Location = selectedTarget?.GetPosition() ?? new Point(0, 0),
                     Repeat = repeatCheckBox.Checked,
                     Shuffle = shuffleCheckBox.Checked,
                     StartPosition = FormStartPosition.Manual,
@@ -329,33 +370,7 @@ namespace wK_Manager.Plugins.MenuControls {
         }
 
         private async void barMonitorControl_Load(object sender, EventArgs e) {
-            IEnumerable<DisplaySource> monitors = ScreenManager.GetDetailedMonitors();
-            IEnumerable<DisplayTarget> targets = await DisplayTarget.InitializeFromMonitors(monitors);
-
-            await targets.ForEachAsync(async (target) => {
-                FontStyle fontStyle = target.IsPrimary ? FontStyle.Bold : FontStyle.Regular;
-
-                CheckBox displayButton = new() {
-                    Appearance = Appearance.Button,
-                    AutoSize = true,
-                    Name = target.Identifier + DisplayButtonPostfix,
-                    Tag = target,
-                    Text = target.Number + Environment.NewLine + "(" + target.FriendlyName.Replace("&", "&&") + ")",
-                    TextAlign = ContentAlignment.MiddleCenter
-                };
-
-                int itemHeight = displaysFlowLayoutPanel.Height - displaysFlowLayoutPanel.Padding.Vertical -
-                                 displayButton.Padding.Vertical - displayButton.Margin.Vertical;
-
-                displayButton.MinimumSize = new Size(itemHeight, itemHeight);
-                displayButton.Font = new Font(displayButton.Font, fontStyle);
-                displayButton.CheckedChanged += onMonitorToggle;
-                displayButton.MouseDown += onMonitorRightClick;
-                displaysFlowLayoutPanel.Controls.Add(displayButton);
-
-                await Task.CompletedTask;
-            });
-
+            await createDisplayTargets();
             await LoadConfig();
         }
 
@@ -396,5 +411,16 @@ namespace wK_Manager.Plugins.MenuControls {
                 presenter.Interval = (uint)nud.Value;
         }
         #endregion
+
+        private void barMonitorControl_Resize(object sender, EventArgs e)
+            => reloadMonitorsPictureBox.Location = new Point(
+                reloadMonitorsPictureBox.Margin.Left,
+                displaysGroupBox.Height - (int)(reloadMonitorsPictureBox.Height / 2.5)
+            );
+
+        private async void reloadMonitorsPictureBox_Click(object sender, EventArgs e) {
+            await createDisplayTargets();
+            await selectMonitorFromConfig(config.DisplayTarget);
+        }
     }
 }

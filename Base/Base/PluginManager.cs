@@ -5,7 +5,7 @@ namespace wK_Manager.Base {
     public class PluginManager {
         public const string MenuControlsNamespace = $"{nameof(wK_Manager)}.{nameof(Plugins)}.MenuControls";
         public static Type ControlType { get; private set; } = typeof(IWKMenuControl);
-        public static IEnumerable<string> PluginSearchPaths { get; private set; } = new[] { "plugins" };
+        public static IEnumerable<string> PluginSearchDirectories { get; private set; } = new[] { "plugins" };
 
         public IEnumerable<IWKPlugin> Plugins { get; private set; } = Enumerable.Empty<IWKPlugin>();
 
@@ -20,26 +20,27 @@ namespace wK_Manager.Base {
 
             if (!pluginSearchPaths.IsNull())
 #pragma warning disable CS8601 // Mögliche Nullverweiszuweisung.
-                PluginSearchPaths = pluginSearchPaths;
+                PluginSearchDirectories = pluginSearchPaths;
 #pragma warning restore CS8601 // Mögliche Nullverweiszuweisung.
         }
 
         public async Task Initialize(object sender) {
-            await PluginSearchPaths.ForEachAsync(async (path) => {
+            await PluginSearchDirectories.ForEachAsync(async (path) => {
                 if (!path.IsNull() && Directory.Exists(path)) {
                     string fullPath = Path.GetFullPath(path);
                     IEnumerable<string> plugins = Directory.GetDirectories(fullPath);
 
-                    Plugins = plugins.SelectMany(pluginPath => {
+                    await plugins.ForEachAsync(async (pluginPath) => {
                         string pluginName = new DirectoryInfo(pluginPath).Name;
                         FileInfo pluginFile = new(Path.Combine(pluginPath, pluginName + ".dll"));
 
                         if (pluginName != null && pluginFile != null && pluginFile.Exists) {
                             Assembly pluginAssembly = loadPlugin(pluginFile.FullName);
-                            return createPlugins(pluginAssembly, sender ?? this);
-                        } else
-                            return Enumerable.Empty<IWKPlugin>();
-                    }).ToList();
+                            Plugins = Plugins.Concat(await createPlugins(pluginAssembly, sender ?? this));
+                        }
+
+                        await Task.CompletedTask;
+                    });
                 }
 
                 await Task.CompletedTask;
@@ -85,10 +86,17 @@ namespace wK_Manager.Base {
             return loadContext.LoadFromAssemblyName(new AssemblyName(Path.GetFileNameWithoutExtension(pluginLocation)));
         }
 
-        private static IEnumerable<IWKPlugin> createPlugins(Assembly assembly, object sender) {
-            foreach (Type type in assembly.GetTypes())
-                if (typeof(IWKPlugin).IsAssignableFrom(type) && Activator.CreateInstance(type, sender) is IWKPlugin result)
-                    yield return result;
+        private static async Task<IEnumerable<IWKPlugin>> createPlugins(Assembly assembly, object sender) {
+            IEnumerable<IWKPlugin> plugins = Enumerable.Empty<IWKPlugin>();
+            
+            await assembly.GetTypes().ForEachAsync(async (type) => {
+                if (typeof(IWKPlugin).IsAssignableFrom(type) && Activator.CreateInstance(type, "", sender) is IWKPlugin result)
+                    plugins = plugins.Append(result);
+
+                await Task.CompletedTask;
+            });
+
+            return plugins;
         }
     }
 }

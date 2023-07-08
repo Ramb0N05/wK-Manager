@@ -33,7 +33,7 @@ namespace wK_Manager.Plugins {
         public HttpClient HttpCli;
 
 #pragma warning disable CS8618 // Ein Non-Nullable-Feld muss beim Beenden des Konstruktors einen Wert ungleich NULL enthalten. Erwägen Sie die Deklaration als Nullable.
-        public BarMonitorWKPlugin(object sender) : base(sender) { }
+        public BarMonitorWKPlugin(string directoryPath, object sender) : base(directoryPath, sender) { }
 #pragma warning restore CS8618 // Ein Non-Nullable-Feld muss beim Beenden des Konstruktors einen Wert ungleich NULL enthalten. Erwägen Sie die Deklaration als Nullable.
 
         public override async Task Initialize() {

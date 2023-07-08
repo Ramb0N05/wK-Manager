@@ -1,68 +1,76 @@
 ﻿using Microsoft.Win32;
-using ScreenInformation;
 using SharpRambo.ExtensionsLib;
 using System.Text.RegularExpressions;
+using WindowsDisplayAPI;
+using wK_Manager.Base;
 
 namespace BarMonitorWKPlugin.Base {
     internal partial class DisplayTarget {
+        public static readonly Point FallbackPosition = Screen.PrimaryScreen?.Bounds.Location ?? new(0, 0);
+        public static readonly Size FallbackResolution = Screen.PrimaryScreen?.WorkingArea.Size ?? new(800, 400);
         public const string MonitorEnumRegSubKey = "SYSTEM\\CurrentControlSet\\Enum\\DISPLAY";
         public const string MonitorEnumFriendlyNameRegValue = "FriendlyName";
         public const char MonitorEnumFriendlyNameValueItemSeperator = ';';
+        public const string UnknownDeviceName = "<dev:unknown>";
+        public const string UnknownDisplayName = "<d:unknown>";
+        public const string UnknownIdentifier = "<id:unknown>";
 
-        [GeneratedRegex(@"\w+\\([A-Za-z0-9]+)\\\{.+\}\\\d+", RegexOptions.Compiled | RegexOptions.IgnoreCase)]
+        public static DisplayTarget Unknown => new(
+            UnknownDisplayName,
+            UnknownDeviceName,
+            "Unknown",
+            UnknownIdentifier,
+            false,
+            0,
+            FallbackPosition,
+            FallbackResolution
+        );
+
+        [GeneratedRegex(@"\\\\\?\\DISPLAY#([A-Za-z0-9]+)#.+#\{.+\}", RegexOptions.Compiled | RegexOptions.IgnoreCase)]
         public static partial Regex MonitorIdentifierRegEx();
 
-        public Rectangle Area { get; set; }
-        public string FriendlyName { get; set; }
-        public string Identifier { get; set; }
-        public bool IsDuplicated { get; set; } = false;
-        public bool IsPrimary { get; set; }
-        public uint Number { get; set; }
-        public uint SourceID { get; set; }
-        public uint TargetID { get; set; }
-        public Rectangle WorkArea { get; set; }
+        public string DisplayName { get; }
+        public string DeviceName { get; }
+        public string FriendlyName { get; private set; }
+        public string Identifier { get; }
+        public bool IsDuplicated { get; private set; } = false;
+        public bool IsPrimary { get; private set; }
+        public uint Number { get; private set; }
+        public Point Position { get; }
+        public Size Resolution { get; }
 
         #region Constructor
-        public DisplayTarget(Rectangle area, string friendlyName, string identifier, bool isPrimary, uint number, uint sourceId, uint targetId, Rectangle workArea) {
-            Area = area;
+        private DisplayTarget(string displayName, string deviceName, string friendlyName, string identifier, bool isPrimary, uint number, Point position, Size resolution) {
+            DisplayName = !displayName.IsNull() ? displayName : throw new ArgumentNullException(nameof(displayName));
+            DeviceName = !deviceName.IsNull() ? deviceName : UnknownDeviceName;
             FriendlyName = !friendlyName.IsNull() ? friendlyName : throw new ArgumentNullException(nameof(friendlyName));
-            Identifier = !identifier.IsNull() ? identifier : throw new ArgumentNullException(nameof(identifier));
+            Identifier = !identifier.IsNull() ? Hashing.SHA1_Simple(identifier) : Hashing.SHA1_Simple(UnknownIdentifier);
             IsPrimary = isPrimary;
             Number = number;
-            SourceID = sourceId;
-            TargetID = targetId;
-            WorkArea = workArea;
+            Position = position;
+            Resolution = resolution;
         }
         #endregion
 
         #region Methods
-        public Point GetLocation() => GetLocation(new Point(0, 0));
-        public Point GetLocation(Point relativeLocation) {
-            uint displayId = SourceID;
-
-            if (Screen.AllScreens.Length > displayId) {
-                Screen screen = Screen.AllScreens[displayId];
-
-                if (relativeLocation.X <= screen.WorkingArea.Width && relativeLocation.X >= 0 &&
-                    relativeLocation.Y <= screen.WorkingArea.Height && relativeLocation.Y >= 0)
-                    return new Point(Screen.AllScreens[displayId].WorkingArea.Location.X + relativeLocation.X,
-                                     Screen.AllScreens[displayId].WorkingArea.Location.Y + relativeLocation.Y);
-            }
-
-            return new Point(0, 0);
-        }
+        public Point GetPosition() => GetPosition(new Point(0, 0));
+        public Point GetPosition(Point relativeLocation)
+            => (relativeLocation.X <= Resolution.Width && relativeLocation.X >= 0 &&
+                relativeLocation.Y <= Resolution.Height && relativeLocation.Y >= 0)
+                ? new Point(Position.X + relativeLocation.X, Position.Y + relativeLocation.Y)
+                : FallbackPosition;
         #endregion
 
         #region Statics
-        public static async Task<IEnumerable<DisplayTarget>> InitializeFromMonitors(IEnumerable<DisplaySource> monitors) {
+        public static async Task<IEnumerable<DisplayTarget>> Initialize(IEnumerable<Display> monitors) {
             IEnumerable<DisplayTarget> targets = Enumerable.Empty<DisplayTarget>();
             uint numberIterator = 1;
 
             await monitors.ForEachAsync(async (monitor) => {
-                if (targets.Any(d => d.TargetID == monitor.MonitorInformation.TargetId)) {
+                if (targets.Any(d => d.DisplayName == monitor.DisplayName)) {
                     await targets.ForEachAsync(async (target) => {
-                        if (target.TargetID == monitor.MonitorInformation.TargetId) {
-                            string identifier = parseMonitorIdentifier(monitor.Id) ?? string.Empty;
+                        if (target.DisplayName == monitor.DisplayName) {
+                            string identifier = parseMonitorDeviceName(monitor.DevicePath) ?? string.Empty;
                             string friendlyName = await parseMonitorFriendlyName(identifier) ?? string.Empty;
 
                             target.IsDuplicated = true;
@@ -72,21 +80,21 @@ namespace BarMonitorWKPlugin.Base {
                         await Task.CompletedTask;
                     });
                 } else {
-                    string? identifier = parseMonitorIdentifier(monitor.Id);
+                    string? deviceName = parseMonitorDeviceName(monitor.DevicePath);
 
-                    if (identifier != null) {
-                        string? friendlyName = await parseMonitorFriendlyName(identifier);
+                    if (deviceName != null) {
+                        string? friendlyName = await parseMonitorFriendlyName(deviceName);
 
                         if (friendlyName != null) {
                             targets = targets.Append(new DisplayTarget(
-                                area: monitor.MonitorInformation.Area,
+                                displayName: monitor.DisplayName,
+                                deviceName: deviceName,
                                 friendlyName: friendlyName,
-                                identifier: identifier,
-                                isPrimary: monitor.MonitorInformation.IsPrimary,
+                                identifier: Hashing.SHA1_Simple(monitor.DevicePath),
+                                isPrimary: monitor.IsGDIPrimary,
                                 number: numberIterator,
-                                sourceId: (uint)monitor.MonitorInformation.SourceId,
-                                targetId: (uint)monitor.MonitorInformation.TargetId,
-                                workArea: monitor.MonitorInformation.WorkArea
+                                position: monitor.CurrentSetting.Position,
+                                resolution: monitor.CurrentSetting.Resolution
                             ));
 
                             numberIterator++;
@@ -100,11 +108,11 @@ namespace BarMonitorWKPlugin.Base {
             return targets;
         }
 
-        private static string? parseMonitorIdentifier(string id) {
-            if (id.IsNull())
+        private static string? parseMonitorDeviceName(string devicePath) {
+            if (devicePath.IsNull())
                 return null;
 
-            Match match = MonitorIdentifierRegEx().Match(id);
+            Match match = MonitorIdentifierRegEx().Match(devicePath);
 
             return match.Success && match.Groups.Count > 1
                 ? match.Groups[1].Value

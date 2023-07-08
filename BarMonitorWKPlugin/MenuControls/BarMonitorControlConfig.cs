@@ -13,10 +13,7 @@ namespace wK_Manager.Plugins.MenuControls {
 
 #pragma warning disable CS8618 // Ein Non-Nullable-Feld muss beim Beenden des Konstruktors einen Wert ungleich NULL enthalten. Erwägen Sie die Deklaration als Nullable.
         [JsonProperty(Required = Required.AllowNull)]
-        public uint? MonitorSourceID { get; set; }
-
-        [JsonProperty(Required = Required.AllowNull)]
-        public uint? MonitorTargetID { get; set; }
+        public string? DisplayTarget { get; set; }
 
         [JsonProperty(Required = Required.Always)]
         [DefaultValue("")]

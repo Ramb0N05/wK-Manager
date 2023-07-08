@@ -31,6 +31,7 @@
             pluginVersionLabel = new Label();
             pluginDescriptionTextBox = new TextBox();
             pluginLogoPictureBox = new PictureBox();
+            openPluginDirButton = new Button();
             ((System.ComponentModel.ISupportInitialize)splitContainer1).BeginInit();
             splitContainer1.Panel1.SuspendLayout();
             splitContainer1.Panel2.SuspendLayout();
@@ -81,6 +82,7 @@
             tableLayoutPanel1.Controls.Add(pluginVersionLabel, 2, 0);
             tableLayoutPanel1.Controls.Add(pluginDescriptionTextBox, 1, 1);
             tableLayoutPanel1.Controls.Add(pluginLogoPictureBox, 0, 0);
+            tableLayoutPanel1.Controls.Add(openPluginDirButton, 1, 2);
             tableLayoutPanel1.Dock = DockStyle.Fill;
             tableLayoutPanel1.Location = new Point(0, 0);
             tableLayoutPanel1.Name = "tableLayoutPanel1";
@@ -147,6 +149,18 @@
             pluginLogoPictureBox.TabIndex = 4;
             pluginLogoPictureBox.TabStop = false;
             // 
+            // openPluginDirButton
+            // 
+            openPluginDirButton.Anchor = AnchorStyles.Left;
+            openPluginDirButton.AutoSize = true;
+            openPluginDirButton.Location = new Point(103, 168);
+            openPluginDirButton.Name = "openPluginDirButton";
+            openPluginDirButton.Size = new Size(108, 25);
+            openPluginDirButton.TabIndex = 5;
+            openPluginDirButton.Text = "Öffne Verzeichnis";
+            openPluginDirButton.UseVisualStyleBackColor = true;
+            openPluginDirButton.Click += openPluginDirButton_Click;
+            // 
             // PluginsControl
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -178,5 +192,6 @@
         private Label pluginVersionLabel;
         private TextBox pluginDescriptionTextBox;
         private PictureBox pluginLogoPictureBox;
+        private Button openPluginDirButton;
     }
 }

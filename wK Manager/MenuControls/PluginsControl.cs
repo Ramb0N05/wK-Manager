@@ -54,5 +54,9 @@ namespace wK_Manager.MenuControls {
                 }
             }
         }
+
+        private void openPluginDirButton_Click(object sender, EventArgs e) {
+
+        }
     }
 }

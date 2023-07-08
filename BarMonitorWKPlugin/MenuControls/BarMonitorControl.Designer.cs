@@ -1,10 +1,8 @@
 ﻿using System.Drawing;
 using System.Windows.Forms;
 
-namespace wK_Manager.Plugins.MenuControls
-{
-    partial class BarMonitorControl
-    {
+namespace wK_Manager.Plugins.MenuControls {
+    partial class BarMonitorControl {
         /// <summary> 
         /// Erforderliche Designervariable.
         /// </summary>
@@ -14,10 +12,8 @@ namespace wK_Manager.Plugins.MenuControls
         /// Verwendete Ressourcen bereinigen.
         /// </summary>
         /// <param name="disposing">True, wenn verwaltete Ressourcen gelöscht werden sollen; andernfalls False.</param>
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing && (components != null))
-            {
+        protected override void Dispose(bool disposing) {
+            if (disposing && (components != null)) {
                 components.Dispose();
             }
             base.Dispose(disposing);
@@ -29,10 +25,11 @@ namespace wK_Manager.Plugins.MenuControls
         /// Erforderliche Methode für die Designerunterstützung. 
         /// Der Inhalt der Methode darf nicht mit dem Code-Editor geändert werden.
         /// </summary>
-        private void InitializeComponent()
-        {
+        private void InitializeComponent() {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(BarMonitorControl));
             displaysGroupBox = new GroupBox();
             displaysFlowLayoutPanel = new FlowLayoutPanel();
+            reloadMonitorsPictureBox = new PictureBox();
             identifyLabel = new Label();
             diashowGroupBox = new GroupBox();
             tableLayoutPanel1 = new TableLayoutPanel();
@@ -50,27 +47,30 @@ namespace wK_Manager.Plugins.MenuControls
             intervalNumericUpDown = new NumericUpDown();
             repeatCheckBox = new CheckBox();
             intervalLabel = new Label();
-            presentButton = new Button();
             stopButton = new Button();
+            presentButton = new Button();
             lockSettingsCheckBox = new CheckBox();
             tableLayoutPanel3 = new TableLayoutPanel();
             saveButton = new Button();
             defaultsButton = new Button();
             obtainProgressBar = new ProgressBar();
+            tableLayoutPanel4 = new TableLayoutPanel();
             displaysGroupBox.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)reloadMonitorsPictureBox).BeginInit();
             diashowGroupBox.SuspendLayout();
             tableLayoutPanel1.SuspendLayout();
             presentGroupBox.SuspendLayout();
             tableLayoutPanel2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)intervalNumericUpDown).BeginInit();
             tableLayoutPanel3.SuspendLayout();
+            tableLayoutPanel4.SuspendLayout();
             SuspendLayout();
             // 
             // displaysGroupBox
             // 
             displaysGroupBox.Controls.Add(displaysFlowLayoutPanel);
             displaysGroupBox.Dock = DockStyle.Top;
-            displaysGroupBox.Location = new Point(0, 0);
+            displaysGroupBox.Location = new Point(0, 20);
             displaysGroupBox.Name = "displaysGroupBox";
             displaysGroupBox.Size = new Size(1029, 100);
             displaysGroupBox.TabIndex = 0;
@@ -85,12 +85,28 @@ namespace wK_Manager.Plugins.MenuControls
             displaysFlowLayoutPanel.Size = new Size(1023, 78);
             displaysFlowLayoutPanel.TabIndex = 0;
             // 
+            // reloadMonitorsPictureBox
+            // 
+            reloadMonitorsPictureBox.Anchor = AnchorStyles.Right;
+            reloadMonitorsPictureBox.BackColor = Color.Transparent;
+            reloadMonitorsPictureBox.Cursor = Cursors.Hand;
+            reloadMonitorsPictureBox.Image = (Image)resources.GetObject("reloadMonitorsPictureBox.Image");
+            reloadMonitorsPictureBox.Location = new Point(1005, 0);
+            reloadMonitorsPictureBox.Margin = new Padding(3, 0, 0, 0);
+            reloadMonitorsPictureBox.Name = "reloadMonitorsPictureBox";
+            reloadMonitorsPictureBox.Size = new Size(24, 20);
+            reloadMonitorsPictureBox.SizeMode = PictureBoxSizeMode.Zoom;
+            reloadMonitorsPictureBox.TabIndex = 6;
+            reloadMonitorsPictureBox.TabStop = false;
+            reloadMonitorsPictureBox.Click += reloadMonitorsPictureBox_Click;
+            // 
             // identifyLabel
             // 
-            identifyLabel.Dock = DockStyle.Top;
-            identifyLabel.Location = new Point(0, 100);
+            identifyLabel.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+            identifyLabel.AutoSize = true;
+            identifyLabel.Location = new Point(828, 5);
             identifyLabel.Name = "identifyLabel";
-            identifyLabel.Size = new Size(1029, 15);
+            identifyLabel.Size = new Size(171, 15);
             identifyLabel.TabIndex = 1;
             identifyLabel.Text = "(Rechtsklick zum identifizieren)";
             identifyLabel.TextAlign = ContentAlignment.TopRight;
@@ -99,7 +115,7 @@ namespace wK_Manager.Plugins.MenuControls
             // 
             diashowGroupBox.Controls.Add(tableLayoutPanel1);
             diashowGroupBox.Dock = DockStyle.Top;
-            diashowGroupBox.Location = new Point(0, 115);
+            diashowGroupBox.Location = new Point(0, 120);
             diashowGroupBox.Name = "diashowGroupBox";
             diashowGroupBox.Size = new Size(1029, 125);
             diashowGroupBox.TabIndex = 2;
@@ -220,7 +236,7 @@ namespace wK_Manager.Plugins.MenuControls
             // 
             presentGroupBox.Controls.Add(tableLayoutPanel2);
             presentGroupBox.Dock = DockStyle.Top;
-            presentGroupBox.Location = new Point(0, 240);
+            presentGroupBox.Location = new Point(0, 245);
             presentGroupBox.Name = "presentGroupBox";
             presentGroupBox.Size = new Size(1029, 100);
             presentGroupBox.TabIndex = 3;
@@ -296,6 +312,20 @@ namespace wK_Manager.Plugins.MenuControls
             intervalLabel.Text = "Intervall (ms):";
             intervalLabel.TextAlign = ContentAlignment.MiddleLeft;
             // 
+            // stopButton
+            // 
+            stopButton.Anchor = AnchorStyles.None;
+            stopButton.AutoSize = true;
+            stopButton.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point);
+            stopButton.ForeColor = Color.DarkRed;
+            stopButton.Location = new Point(899, 3);
+            stopButton.Name = "stopButton";
+            stopButton.Size = new Size(77, 25);
+            stopButton.TabIndex = 7;
+            stopButton.Text = "Stoppen ■";
+            stopButton.UseVisualStyleBackColor = true;
+            stopButton.Click += stopButton_Click;
+            // 
             // presentButton
             // 
             presentButton.Anchor = AnchorStyles.Top;
@@ -311,20 +341,6 @@ namespace wK_Manager.Plugins.MenuControls
             presentButton.TextAlign = ContentAlignment.TopCenter;
             presentButton.UseVisualStyleBackColor = true;
             presentButton.Click += presentButton_Click;
-            // 
-            // stopButton
-            // 
-            stopButton.Anchor = AnchorStyles.None;
-            stopButton.AutoSize = true;
-            stopButton.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point);
-            stopButton.ForeColor = Color.DarkRed;
-            stopButton.Location = new Point(899, 3);
-            stopButton.Name = "stopButton";
-            stopButton.Size = new Size(77, 25);
-            stopButton.TabIndex = 7;
-            stopButton.Text = "Stoppen ■";
-            stopButton.UseVisualStyleBackColor = true;
-            stopButton.Click += stopButton_Click;
             // 
             // lockSettingsCheckBox
             // 
@@ -391,6 +407,21 @@ namespace wK_Manager.Plugins.MenuControls
             obtainProgressBar.TabIndex = 7;
             obtainProgressBar.Visible = false;
             // 
+            // tableLayoutPanel4
+            // 
+            tableLayoutPanel4.ColumnCount = 2;
+            tableLayoutPanel4.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
+            tableLayoutPanel4.ColumnStyles.Add(new ColumnStyle());
+            tableLayoutPanel4.Controls.Add(identifyLabel, 0, 0);
+            tableLayoutPanel4.Controls.Add(reloadMonitorsPictureBox, 1, 0);
+            tableLayoutPanel4.Dock = DockStyle.Top;
+            tableLayoutPanel4.Location = new Point(0, 0);
+            tableLayoutPanel4.Name = "tableLayoutPanel4";
+            tableLayoutPanel4.RowCount = 1;
+            tableLayoutPanel4.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
+            tableLayoutPanel4.Size = new Size(1029, 20);
+            tableLayoutPanel4.TabIndex = 7;
+            // 
             // BarMonitorControl
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -399,14 +430,16 @@ namespace wK_Manager.Plugins.MenuControls
             Controls.Add(tableLayoutPanel3);
             Controls.Add(presentGroupBox);
             Controls.Add(diashowGroupBox);
-            Controls.Add(identifyLabel);
             Controls.Add(displaysGroupBox);
+            Controls.Add(tableLayoutPanel4);
             MenuImageKey = "device-tv";
             MenuItemName = "Kneipe Monitor";
             Name = "BarMonitorControl";
             Size = new Size(1029, 628);
             Load += barMonitorControl_Load;
+            Resize += barMonitorControl_Resize;
             displaysGroupBox.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)reloadMonitorsPictureBox).EndInit();
             diashowGroupBox.ResumeLayout(false);
             tableLayoutPanel1.ResumeLayout(false);
             tableLayoutPanel1.PerformLayout();
@@ -416,6 +449,8 @@ namespace wK_Manager.Plugins.MenuControls
             ((System.ComponentModel.ISupportInitialize)intervalNumericUpDown).EndInit();
             tableLayoutPanel3.ResumeLayout(false);
             tableLayoutPanel3.PerformLayout();
+            tableLayoutPanel4.ResumeLayout(false);
+            tableLayoutPanel4.PerformLayout();
             ResumeLayout(false);
         }
 
@@ -447,5 +482,7 @@ namespace wK_Manager.Plugins.MenuControls
         private Label intervalLabel;
         private NumericUpDown intervalNumericUpDown;
         private ProgressBar obtainProgressBar;
+        private PictureBox reloadMonitorsPictureBox;
+        private TableLayoutPanel tableLayoutPanel4;
     }
 }

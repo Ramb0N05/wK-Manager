@@ -1,13 +1,15 @@
 ﻿namespace wK_Manager.Base {
     public abstract class WKPlugin : IWKPlugin {
-        public virtual object Sender { get; set; }
-        public virtual string Identifier => IWKPlugin.PluginListNamePrefix + Name.GetHashCode().ToString();
-        public abstract string Name { get; }
         public abstract string Description { get; }
-        public virtual string Version { get; internal set; } = IWKPlugin.UndefinedVersion;
+        public virtual string DirectoryPath { get; }
+        public virtual string Identifier => IWKPlugin.PluginListNamePrefix + Name.GetHashCode().ToString();
         public virtual string ImageKey => IWKPlugin.UndefinedImageKey;
-
-        public WKPlugin(object sender) {
+        public abstract string Name { get; }
+        public virtual object Sender { get; }
+        public virtual string Version { get; internal set; } = IWKPlugin.UndefinedVersion;
+        
+        public WKPlugin(string directoryPath, object sender) {
+            DirectoryPath = directoryPath;
             Sender = sender;
         }
 
