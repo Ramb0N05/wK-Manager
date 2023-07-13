@@ -8,7 +8,6 @@ namespace wK_Manager.Base {
         [JsonIgnore]
         public override string ConfigFilePath { get; set; } = string.Empty;
 
-#pragma warning disable CS8618 // Ein Non-Nullable-Feld muss beim Beenden des Konstruktors einen Wert ungleich NULL enthalten. Erwägen Sie die Deklaration als Nullable.
         [JsonProperty(Required = Required.Always)]
         [DefaultValue("")]
         public string StartupWindowName { get; set; }
@@ -17,6 +16,7 @@ namespace wK_Manager.Base {
         [DefaultValue("")]
         public string UserConfigDirectory { get; set; }
 
+#pragma warning disable CS8618 // Ein Non-Nullable-Feld muss beim Beenden des Konstruktors einen Wert ungleich NULL enthalten. Erwägen Sie die Deklaration als Nullable.
         [JsonConstructor]
         internal MainConfig() {
             if (ConfigProvider.Global != null && !ConfigProvider.Global.ConfigFilePath.IsNull())

@@ -62,6 +62,8 @@
             // 
             updateStatusLabel.Anchor = AnchorStyles.Left | AnchorStyles.Right;
             updateStatusLabel.AutoSize = true;
+            updateStatusLabel.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point);
+            updateStatusLabel.ForeColor = Color.Teal;
             updateStatusLabel.Location = new Point(73, 42);
             updateStatusLabel.Name = "updateStatusLabel";
             updateStatusLabel.Size = new Size(633, 15);

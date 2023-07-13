@@ -6,15 +6,15 @@ using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Net.Http.Headers;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using wK_Manager.Base;
-using wK_Manager.Base.DataModels;
+using wK_Manager.Base.Models;
 
 namespace wK_Manager.MenuControls {
     public partial class UpdatesControl : WKMenuControl {
-        public const string VersionFileContentType = MimeMapping.KnownMimeTypes.Json;
         public override IWKMenuControlConfig Config { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
         private readonly HttpClient httpCli = new(new HttpClientHandler() { UseProxy = false });
@@ -29,47 +29,41 @@ namespace wK_Manager.MenuControls {
         #endregion
 
         #region Methods
-        private async Task<VersionDataModel?> getCurrentVersion() {
-            if (!Uri.IsWellFormedUriString(updateManifestURL, UriKind.Absolute))
-                return null;
-
-            Uri updateManifestUri = new(updateManifestURL);
-            using HttpRequestMessage request = new(HttpMethod.Get, updateManifestUri);
-
-            try {
-                using HttpResponseMessage respone = await httpCli.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
-                MediaTypeHeaderValue? contentType = respone.Content.Headers.ContentType;
-
-                if (contentType == null || contentType.MediaType != VersionFileContentType)
-                    return null;
-
-                Memory<byte> buffer = new(Array.Empty<byte>());
-                using StreamReader versionDataStream = new(await respone.Content.ReadAsStreamAsync());
-                string versionDataJson = await versionDataStream.ReadToEndAsync();
-
-                return JsonConvert.DeserializeObject<VersionDataModel>(versionDataJson);
-            } catch (Exception) {
-                return null;
-            }
-        }
-
-        private (Version Version, Uri Uri)? parseVersionData(VersionDataModel? versionData) {
-            if (versionData != null && Version.TryParse(versionData.Current, out Version? version) && version != null) {
-                UriCreationOptions uco = new() { DangerousDisablePathAndQueryCanonicalization = false };
-                
-                return Uri.TryCreate(versionData.DownloadURL, uco, out Uri? uri) && uri != null
-                    ? new() {
-                        Version = version,
-                        Uri = uri
-                    }
-                    : null;
-            } else
-                return null;
-        }
-
         public new void Dispose() {
             httpCli.Dispose();
             base.Dispose();
+        }
+
+        private async Task checkUpdates() {
+            updateStatusLabel.ForeColor = SystemColors.ControlText;
+            updateStatusLabel.Text = "Prüfe auf updates ...";
+            VersionData? versionData = await VersionData.GetCurrent(updateManifestURL, httpCli);
+
+            if (versionData != null) {
+                Version? assemblyVersion = Assembly.GetExecutingAssembly().GetName().Version;
+
+                if (assemblyVersion == null)
+                    return;
+
+                switch (assemblyVersion.CompareTo(versionData.Version)) {
+                    case > 0: // Running is newer
+                        updateStatusLabel.ForeColor = Color.Teal;
+                        updateStatusLabel.Text = "Vorabversion. Keine Updates verfügbar.";
+                        break;
+
+                    case < 0: // Update availabile
+                        updateStatusLabel.ForeColor = Color.Chocolate;
+                        updateStatusLabel.Text = "Es ist ein update auf Version " + versionData.Version.ToString() + " verfügbar!";
+                        break;
+
+                    case 0:
+                    default: // Equal
+                        updateStatusLabel.ForeColor = Color.DarkGreen;
+                        updateStatusLabel.Text = "Keine Updates verfügbar.";
+                        break;
+                }
+            } else
+                updateStatusLabel.Text = "> Error <";
         }
         #endregion
 
@@ -78,13 +72,7 @@ namespace wK_Manager.MenuControls {
             if (main.menuImageList_large.Images.ContainsKey(MenuImageKey))
                 updatesImagePictureBox.Image = main.menuImageList_large.Images[MenuImageKey];
 
-            (Version Version, Uri Uri)? version = parseVersionData(await getCurrentVersion());
-
-            if (version.HasValue) {
-                updateStatusLabel.Text = version.Value.Version.ToString() + Environment.NewLine;
-                updateStatusLabel.Text += version.Value.Uri.AbsoluteUri;
-            } else
-                updateStatusLabel.Text = "> Error <";
+            await checkUpdates();
         }
         #endregion
     }
