@@ -5,5 +5,8 @@
     <Setting Name="mainConfigName" Type="System.String" Scope="Application">
       <Value Profile="(Default)">config.json</Value>
     </Setting>
+    <Setting Name="updateManifestURL" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">https://neuland.ninja/files/wK_Manager/version.json</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

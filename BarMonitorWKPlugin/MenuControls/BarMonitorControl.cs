@@ -6,7 +6,6 @@ using BarMonitorWKPlugin.Forms;
 using DotNet.Basics.SevenZip;
 using BarMonitorWKPlugin.Base;
 using WindowsDisplayAPI;
-using System.Collections;
 
 namespace wK_Manager.Plugins.MenuControls {
     public partial class BarMonitorControl : WKMenuControl {
@@ -85,11 +84,11 @@ namespace wK_Manager.Plugins.MenuControls {
             return null;
         }
 
-        private async Task<object?> validateRemotePath(string remotePath) {
-            dynamic? result = new {
+        private async Task<(bool Status, string? ContentType, Exception? Error)?> validateRemotePath(string remotePath) {
+            (bool Status, string? ContentType, Exception? Error)? result = new() {
                 Status = false,
                 ContentType = string.Empty,
-                Error = false
+                Error = null
             };
 
             if (sender != null) {
@@ -101,13 +100,13 @@ namespace wK_Manager.Plugins.MenuControls {
                         using HttpResponseMessage response = await sender.HttpCli.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
                         MediaTypeHeaderValue? contentType = response.Content.Headers.ContentType;
 
-                        result = new {
+                        result = new() {
                             Status = contentType != null && BarMonitorWKPlugin.AcceptedDiashowArchiveContentTypes.Contains(contentType.MediaType),
                             ContentType = contentType?.MediaType,
-                            Error = false
+                            Error = null
                         };
                     } catch (Exception ex) {
-                        result = new {
+                        result = new() {
                             Status = false,
                             ContentType = string.Empty,
                             Error = ex
@@ -122,12 +121,12 @@ namespace wK_Manager.Plugins.MenuControls {
 
         private async Task<bool> downloadFromRemotePath(string remotePath, DirectoryInfo downloadDirectory) {
             if (sender != null) {
-                dynamic? check = await validateRemotePath(remotePath);
+                (bool Status, string? ContentType, Exception? Error)? check = await validateRemotePath(remotePath);
 
-                if (check != null) {
-                    string[] exts = MimeMapping.MimeUtility.GetExtensions(check.ContentType);
+                if (check.HasValue) {
+                    string[] exts = MimeMapping.MimeUtility.GetExtensions(check.Value.ContentType);
 
-                    if (check.Status) {
+                    if (check.Value.Status) {
                         Uri uri = new(remotePath);
                         string downloadPath = Path.Combine(downloadDirectory.FullName, "diashow." + exts?.FirstOrDefault() ?? "zip");
 
@@ -353,10 +352,10 @@ namespace wK_Manager.Plugins.MenuControls {
         private async void remotePathTextBox_TextChanged(object sender, EventArgs e) {
             if (sender is not null and TextBox tb) {
                 if (tb.Text.Trim() != string.Empty) {
-                    dynamic? check = await validateRemotePath(tb.Text);
+                    (bool Status, string? ContentType, Exception? Error)? check = await validateRemotePath(tb.Text);
 
-                    if (check != null) {
-                        if (check.Status) {
+                    if (check.HasValue) {
+                        if (check.Value.Status) {
                             remotePathStatusLabel.ForeColor = Color.DarkGreen;
                             remotePathStatusLabel.Text = "OK";
                         } else {
@@ -410,7 +409,6 @@ namespace wK_Manager.Plugins.MenuControls {
             if (presenter != null && sender is NumericUpDown nud)
                 presenter.Interval = (uint)nud.Value;
         }
-        #endregion
 
         private void barMonitorControl_Resize(object sender, EventArgs e)
             => reloadMonitorsPictureBox.Location = new Point(
@@ -422,5 +420,6 @@ namespace wK_Manager.Plugins.MenuControls {
             await createDisplayTargets();
             await selectMonitorFromConfig(config.DisplayTarget);
         }
+        #endregion
     }
 }

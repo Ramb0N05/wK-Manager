@@ -168,7 +168,7 @@
             Controls.Add(splitContainer1);
             MenuImageKey = "brick";
             MenuItemName = "Erweiterungen verwalten";
-            MenuItemOrder = 999;
+            MenuItemOrder = 997;
             Name = "PluginsControl";
             Size = new Size(1000, 650);
             Load += pluginsControl_Load;

@@ -66,7 +66,7 @@
             settingsTableLayoutPanel.RowStyles.Add(new RowStyle(SizeType.Percent, 33.3333321F));
             settingsTableLayoutPanel.RowStyles.Add(new RowStyle(SizeType.Percent, 33.3333321F));
             settingsTableLayoutPanel.RowStyles.Add(new RowStyle(SizeType.Absolute, 20F));
-            settingsTableLayoutPanel.Size = new Size(1096, 121);
+            settingsTableLayoutPanel.Size = new Size(1233, 121);
             settingsTableLayoutPanel.TabIndex = 0;
             // 
             // label2
@@ -87,7 +87,7 @@
             userConfigPathTextBox.Location = new Point(132, 8);
             userConfigPathTextBox.Name = "userConfigPathTextBox";
             userConfigPathTextBox.ReadOnly = true;
-            userConfigPathTextBox.Size = new Size(874, 23);
+            userConfigPathTextBox.Size = new Size(1010, 23);
             userConfigPathTextBox.TabIndex = 4;
             // 
             // label3
@@ -105,7 +105,7 @@
             // 
             userConfigPathButton.Anchor = AnchorStyles.None;
             userConfigPathButton.AutoSize = true;
-            userConfigPathButton.Location = new Point(1015, 7);
+            userConfigPathButton.Location = new Point(1151, 7);
             userConfigPathButton.Name = "userConfigPathButton";
             userConfigPathButton.Size = new Size(75, 25);
             userConfigPathButton.TabIndex = 5;
@@ -121,7 +121,7 @@
             startWindowComboBox.FormattingEnabled = true;
             startWindowComboBox.Location = new Point(132, 48);
             startWindowComboBox.Name = "startWindowComboBox";
-            startWindowComboBox.Size = new Size(874, 23);
+            startWindowComboBox.Size = new Size(1010, 23);
             startWindowComboBox.TabIndex = 7;
             // 
             // tableLayoutPanel2
@@ -136,18 +136,18 @@
             tableLayoutPanel2.Controls.Add(checkPermissionPictureBox, 0, 0);
             tableLayoutPanel2.Controls.Add(checkPermissionLabel, 1, 0);
             tableLayoutPanel2.Dock = DockStyle.Bottom;
-            tableLayoutPanel2.Location = new Point(0, 615);
+            tableLayoutPanel2.Location = new Point(0, 672);
             tableLayoutPanel2.Name = "tableLayoutPanel2";
             tableLayoutPanel2.RowCount = 1;
             tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
-            tableLayoutPanel2.Size = new Size(1096, 30);
+            tableLayoutPanel2.Size = new Size(1233, 30);
             tableLayoutPanel2.TabIndex = 1;
             // 
             // saveButton
             // 
             saveButton.Anchor = AnchorStyles.None;
             saveButton.AutoSize = true;
-            saveButton.Location = new Point(1018, 3);
+            saveButton.Location = new Point(1155, 3);
             saveButton.Name = "saveButton";
             saveButton.Size = new Size(75, 24);
             saveButton.TabIndex = 1;
@@ -159,7 +159,7 @@
             // 
             defaultsButton.Anchor = AnchorStyles.None;
             defaultsButton.AutoSize = true;
-            defaultsButton.Location = new Point(925, 3);
+            defaultsButton.Location = new Point(1062, 3);
             defaultsButton.Name = "defaultsButton";
             defaultsButton.Size = new Size(87, 24);
             defaultsButton.TabIndex = 0;
@@ -186,7 +186,7 @@
             checkPermissionLabel.ForeColor = Color.DarkRed;
             checkPermissionLabel.Location = new Point(33, 0);
             checkPermissionLabel.Name = "checkPermissionLabel";
-            checkPermissionLabel.Size = new Size(886, 30);
+            checkPermissionLabel.Size = new Size(1023, 30);
             checkPermissionLabel.TabIndex = 3;
             checkPermissionLabel.Text = "Kein Schreibzugriff auf die Einstellungen möglich!\r\nStarte die Anwendung mit erhöten Rechten neu.";
             // 
@@ -199,9 +199,9 @@
             Controls.Add(settingsTableLayoutPanel);
             MenuImageKey = "cog";
             MenuItemName = "Einstellungen";
-            MenuItemOrder = 990;
+            MenuItemOrder = 996;
             Name = "SettingsControl";
-            Size = new Size(1096, 645);
+            Size = new Size(1233, 702);
             Load += settingsControl_Load;
             settingsTableLayoutPanel.ResumeLayout(false);
             settingsTableLayoutPanel.PerformLayout();

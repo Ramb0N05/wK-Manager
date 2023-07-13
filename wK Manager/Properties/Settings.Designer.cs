@@ -31,5 +31,14 @@ namespace wK_Manager.Properties {
                 return ((string)(this["mainConfigName"]));
             }
         }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("https://neuland.ninja/files/wK_Manager/version.json")]
+        public string updateManifestURL {
+            get {
+                return ((string)(this["updateManifestURL"]));
+            }
+        }
     }
 }
