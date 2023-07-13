@@ -19,6 +19,7 @@
     <UseWindowsForms>true</UseWindowsForms>
     <NoWin32Manifest>true</NoWin32Manifest>
     <EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
 
   <ItemGroup>

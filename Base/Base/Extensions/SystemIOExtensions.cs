@@ -2,7 +2,7 @@
 using System.Security.AccessControl;
 using System.Security.Principal;
 
-namespace wK_Manager.Base {
+namespace wK_Manager.Base.Extensions {
     public static class SystemIOExtensions {
         public static async Task CopyTo(this DirectoryInfo srcPath, string destPath) {
             if (!Directory.Exists(destPath))

@@ -1,6 +1,7 @@
 ﻿using SharpRambo.ExtensionsLib;
 using System.Security.AccessControl;
 using wK_Manager.Base;
+using wK_Manager.Base.Extensions;
 
 namespace wK_Manager.MenuControls {
     public partial class SettingsControl : WKMenuControl {

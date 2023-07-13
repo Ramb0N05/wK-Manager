@@ -6,6 +6,7 @@ using BarMonitorWKPlugin.Forms;
 using DotNet.Basics.SevenZip;
 using BarMonitorWKPlugin.Base;
 using WindowsDisplayAPI;
+using wK_Manager.Base.Extensions;
 
 namespace wK_Manager.Plugins.MenuControls {
     public partial class BarMonitorControl : WKMenuControl {
