@@ -3,59 +3,8 @@ using System.Security.AccessControl;
 using System.Security.Principal;
 
 namespace wK_Manager.Base.Extensions {
+
     public static class SystemIOExtensions {
-        public static async Task CopyTo(this DirectoryInfo srcPath, string destPath) {
-            if (!Directory.Exists(destPath))
-                Directory.CreateDirectory(destPath);
-
-
-            /*foreach(DirectoryInfo srcInfo in srcPath.GetDirectories("*", SearchOption.AllDirectories))
-                Directory.CreateDirectory(Path.Combine(destPath, srcInfo.Name));*/
-
-            await srcPath.GetDirectories("*", SearchOption.AllDirectories).ForEachAsync(async (srcInfo) => {
-                Directory.CreateDirectory(Path.Combine(destPath, srcInfo.Name));
-                await Task.CompletedTask;
-            });
-
-            await srcPath.GetFiles("*", SearchOption.AllDirectories).ForEachAsync(async (srcInfo) => {
-                File.Copy(srcInfo.FullName, Path.Combine(destPath, srcInfo.Name), true);
-                await Task.CompletedTask;
-            });
-
-            /*foreach (FileInfo srcInfo in srcPath.GetFiles("*", SearchOption.AllDirectories))
-                File.Copy(srcInfo.FullName, Path.Combine(destPath, srcInfo.Name), true);*/
-        }
-
-        public static async Task DeleteContents(this DirectoryInfo srcPath) {
-            if (srcPath.Exists) {
-                await srcPath.GetDirectories("*", SearchOption.AllDirectories).ForEachAsync(async (srcInfo) => {
-                    Directory.Delete(Path.Combine(srcPath.FullName, srcInfo.Name), true);
-                    await Task.CompletedTask;
-                });
-
-                /*foreach (DirectoryInfo srcInfo in srcPath.GetDirectories("*", SearchOption.AllDirectories))
-                    Directory.Delete(Path.Combine(srcPath.FullName, srcInfo.Name), true);*/
-
-                await srcPath.GetFiles("*", SearchOption.AllDirectories).ForEachAsync(async (srcInfo) => {
-                    File.Delete(Path.Combine(srcPath.FullName, srcInfo.Name));
-                    await Task.CompletedTask;
-                });
-
-                /*foreach (FileInfo srcInfo in srcPath.GetFiles("*", SearchOption.AllDirectories))
-                    File.Delete(Path.Combine(srcPath.FullName, srcInfo.Name));*/
-            }
-        }
-
-        public static async Task DeleteDirectories(this DirectoryInfo srcPath, bool recursive = true) {
-            if (srcPath.Exists)
-                await srcPath.GetDirectories("*", SearchOption.AllDirectories).ForEachAsync(async (srcInfo) => {
-                    Directory.Delete(Path.Combine(srcPath.FullName, srcInfo.Name), recursive);
-                    await Task.CompletedTask;
-                });
-
-            /*foreach (DirectoryInfo srcInfo in srcPath.GetDirectories("*", SearchOption.AllDirectories))
-                Directory.Delete(Path.Combine(srcPath.FullName, srcInfo.Name), recursive);*/
-        }
 
         public static async Task<bool> CheckFileSystemRight(this DirectoryInfo srcPath, FileSystemRights fileSystemRight = FileSystemRights.WriteData) {
             if (!srcPath.Exists)
@@ -84,6 +33,59 @@ namespace wK_Manager.Base.Extensions {
             });
 
             return checkRight;
+        }
+
+        public static async Task CopyTo(this DirectoryInfo srcPath, string destinationPath) {
+            if (!Directory.Exists(destinationPath))
+                Directory.CreateDirectory(destinationPath);
+
+            /*foreach(DirectoryInfo srcInfo in srcPath.GetDirectories("*", SearchOption.AllDirectories))
+                Directory.CreateDirectory(Path.Combine(destPath, srcInfo.Name));*/
+
+            await srcPath.GetDirectories("*", SearchOption.AllDirectories).ForEachAsync(async (srcInfo) => {
+                Directory.CreateDirectory(Path.Combine(destinationPath, srcInfo.Name));
+                await Task.CompletedTask;
+            });
+
+            await srcPath.GetFiles("*", SearchOption.AllDirectories).ForEachAsync(async (srcInfo) => {
+                File.Copy(srcInfo.FullName, Path.Combine(destinationPath, srcInfo.Name), true);
+                await Task.CompletedTask;
+            });
+
+            /*foreach (FileInfo srcInfo in srcPath.GetFiles("*", SearchOption.AllDirectories))
+                File.Copy(srcInfo.FullName, Path.Combine(destPath, srcInfo.Name), true);*/
+        }
+
+        public static async Task DeleteContents(this DirectoryInfo srcPath) {
+            if (srcPath.Exists) {
+                await srcPath.GetDirectories("*", SearchOption.AllDirectories).ForEachAsync(async (srcInfo) => {
+                    Directory.Delete(Path.Combine(srcPath.FullName, srcInfo.Name), true);
+                    await Task.CompletedTask;
+                });
+
+                /*foreach (DirectoryInfo srcInfo in srcPath.GetDirectories("*", SearchOption.AllDirectories))
+                    Directory.Delete(Path.Combine(srcPath.FullName, srcInfo.Name), true);*/
+
+                await srcPath.GetFiles("*", SearchOption.AllDirectories).ForEachAsync(async (srcInfo) => {
+                    File.Delete(Path.Combine(srcPath.FullName, srcInfo.Name));
+                    await Task.CompletedTask;
+                });
+
+                /*foreach (FileInfo srcInfo in srcPath.GetFiles("*", SearchOption.AllDirectories))
+                    File.Delete(Path.Combine(srcPath.FullName, srcInfo.Name));*/
+            }
+        }
+
+        public static async Task DeleteDirectories(this DirectoryInfo srcPath, bool recursive = true) {
+            if (srcPath.Exists) {
+                await srcPath.GetDirectories("*", SearchOption.AllDirectories).ForEachAsync(async (srcInfo) => {
+                    Directory.Delete(Path.Combine(srcPath.FullName, srcInfo.Name), recursive);
+                    await Task.CompletedTask;
+                });
+            }
+
+            /*foreach (DirectoryInfo srcInfo in srcPath.GetDirectories("*", SearchOption.AllDirectories))
+                Directory.Delete(Path.Combine(srcPath.FullName, srcInfo.Name), recursive);*/
         }
     }
 }

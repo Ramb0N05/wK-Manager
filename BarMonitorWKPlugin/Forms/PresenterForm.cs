@@ -1,16 +1,18 @@
 ﻿using SharpRambo.ExtensionsLib;
 
-namespace BarMonitorWKPlugin.Forms {
+namespace BarMonitorWKPlugIn.Forms {
     public partial class PresenterForm : Form {
-        public bool CloseOnEnd { get; set; } = false;
+        private readonly Dictionary<string, Bitmap> cache = new();
+        private readonly DirectoryInfo? diashowDir;
+        private uint currentPosition;
+        private IEnumerable<string> diashowFiles = Enumerable.Empty<string>();
+
+        public bool CloseOnEnd { get; set; }
         public uint Interval { get; set; } = 5000;
         public bool Repeat { get; set; } = true;
-        public bool Shuffle { get; set; } = false;
+        public bool Shuffle { get; set; }
 
-        private uint currentPosition = 0;
-        private readonly DirectoryInfo? diashowDir = null;
-        private IEnumerable<string> diashowFiles = Enumerable.Empty<string>();
-        private readonly Dictionary<string, Bitmap> cache = new();
+        #region Constructor
 
         public PresenterForm(string diashowPath, uint interval = 5000) {
             InitializeComponent();
@@ -20,6 +22,10 @@ namespace BarMonitorWKPlugin.Forms {
 
             Interval = interval;
         }
+
+        #endregion Constructor
+
+        #region EventHandlers
 
         private void presenterForm_FormClosing(object sender, FormClosingEventArgs e) {
             if (presenterTimer.Enabled)
@@ -32,11 +38,11 @@ namespace BarMonitorWKPlugin.Forms {
         }
 
         private async void presenterForm_Load(object sender, EventArgs e) {
-            if (diashowDir != null && diashowDir.Exists) {
+            if (diashowDir?.Exists == true) {
                 await diashowDir.GetFiles().ForEachAsync(async (file) => {
                     string mime = MimeMapping.MimeUtility.GetMimeMapping(file.Extension);
 
-                    if (wK_Manager.Plugins.BarMonitorWKPlugin.AcceptedDiashowContentTypes.Contains(mime))
+                    if (wK_Manager.PlugIns.BarMonitorWKPlugIn.AcceptedDiashowContentTypes.Contains(mime))
                         diashowFiles = diashowFiles.Append(file.FullName);
 
                     await Task.CompletedTask;
@@ -81,5 +87,7 @@ namespace BarMonitorWKPlugin.Forms {
 
             presenterTimer.Interval = (int)Interval;
         }
+
+        #endregion EventHandlers
     }
 }

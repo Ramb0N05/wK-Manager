@@ -2,10 +2,12 @@
 using SharpRambo.ExtensionsLib;
 using System.ComponentModel;
 using System.Reflection;
+using wK_Manager.Base.Extensions;
 
 namespace wK_Manager.Base {
     [JsonObject(MemberSerialization.OptOut)]
     public abstract class WKMenuControlConfig : IWKMenuControlConfig {
+
         [JsonIgnore]
         public const string ConfigFileName = IWKMenuControlConfig.ConfigFileName;
 
@@ -17,7 +19,7 @@ namespace wK_Manager.Base {
             Formatting = Formatting.Indented
         };
 
-        public WKMenuControlConfig() {
+        protected WKMenuControlConfig() {
             if (ConfigProvider.Global != null) {
                 Type baseType = GetType();
                 FieldInfo? cfnField = baseType.GetField(nameof(ConfigFileName));
@@ -33,9 +35,11 @@ namespace wK_Manager.Base {
             }
         }
 
+        public virtual string GetData(JsonSerializerSettings? jsonSerializerSettings = null)
+            => JsonConvert.SerializeObject(this, GetType(), jsonSerializerSettings);
+
         public virtual void InitializeDefault() {
-            PropertyInfo[] props = GetType().GetProperties();
-            foreach (PropertyInfo prop in props) {
+            foreach (PropertyInfo prop in GetType().GetProperties()) {
                 DefaultValueAttribute? d = prop.GetCustomAttribute<DefaultValueAttribute>();
 
                 if (d != null)
@@ -43,38 +47,6 @@ namespace wK_Manager.Base {
                 else if (prop.IsNullable())
                     prop.SetValue(this, null);
             }
-        }
-
-        public virtual string GetData(JsonSerializerSettings? jss = null)
-            => JsonConvert.SerializeObject(this, GetType(), jss);
-
-        public virtual bool SetData(string json, JsonSerializerSettings? jss = null) {
-            object? data = JsonConvert.DeserializeObject(json, GetType(), jss);
-            return data != null && data is WKMenuControlConfig dataOfType && SetData(dataOfType);
-        }
-
-        public virtual bool SetData(IWKMenuControlConfig? configObject) => SetData(configObject as WKMenuControlConfig);
-        public virtual bool SetData(WKMenuControlConfig? configObject) {
-            if (configObject != null) {
-                Type dataType = configObject.GetType();
-                Type targetType = GetType();
-                PropertyInfo[] dataProperties = dataType.GetProperties();
-                bool dataChanged = false;
-
-                foreach (PropertyInfo dataProperty in dataProperties) {
-                    if (dataProperty.GetCustomAttribute(typeof(JsonPropertyAttribute), true) != null) {
-                        PropertyInfo? targetProperty = targetType.GetProperty(dataProperty.Name, dataProperty.PropertyType);
-
-                        if (targetProperty != null && targetProperty.CanWrite) {
-                            targetProperty.SetValue(this, dataProperty.GetValue(configObject));
-                            dataChanged = true;
-                        }
-                    }
-                }
-
-                return dataChanged;
-            } else
-                return false;
         }
 
         public virtual async Task<bool> Load(bool initialize = true) {
@@ -91,8 +63,9 @@ namespace wK_Manager.Base {
             if (File.Exists(filePath)) {
                 string json = await File.ReadAllTextAsync(filePath);
                 return SetData(json, GlobalJsonSerializerSettings);
-            } else
-                return false;
+            }
+
+            return false;
         }
 
         public virtual async Task<bool> Save(bool makeDirectory = true) {
@@ -108,6 +81,37 @@ namespace wK_Manager.Base {
 
             await File.WriteAllTextAsync(filePath, GetData(GlobalJsonSerializerSettings));
             return true;
+        }
+
+        public virtual bool SetData(string json, JsonSerializerSettings? jsonSerializerSettings = null) {
+            object? data = JsonConvert.DeserializeObject(json, GetType(), jsonSerializerSettings);
+            return data != null && data is WKMenuControlConfig dataOfType && SetData(dataOfType);
+        }
+
+        public virtual bool SetData(IWKMenuControlConfig? configObject) => SetData(configObject as WKMenuControlConfig);
+
+        public virtual bool SetData(WKMenuControlConfig? configObject) {
+            if (configObject != null) {
+                Type dataType = configObject.GetType();
+                Type targetType = GetType();
+                PropertyInfo[] dataProperties = dataType.GetProperties();
+                bool dataChanged = false;
+
+                foreach (PropertyInfo dataProperty in dataProperties) {
+                    if (dataProperty.GetCustomAttribute(typeof(JsonPropertyAttribute), true) != null) {
+                        PropertyInfo? targetProperty = targetType.GetProperty(dataProperty.Name, dataProperty.PropertyType);
+
+                        if (targetProperty?.CanWrite == true) {
+                            targetProperty.SetValue(this, dataProperty.GetValue(configObject));
+                            dataChanged = true;
+                        }
+                    }
+                }
+
+                return dataChanged;
+            }
+
+            return false;
         }
 
         private string? getCurrentConfigFilePath() {

@@ -1,5 +1,7 @@
 ﻿namespace wK_Manager.Base.Extensions {
+
     public static class StreamExtensions {
+
         public static async Task CopyToAsync(this Stream source, Stream destination, int bufferSize, IProgress<long>? progress = null, CancellationToken cancellationToken = default) {
             if (source == null)
                 throw new ArgumentNullException(nameof(source));

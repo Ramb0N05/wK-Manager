@@ -4,11 +4,14 @@ using wK_Manager.Base;
 using wK_Manager.Base.Extensions;
 
 namespace wK_Manager.MenuControls {
+
     public partial class SettingsControl : WKMenuControl {
         private readonly FolderBrowserDialog fbd = new();
         private readonly OpenFileDialog ofd = new();
 
         public override IWKMenuControlConfig Config { get => ConfigProvider.Global; set => ConfigProvider.Global.SetData(value); }
+
+        #region Constructor
 
         public SettingsControl(object sender) : base(sender) {
             InitializeComponent();
@@ -25,9 +28,15 @@ namespace wK_Manager.MenuControls {
             settingsTableLayoutPanel.Visible = false;
         }
 
-        public override Task<bool> LoadConfig() {
-            ConfigToControls(ConfigProvider.Global);
-            return new Task<bool>(() => true);
+        #endregion Constructor
+
+        #region Methods
+
+        public override MainConfig ConfigFromControls() {
+            ConfigProvider.Global.UserConfigDirectory = userConfigPathTextBox.Text;
+            ConfigProvider.Global.StartupWindowName = MainForm.MenuItems.FirstOrDefault((i) => i.Value == startWindowComboBox.SelectedItem.ToString()).Key;
+
+            return ConfigProvider.Global;
         }
 
         public override void ConfigToControls(IWKMenuControlConfig config) {
@@ -41,24 +50,20 @@ namespace wK_Manager.MenuControls {
             }
         }
 
-        public override MainConfig ConfigFromControls() {
-
-            ConfigProvider.Global.UserConfigDirectory = userConfigPathTextBox.Text;
-            ConfigProvider.Global.StartupWindowName = MainForm.MenuItems.FirstOrDefault((i) => i.Value == startWindowComboBox.SelectedItem.ToString()).Key;
-
-            return ConfigProvider.Global;
+        public override Task<bool> LoadConfig() {
+            ConfigToControls(ConfigProvider.Global);
+            return new Task<bool>(() => true);
         }
 
-        private void userConfigPathButton_Click(object sender, EventArgs e) {
-            fbd.Reset();
-            fbd.ShowNewFolderButton = true;
-            fbd.InitialDirectory = userConfigPathTextBox.Text != null && userConfigPathTextBox.Text.Trim() != string.Empty
-                ? userConfigPathTextBox.Text
-                : Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+        #endregion Methods
 
-            if (fbd.ShowDialog() == DialogResult.OK && Directory.Exists(fbd.SelectedPath))
-                userConfigPathTextBox.Text = fbd.SelectedPath;
-        }
+        #region EventHandlers
+
+        private async void defaultsButton_Click(object sender, EventArgs e)
+            => await LoadConfig();
+
+        private async void saveButton_Click(object sender, EventArgs e)
+            => await SaveConfig();
 
         private async void settingsControl_Load(object sender, EventArgs e) {
             DirectoryInfo confDir = new FileInfo(Config.ConfigFilePath).Directory ?? new DirectoryInfo(Application.StartupPath);
@@ -77,11 +82,17 @@ namespace wK_Manager.MenuControls {
             await LoadConfig();
         }
 
-        private async void saveButton_Click(object sender, EventArgs e)
-            => await SaveConfig();
+        private void userConfigPathButton_Click(object sender, EventArgs e) {
+            fbd.Reset();
+            fbd.ShowNewFolderButton = true;
+            fbd.InitialDirectory = userConfigPathTextBox.Text != null && userConfigPathTextBox.Text.Trim() != string.Empty
+                ? userConfigPathTextBox.Text
+                : Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
 
-        private async void defaultsButton_Click(object sender, EventArgs e)
-            => await LoadConfig();
+            if (fbd.ShowDialog() == DialogResult.OK && Directory.Exists(fbd.SelectedPath))
+                userConfigPathTextBox.Text = fbd.SelectedPath;
+        }
+
+        #endregion EventHandlers
     }
 }
-

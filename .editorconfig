@@ -256,3 +256,13 @@ dotnet_naming_style.mixed.required_prefix =
 dotnet_naming_style.mixed.required_suffix = 
 dotnet_naming_style.mixed.word_separator = 
 dotnet_naming_style.mixed.capitalization = camel_case
+
+# Roslynator
+dotnet_analyzer_diagnostic.category-roslynator.severity = suggestion
+roslynator_refactorings.enabled = true
+roslynator_compiler_diagnostic_fixes.enabled = true
+
+dotnet_diagnostic.rcs1001.severity = silent
+dotnet_diagnostic.rcs1003.severity = silent
+dotnet_diagnostic.rcs1036.severity = silent
+dotnet_diagnostic.rcs1238.severity = silent

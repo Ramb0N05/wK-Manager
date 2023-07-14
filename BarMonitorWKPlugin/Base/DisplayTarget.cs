@@ -4,16 +4,17 @@ using System.Text.RegularExpressions;
 using WindowsDisplayAPI;
 using wK_Manager.Base;
 
-namespace BarMonitorWKPlugin.Base {
-    internal partial class DisplayTarget {
-        public static readonly Point FallbackPosition = Screen.PrimaryScreen?.Bounds.Location ?? new(0, 0);
-        public static readonly Size FallbackResolution = Screen.PrimaryScreen?.WorkingArea.Size ?? new(800, 400);
-        public const string MonitorEnumRegSubKey = "SYSTEM\\CurrentControlSet\\Enum\\DISPLAY";
+namespace BarMonitorWKPlugIn.Base {
+
+    public sealed partial class DisplayTarget {
         public const string MonitorEnumFriendlyNameRegValue = "FriendlyName";
-        public const char MonitorEnumFriendlyNameValueItemSeperator = ';';
+        public const char MonitorEnumFriendlyNameValueItemSeparator = ';';
+        public const string MonitorEnumRegSubKey = "SYSTEM\\CurrentControlSet\\Enum\\DISPLAY";
         public const string UnknownDeviceName = "<dev:unknown>";
         public const string UnknownDisplayName = "<d:unknown>";
         public const string UnknownIdentifier = "<id:unknown>";
+        public static readonly Point FallbackPosition = Screen.PrimaryScreen?.Bounds.Location ?? new(0, 0);
+        public static readonly Size FallbackResolution = Screen.PrimaryScreen?.WorkingArea.Size ?? new(800, 400);
 
         public static DisplayTarget Unknown => new(
             UnknownDisplayName,
@@ -26,20 +27,26 @@ namespace BarMonitorWKPlugin.Base {
             FallbackResolution
         );
 
-        [GeneratedRegex(@"\\\\\?\\DISPLAY#([A-Za-z0-9]+)#.+#\{.+\}", RegexOptions.Compiled | RegexOptions.IgnoreCase)]
-        public static partial Regex MonitorIdentifierRegEx();
+        public string DeviceName { get; }
 
         public string DisplayName { get; }
-        public string DeviceName { get; }
+
         public string FriendlyName { get; private set; }
+
         public string Identifier { get; }
-        public bool IsDuplicated { get; private set; } = false;
+
+        public bool IsDuplicated { get; private set; }
+
         public bool IsPrimary { get; private set; }
+
         public uint Number { get; private set; }
+
         public Point Position { get; }
+
         public Size Resolution { get; }
 
         #region Constructor
+
         private DisplayTarget(string displayName, string deviceName, string friendlyName, string identifier, bool isPrimary, uint number, Point position, Size resolution) {
             DisplayName = !displayName.IsNull() ? displayName : throw new ArgumentNullException(nameof(displayName));
             DeviceName = !deviceName.IsNull() ? deviceName : UnknownDeviceName;
@@ -50,18 +57,30 @@ namespace BarMonitorWKPlugin.Base {
             Position = position;
             Resolution = resolution;
         }
-        #endregion
+
+        #endregion Constructor
+
+        #region RegEx
+
+        [GeneratedRegex(@"\\\\\?\\DISPLAY#([A-Za-z0-9]+)#.+#\{.+\}", RegexOptions.Compiled | RegexOptions.IgnoreCase)]
+        public static partial Regex MonitorIdentifierRegEx();
+
+        #endregion RegEx
 
         #region Methods
+
         public Point GetPosition() => GetPosition(new Point(0, 0));
+
         public Point GetPosition(Point relativeLocation)
             => (relativeLocation.X <= Resolution.Width && relativeLocation.X >= 0 &&
                 relativeLocation.Y <= Resolution.Height && relativeLocation.Y >= 0)
                 ? new Point(Position.X + relativeLocation.X, Position.Y + relativeLocation.Y)
                 : FallbackPosition;
-        #endregion
+
+        #endregion Methods
 
         #region Statics
+
         public static async Task<IEnumerable<DisplayTarget>> Initialize(IEnumerable<Display> monitors) {
             IEnumerable<DisplayTarget> targets = Enumerable.Empty<DisplayTarget>();
             uint numberIterator = 1;
@@ -138,14 +157,14 @@ namespace BarMonitorWKPlugin.Base {
                     string currentSubKey = monitorRegKey + "\\" + key;
                     RegistryKey? currentRegKey = baseKey.OpenSubKey(currentSubKey, RegistryKeyPermissionCheck.ReadSubTree);
 
-                    if (currentRegKey != null && currentRegKey.ValueCount > 0 && currentRegKey.GetValueNames().Contains(MonitorEnumFriendlyNameRegValue)) {
+                    if (currentRegKey?.ValueCount > 0 && currentRegKey.GetValueNames().Contains(MonitorEnumFriendlyNameRegValue)) {
                         string? regFriendlyName = Convert.ToString(
                             currentRegKey.GetValue(MonitorEnumFriendlyNameRegValue, null, RegistryValueOptions.DoNotExpandEnvironmentNames)
                         );
 
-                        if (regFriendlyName != null && !regFriendlyName.IsNull() && regFriendlyName != Convert.ToString(null)) {
+                        if (regFriendlyName?.IsNull() == false && regFriendlyName != Convert.ToString(null)) {
                             IEnumerable<string> regFriendlyNameItems = regFriendlyName.Split(
-                                MonitorEnumFriendlyNameValueItemSeperator,
+                                MonitorEnumFriendlyNameValueItemSeparator,
                                 StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries
                             );
 
@@ -160,6 +179,7 @@ namespace BarMonitorWKPlugin.Base {
 
             return !friendlyName.IsNull() ? friendlyName : identifier;
         }
-        #endregion
+
+        #endregion Statics
     }
 }

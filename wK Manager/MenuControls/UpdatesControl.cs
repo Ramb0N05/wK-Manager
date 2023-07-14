@@ -1,39 +1,31 @@
-﻿using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Net.Http.Headers;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
+﻿using System.Reflection;
 using wK_Manager.Base;
 using wK_Manager.Base.Extensions;
-using wK_Manager.Base.Models;
 
 namespace wK_Manager.MenuControls {
+
     public partial class UpdatesControl : WKMenuControl {
         public static readonly string UpdateDownloadFilePath = Path.Combine(Application.StartupPath, "latest-update.7z");
 
-        public override IWKMenuControlConfig Config { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-
-        private readonly HttpClient httpCli = new(new HttpClientHandler() { UseProxy = false });
-        private MainForm main { get; set; }
+        private readonly HttpClient httpClient = new(new HttpClientHandler() { UseProxy = false });
+        private readonly MainForm main;
         private readonly string updateManifestURL = Properties.Settings.Default.updateManifestURL;
 
+        public override IWKMenuControlConfig Config { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+
         #region Constructor
+
         public UpdatesControl(object sender) : base(sender) {
             InitializeComponent();
             main = sender as MainForm ?? throw new ArgumentNullException(nameof(sender));
         }
-        #endregion
+
+        #endregion Constructor
 
         #region Methods
+
         public new void Dispose() {
-            httpCli.Dispose();
+            httpClient.Dispose();
             base.Dispose();
         }
 
@@ -43,7 +35,7 @@ namespace wK_Manager.MenuControls {
             updateStatusLabel.Text = "Prüfe auf updates ...";
             updateProgressBar.Visible = false;
             updateProgressLabel.Visible = false;
-            VersionData? versionData = await VersionData.GetCurrent(updateManifestURL, httpCli);
+            VersionData? versionData = await VersionData.GetCurrent(updateManifestURL, httpClient);
 
             if (versionData != null) {
                 Version? assemblyVersion = Assembly.GetExecutingAssembly().GetName().Version;
@@ -62,7 +54,7 @@ namespace wK_Manager.MenuControls {
                         updateButton.Enabled = true;
                         break;
 
-                    case < 0: // Update availabile
+                    case < 0: // Update available
                         updateStatusLabel.ForeColor = Color.Chocolate;
                         updateStatusLabel.Text = "Es ist ein update auf Version " + versionData.Version.ToString() + " verfügbar!";
 
@@ -72,7 +64,6 @@ namespace wK_Manager.MenuControls {
                         updateButton.Enabled = true;
                         break;
 
-                    case 0:
                     default: // Equal
                         updateStatusLabel.ForeColor = Color.DarkGreen;
                         updateStatusLabel.Text = "Keine Updates verfügbar.";
@@ -82,15 +73,10 @@ namespace wK_Manager.MenuControls {
             } else
                 updateStatusLabel.Text = "> Error <";
         }
-        #endregion
+
+        #endregion Methods
 
         #region EventHandlers
-        private async void updatesControl_Load(object sender, EventArgs e) {
-            if (main.menuImageList_large.Images.ContainsKey(MenuImageKey))
-                updatesImagePictureBox.Image = main.menuImageList_large.Images[MenuImageKey];
-
-            await checkUpdates();
-        }
 
         private async void updateButton_Click(object sender, EventArgs e) {
             if (sender is Button updateButton) {
@@ -133,7 +119,7 @@ namespace wK_Manager.MenuControls {
                         updateProgressBar.Value = newValue <= max ? newValue : max;
                     });
 
-                    (bool Status, Exception? Error, DirectoryInfo? ExtractionDirectory) = await versionData.Download(destinationFile, downloadProgress, extractProgress, httpCli);
+                    (bool Status, Exception? Error, DirectoryInfo? ExtractionDirectory) = await versionData.Download(destinationFile, downloadProgress, extractProgress, httpClient);
 
                     if (Status) {
                         updateButton.Text = "Anwenden ↪";
@@ -146,14 +132,20 @@ namespace wK_Manager.MenuControls {
                             : "Unbekannter Fehler!";
                     }
                 } else if (updateButton.Tag is DirectoryInfo extractionDirectory) {
-
                 }
             }
         }
-        #endregion
 
-        private async void updatesImagePictureBox_Click(object sender, EventArgs e) {
+        private async void updatesControl_Load(object sender, EventArgs e) {
+            if (main.menuImageList_large.Images.ContainsKey(MenuImageKey))
+                updatesImagePictureBox.Image = main.menuImageList_large.Images[MenuImageKey];
+
             await checkUpdates();
         }
+
+        private async void updatesImagePictureBox_Click(object sender, EventArgs e)
+            => await checkUpdates();
+
+        #endregion EventHandlers
     }
 }

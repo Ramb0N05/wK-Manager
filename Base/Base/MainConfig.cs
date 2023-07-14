@@ -5,6 +5,7 @@ using System.ComponentModel;
 namespace wK_Manager.Base {
     [JsonObject(MemberSerialization.OptOut)]
     public class MainConfig : WKMenuControlConfig {
+
         [JsonIgnore]
         public override string ConfigFilePath { get; set; } = string.Empty;
 
@@ -16,19 +17,25 @@ namespace wK_Manager.Base {
         [DefaultValue("")]
         public string UserConfigDirectory { get; set; }
 
+        #region Constructor
 #pragma warning disable CS8618 // Ein Non-Nullable-Feld muss beim Beenden des Konstruktors einen Wert ungleich NULL enthalten. Erwägen Sie die Deklaration als Nullable.
-        [JsonConstructor]
-        internal MainConfig() {
-            if (ConfigProvider.Global != null && !ConfigProvider.Global.ConfigFilePath.IsNull())
-                ConfigFilePath = ConfigProvider.Global.ConfigFilePath;
-        }
 
         public MainConfig(string configFilePath) {
             ConfigFilePath = !configFilePath.IsNull() && File.Exists(configFilePath)
                 ? configFilePath
                 : throw new ArgumentException("Invalid config file path!", nameof(configFilePath));
         }
+
+        [JsonConstructor]
+        internal MainConfig() {
+            if (ConfigProvider.Global?.ConfigFilePath.IsNull() == false)
+                ConfigFilePath = ConfigProvider.Global.ConfigFilePath;
+        }
+
 #pragma warning restore CS8618 // Ein Non-Nullable-Feld muss beim Beenden des Konstruktors einen Wert ungleich NULL enthalten. Erwägen Sie die Deklaration als Nullable.
+        #endregion Constructor
+
+        #region Methods
 
         public string GetUserConfigFilePath(string filename)
             => !filename.IsNull()
@@ -36,5 +43,7 @@ namespace wK_Manager.Base {
                     ? Path.Combine(UserConfigDirectory, filename)
                     : filename)
                 : string.Empty;
+
+        #endregion Methods
     }
 }

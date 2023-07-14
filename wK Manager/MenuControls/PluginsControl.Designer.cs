@@ -1,5 +1,5 @@
 ﻿namespace wK_Manager.MenuControls {
-    partial class PluginsControl {
+    partial class PlugInsControl {
         /// <summary> 
         /// Erforderliche Designervariable.
         /// </summary>
@@ -68,7 +68,7 @@
             pluginsListView.TabIndex = 0;
             pluginsListView.UseCompatibleStateImageBehavior = false;
             pluginsListView.View = View.List;
-            pluginsListView.ItemSelectionChanged += pluginsListView_ItemSelectionChanged;
+            pluginsListView.ItemSelectionChanged += plugInsListView_ItemSelectionChanged;
             // 
             // tableLayoutPanel1
             // 
@@ -159,9 +159,9 @@
             openPluginDirButton.TabIndex = 5;
             openPluginDirButton.Text = "Öffne Verzeichnis";
             openPluginDirButton.UseVisualStyleBackColor = true;
-            openPluginDirButton.Click += openPluginDirButton_Click;
+            openPluginDirButton.Click += openPlugInDirButton_Click;
             // 
-            // PluginsControl
+            // PlugInsControl
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
@@ -169,9 +169,9 @@
             MenuImageKey = "brick";
             MenuItemName = "Erweiterungen verwalten";
             MenuItemOrder = 997;
-            Name = "PluginsControl";
+            Name = "PlugInsControl";
             Size = new Size(1000, 650);
-            Load += pluginsControl_Load;
+            Load += plugInsControl_Load;
             splitContainer1.Panel1.ResumeLayout(false);
             splitContainer1.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)splitContainer1).EndInit();

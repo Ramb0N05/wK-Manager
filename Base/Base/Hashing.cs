@@ -2,7 +2,9 @@
 using System.Text;
 
 namespace wK_Manager.Base {
+
     public static class Hashing {
+
         public static string MD5_Simple(string input)
             => Convert.ToHexString(MD5.HashData(Encoding.UTF8.GetBytes(input)));
 

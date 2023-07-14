@@ -2,11 +2,11 @@
 using System.Runtime.Loader;
 
 namespace wK_Manager.Base {
-    public class PluginLoadContext : AssemblyLoadContext {
+    public class PlugInLoadContext : AssemblyLoadContext {
         private readonly AssemblyDependencyResolver resolver;
 
-        public PluginLoadContext(string pluginPath) {
-            resolver = new AssemblyDependencyResolver(pluginPath);
+        public PlugInLoadContext(string plugInPath) {
+            resolver = new AssemblyDependencyResolver(plugInPath);
         }
 
         protected override Assembly? Load(AssemblyName assemblyName) {

@@ -1,6 +1,7 @@
 ﻿namespace wK_Manager.Base {
-    public interface IWKPlugin {
-        public const string PluginListNamePrefix = "plugin_";
+
+    public interface IWKPlugIn {
+        public const string PlugInListNamePrefix = "plugin_";
         public const string UndefinedImageKey = "<i:undefined>";
         public const string UndefinedVersion = "<v:undefined>";
         public const string UnknownVersion = "<v:unknown>";
@@ -11,7 +12,12 @@
         public virtual string ImageKey => UndefinedImageKey;
         public abstract string Name { get; }
 
-        public abstract Task Initialize();
+        #region Methods
+
         public abstract void Dispose();
+
+        public abstract Task Initialize();
+
+        #endregion Methods
     }
 }

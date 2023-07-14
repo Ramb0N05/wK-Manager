@@ -2,12 +2,15 @@
 using wK_Manager.Base;
 
 namespace wK_Manager.MenuControls {
-    public partial class PluginsControl : WKMenuControl {
+
+    public partial class PlugInsControl : WKMenuControl {
         public override IWKMenuControlConfig Config { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
-        private MainForm? main { get; set; } = null;
+        private readonly MainForm? main;
 
-        public PluginsControl(object sender) : base(sender) {
+        #region Constructor
+
+        public PlugInsControl(object sender) : base(sender) {
             InitializeComponent();
 
             if (sender is MainForm main) {
@@ -16,9 +19,16 @@ namespace wK_Manager.MenuControls {
             }
         }
 
-        private async void pluginsControl_Load(object sender, EventArgs e) {
+        #endregion Constructor
+
+        #region EventHandlers
+
+        private void openPlugInDirButton_Click(object sender, EventArgs e) {
+        }
+
+        private async void plugInsControl_Load(object sender, EventArgs e) {
             if (main != null) {
-                await main.PM.Plugins.ForEachAsync(async (plugin) => {
+                await main.PM.PlugIns.ForEachAsync(async (plugin) => {
                     ListViewItem pluginItem = new(plugin.Name) {
                         Name = plugin.Identifier,
                         ImageKey = plugin.ImageKey
@@ -30,16 +40,16 @@ namespace wK_Manager.MenuControls {
             }
         }
 
-        private void pluginsListView_ItemSelectionChanged(object sender, ListViewItemSelectionChangedEventArgs e) {
+        private void plugInsListView_ItemSelectionChanged(object sender, ListViewItemSelectionChangedEventArgs e) {
             if (main != null) {
                 if (sender is ListView plv && e.Item != null) {
-                    IWKPlugin? plugin = main.PM.Plugins.FirstOrDefault((p) => p.Identifier == e.Item.Name);
+                    IWKPlugIn? plugin = main.PM.PlugIns.FirstOrDefault((p) => p.Identifier == e.Item.Name);
 
-                    if (plugin is not null and WKPlugin p) {
+                    if (plugin is not null and WKPlugIn p) {
                         string description = p.Description + Environment.NewLine + Environment.NewLine + "--" + Environment.NewLine
 #if DEBUG
                                             + "(" + p.Identifier + "; "
-                                            + (main.PM.PluginMenuControls.TryGetValue(p.Identifier, out IEnumerable<WKMenuControl>? pVal)
+                                            + (main.PM.PlugInMenuControls.TryGetValue(p.Identifier, out IEnumerable<WKMenuControl>? pVal)
                                                 ? pVal.Count().ToString() + " GUI Controls"
                                                 : string.Empty)
                                             + ")"
@@ -55,8 +65,6 @@ namespace wK_Manager.MenuControls {
             }
         }
 
-        private void openPluginDirButton_Click(object sender, EventArgs e) {
-
-        }
+        #endregion EventHandlers
     }
 }

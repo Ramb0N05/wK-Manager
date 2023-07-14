@@ -1,15 +1,18 @@
 using SharpRambo.ExtensionsLib;
 using System.Reflection;
 using wK_Manager.Base;
+using wK_Manager.Base.Extensions;
 
 namespace wK_Manager {
     public partial class MainForm : Form {
-        public static IEnumerable<KeyValuePair<string, string>> MenuItems { get; private set; } = Array.Empty<KeyValuePair<string, string>>();
-        public PluginManager PM { get; private set; } = new();
-
-        private const string MenuItemTabPostfix = "_tab";
+        private const string ExtensionMenuControlsNamespace = $"{nameof(wK_Manager)}.PlugIns.{nameof(MenuControls)}";
         private const string MenuControlsNamespace = $"{nameof(wK_Manager)}.{nameof(MenuControls)}";
-        private const string ExtensionMenuControlsNamespace = $"{nameof(wK_Manager)}.Plugins.{nameof(MenuControls)}";
+        private const string MenuItemTabPostfix = "_tab";
+
+        public static IEnumerable<KeyValuePair<string, string>> MenuItems { get; private set; } = Array.Empty<KeyValuePair<string, string>>();
+        public PlugInManager PM { get; private set; } = new();
+
+        #region Constructor
 
         public MainForm() {
             ConfigProvider.Global.ConfigFilePath = Path.Combine(Application.StartupPath, Properties.Settings.Default.mainConfigName);
@@ -18,6 +21,13 @@ namespace wK_Manager {
             menuListView.Visible = false;
             menuTabControl.Visible = false;
         }
+
+        #endregion Constructor
+
+        #region EventHandlers
+
+        private void mainForm_FormClosing(object sender, FormClosingEventArgs e)
+            => PM.Dispose();
 
         private async void mainForm_Load(object sender, EventArgs e) {
             await ConfigProvider.Global.Load();
@@ -56,7 +66,7 @@ namespace wK_Manager {
                 await Task.CompletedTask;
             });
 
-            await PM.PluginMenuControls.ForEachAsync(async (plugin) => await plugin.Value.ForEachAsync(async (c) => {
+            await PM.PlugInMenuControls.ForEachAsync(async (plugin) => await plugin.Value.ForEachAsync(async (c) => {
                 string menuItemName = c.MenuItemName ?? c.Name;
                 string tabName = c.Name + MenuItemTabPostfix;
                 ListViewItem item = new(menuItemName) {
@@ -100,22 +110,19 @@ namespace wK_Manager {
             menuListView.Select();
         }
 
+        private void mainForm_Shown(object sender, EventArgs e) {
+        }
+
         private void menuListView_ItemSelectionChanged(object sender, ListViewItemSelectionChangedEventArgs e) {
             if (e.IsSelected && e.Item != null)
                 menuTabControl.SelectTab(e.Item.Tag.ToString());
         }
 
-        private void mainForm_Shown(object sender, EventArgs e) {
-
-        }
-
         private void menuListView_Resize(object sender, EventArgs e) {
-            if (sender is ListView lv)
-                if (lv.Columns.Count > 0)
-                    lv.Columns[0].Width = lv.Width - 5;
+            if (sender is ListView lv && lv.Columns.Count > 0)
+                lv.Columns[0].Width = lv.Width - 5;
         }
 
-        private void mainForm_FormClosing(object sender, FormClosingEventArgs e)
-            => PM.Dispose();
+        #endregion EventHandlers
     }
 }

@@ -1,4 +1,4 @@
-﻿namespace BarMonitorWKPlugin.Forms
+﻿namespace BarMonitorWKPlugIn.Forms
 {
     partial class PresenterForm
     {

@@ -1,9 +1,9 @@
-﻿using System;
-using System.Reflection;
-using wK_Manager.Base;
+﻿using wK_Manager.Base;
 
-namespace wK_Manager.Plugins {
-    public class BarMonitorWKPlugin : WKPlugin {
+namespace wK_Manager.PlugIns {
+
+    public class BarMonitorWKPlugIn : WKPlugIn {
+
         public static readonly IEnumerable<string> AcceptedDiashowArchiveContentTypes = new List<string>
         {
             MimeMapping.KnownMimeTypes.Gz,
@@ -26,25 +26,33 @@ namespace wK_Manager.Plugins {
             "image/x-png"
         };
 
-        public override string Name => "Bar Monitor";
-        public override string Description => "Bar Monitor Plugin";
+        public HttpClient HttpClient { get; private set; }
+        public override string Description => "Bar Monitor PlugIn";
         public override string ImageKey => "device-tv";
+        public override string Name => "Bar Monitor";
 
-        public HttpClient HttpCli;
-
+        #region Constructor
 #pragma warning disable CS8618 // Ein Non-Nullable-Feld muss beim Beenden des Konstruktors einen Wert ungleich NULL enthalten. Erwägen Sie die Deklaration als Nullable.
-        public BarMonitorWKPlugin(string directoryPath, object sender) : base(directoryPath, sender) { }
+
+        public BarMonitorWKPlugIn(string directoryPath, object sender) : base(directoryPath, sender) {
+        }
+
 #pragma warning restore CS8618 // Ein Non-Nullable-Feld muss beim Beenden des Konstruktors einen Wert ungleich NULL enthalten. Erwägen Sie die Deklaration als Nullable.
+        #endregion Constructor
+
+        #region Methods
+
+        public override void Dispose()
+            => HttpClient.Dispose();
 
         public override async Task Initialize() {
-            HttpCli = new HttpClient(new HttpClientHandler() {
+            HttpClient = new HttpClient(new HttpClientHandler() {
                 UseProxy = false
             });
 
             await Task.CompletedTask;
         }
 
-        public override void Dispose()
-            => HttpCli.Dispose();
+        #endregion Methods
     }
 }

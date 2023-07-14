@@ -1,19 +1,13 @@
 ﻿using DotNet.Basics.SevenZip;
-using DotNet.Basics.Sys;
 using Newtonsoft.Json;
-using SharpRambo.ExtensionsLib;
-using System.Net;
 using System.Net.Http.Headers;
-using System.Runtime.CompilerServices;
 using wK_Manager.Base.Extensions;
 using wK_Manager.Base.Models;
 
 namespace wK_Manager.Base {
     public class VersionData {
-        public static readonly string FlallbackUpdateExtractDirectory = Path.Combine(Application.StartupPath, "update");
 
-        public static readonly IEnumerable<string> AcceptedDiashowArchiveContentTypes = new List<string>
-        {
+        public static readonly IEnumerable<string> AcceptedDiashowArchiveContentTypes = new List<string> {
             MimeMapping.KnownMimeTypes.Gz,
             MimeMapping.KnownMimeTypes.Cab,
             MimeMapping.KnownMimeTypes._7z,
@@ -25,20 +19,25 @@ namespace wK_Manager.Base {
             MimeMapping.KnownMimeTypes.Zip
         };
 
-        public Version Version { get; set; }
+        public static readonly string FallbackUpdateExtractDirectory = Path.Combine(Application.StartupPath, "update");
         public Uri Uri { get; set; }
-
-        private readonly HttpClient? httpClient;
+        public Version Version { get; set; }
+        private HttpClient? httpClient { get; }
 
         #region Constructor
-        public VersionData(Version version, Uri uri) : this(version, uri, null) { }
+
+        public VersionData(Version version, Uri uri) : this(version, uri, null) {
+        }
+
         public VersionData(Version version, Uri uri, HttpClient? httpClient) {
             Version = version;
             Uri = uri;
             this.httpClient = httpClient;
         }
 
-        public VersionData(VersionDataModel model) : this(model, null) { }
+        public VersionData(VersionDataModel model) : this(model, null) {
+        }
+
         public VersionData(VersionDataModel model, HttpClient? httpClient) {
             this.httpClient = httpClient;
 
@@ -53,16 +52,54 @@ namespace wK_Manager.Base {
             } else
                 throw new ArgumentException("Property \"" + nameof(model.Current) + "\" is invalid or empty!", nameof(model));
         }
-        #endregion
+
+        #endregion Constructor
 
         #region Methods
+
+        public static async Task<VersionData?> GetCurrent(string versionFileUrl, HttpClient? httpClient) {
+            if (!Uri.IsWellFormedUriString(versionFileUrl, UriKind.Absolute))
+                return null;
+
+            Uri updateManifestUri = new(versionFileUrl);
+            using HttpRequestMessage request = new(HttpMethod.Get, updateManifestUri);
+            bool newHttpClient = httpClient == null;
+            httpClient ??= new HttpClient(new HttpClientHandler() { UseProxy = false });
+
+            try {
+                using HttpResponseMessage respone = await httpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
+                MediaTypeHeaderValue? contentType = respone.Content.Headers.ContentType;
+
+                if (!respone.IsSuccessStatusCode || contentType == null || contentType.MediaType != MimeMapping.KnownMimeTypes.Json)
+                    return null;
+
+                Memory<byte> buffer = new(Array.Empty<byte>());
+                using StreamReader versionDataStream = new(await respone.Content.ReadAsStreamAsync());
+                string versionDataJson = await versionDataStream.ReadToEndAsync();
+                VersionDataModel? versionDataModel = JsonConvert.DeserializeObject<VersionDataModel>(versionDataJson);
+
+                if (newHttpClient)
+                    httpClient.Dispose();
+
+                return versionDataModel != null ? new VersionData(versionDataModel) : null;
+            } catch (Exception) {
+                if (newHttpClient)
+                    httpClient.Dispose();
+
+                return null;
+            }
+        }
+
         public async Task<(bool Status, Exception? Error, DirectoryInfo? ExtractionDirectory)> Download(FileInfo destinationFile) => await Download(destinationFile, null, null, null);
+
         public async Task<(bool Status, Exception? Error, DirectoryInfo? ExtractionDirectory)> Download(FileInfo destinationFile, IProgress<float>? downloadProgress = null) => await Download(destinationFile, downloadProgress, null, null);
+
         public async Task<(bool Status, Exception? Error, DirectoryInfo? ExtractionDirectory)> Download(FileInfo destinationFile, IProgress<float>? downloadProgress = null, IProgress<int>? extractProgress = null) => await Download(destinationFile, downloadProgress, extractProgress, null);
+
         public async Task<(bool Status, Exception? Error, DirectoryInfo? ExtractionDirectory)> Download(FileInfo destinationFile, IProgress<float>? downloadProgress = null, IProgress<int>? extractProgress = null, HttpClient? httpClient = null) {
             httpClient ??= this.httpClient ?? new(new HttpClientHandler() { UseProxy = false });
             using HttpRequestMessage request = new(HttpMethod.Get, Uri);
-            DirectoryInfo extractDir = destinationFile.Directory ?? new DirectoryInfo(FlallbackUpdateExtractDirectory);
+            DirectoryInfo extractDir = destinationFile.Directory ?? new DirectoryInfo(FallbackUpdateExtractDirectory);
 
             try {
                 HttpResponseMessage response = await httpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
@@ -140,17 +177,17 @@ namespace wK_Manager.Base {
                         };
                     } else {
                         currentExtractProgressValue = 99;
-                        extractProgress?.Report(- currentExtractProgressValue);
+                        extractProgress?.Report(-currentExtractProgressValue);
 
                         return new() {
-                            Error = new Exception("Extracion finished with exit code \"" + result.ToString() + "\""),
+                            Error = new Exception("Extraction finished with exit code \"" + result.ToString() + "\""),
                             ExtractionDirectory = null,
                             Status = false
                         };
                     }
                 } else {
                     currentExtractProgressValue = 11;
-                    extractProgress?.Report(- currentExtractProgressValue);
+                    extractProgress?.Report(-currentExtractProgressValue);
 
                     return new() {
                         Error = new Exception("Downloaded file does not exist!"),
@@ -159,7 +196,7 @@ namespace wK_Manager.Base {
                     };
                 }
             } catch (Exception ex) {
-                extractProgress?.Report(- currentExtractProgressValue);
+                extractProgress?.Report(-currentExtractProgressValue);
 
                 return new() {
                     Error = ex,
@@ -169,41 +206,10 @@ namespace wK_Manager.Base {
             }
         }
 
-        public static async Task<VersionData?> GetCurrent(string versionFileUrl, HttpClient? httpClient) {
-            if (!Uri.IsWellFormedUriString(versionFileUrl, UriKind.Absolute))
-                return null;
-
-            Uri updateManifestUri = new(versionFileUrl);
-            using HttpRequestMessage request = new(HttpMethod.Get, updateManifestUri);
-            bool newHttpClient = httpClient == null;
-            httpClient ??= new HttpClient(new HttpClientHandler() { UseProxy = false });
-
-            try {
-                using HttpResponseMessage respone = await httpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
-                MediaTypeHeaderValue? contentType = respone.Content.Headers.ContentType;
-
-                if (!respone.IsSuccessStatusCode || contentType == null || contentType.MediaType != MimeMapping.KnownMimeTypes.Json)
-                    return null;
-
-                Memory<byte> buffer = new(Array.Empty<byte>());
-                using StreamReader versionDataStream = new(await respone.Content.ReadAsStreamAsync());
-                string versionDataJson = await versionDataStream.ReadToEndAsync();
-                VersionDataModel? versionDataModel = JsonConvert.DeserializeObject<VersionDataModel>(versionDataJson);
-
-                if (newHttpClient)
-                    httpClient.Dispose();
-
-                return versionDataModel != null ? new VersionData(versionDataModel) : null;
-            } catch (Exception) {
-                if (newHttpClient)
-                    httpClient.Dispose();
-
-                return null;
-            }
-        }
-        #endregion
+        #endregion Methods
 
         #region ModelMethods
+
         public static VersionData FromModel(VersionDataModel model)
             => new(model);
 
@@ -212,6 +218,7 @@ namespace wK_Manager.Base {
                 Current = Version.ToString(),
                 DownloadURL = Uri.ToString()
             };
-        #endregion
+
+        #endregion ModelMethods
     }
 }
