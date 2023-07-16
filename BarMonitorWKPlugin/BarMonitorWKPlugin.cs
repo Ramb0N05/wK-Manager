@@ -26,31 +26,23 @@ namespace wK_Manager.PlugIns {
             "image/x-png"
         };
 
-        public HttpClient HttpClient { get; private set; }
         public override string Description => "Bar Monitor PlugIn";
-        public override string ImageKey => "device-tv";
+        public override string ImageKey => "device_tv";
         public override string Name => "Bar Monitor";
 
         #region Constructor
-#pragma warning disable CS8618 // Ein Non-Nullable-Feld muss beim Beenden des Konstruktors einen Wert ungleich NULL enthalten. Erwägen Sie die Deklaration als Nullable.
 
-        public BarMonitorWKPlugIn(string directoryPath, object sender) : base(directoryPath, sender) {
+        public BarMonitorWKPlugIn(string directoryPath, WKManagerBase @base) : base(directoryPath, @base) {
         }
 
-#pragma warning restore CS8618 // Ein Non-Nullable-Feld muss beim Beenden des Konstruktors einen Wert ungleich NULL enthalten. Erwägen Sie die Deklaration als Nullable.
         #endregion Constructor
 
         #region Methods
 
-        public override void Dispose()
-            => HttpClient.Dispose();
+        public override async Task Initialize()
+            => await Task.CompletedTask;
 
-        public override async Task Initialize() {
-            HttpClient = new HttpClient(new HttpClientHandler() {
-                UseProxy = false
-            });
-
-            await Task.CompletedTask;
+        protected override void Dispose(bool disposing) {
         }
 
         #endregion Methods

@@ -1,6 +1,6 @@
 ﻿namespace wK_Manager.Base {
 
-    public interface IWKPlugIn {
+    public interface IWKPlugIn : IDisposable {
         public const string PlugInListNamePrefix = "plugin_";
         public const string UndefinedImageKey = "<i:undefined>";
         public const string UndefinedVersion = "<v:undefined>";
@@ -13,8 +13,6 @@
         public abstract string Name { get; }
 
         #region Methods
-
-        public abstract void Dispose();
 
         public abstract Task Initialize();
 

@@ -26,7 +26,6 @@ namespace wK_Manager.PlugIns.MenuControls {
         /// Der Inhalt der Methode darf nicht mit dem Code-Editor geändert werden.
         /// </summary>
         private void InitializeComponent() {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(BarMonitorControl));
             displaysGroupBox = new GroupBox();
             displaysFlowLayoutPanel = new FlowLayoutPanel();
             reloadMonitorsPictureBox = new PictureBox();
@@ -90,12 +89,11 @@ namespace wK_Manager.PlugIns.MenuControls {
             reloadMonitorsPictureBox.Anchor = AnchorStyles.Right;
             reloadMonitorsPictureBox.BackColor = Color.Transparent;
             reloadMonitorsPictureBox.Cursor = Cursors.Hand;
-            reloadMonitorsPictureBox.Image = (Image)resources.GetObject("reloadMonitorsPictureBox.Image");
-            reloadMonitorsPictureBox.Location = new Point(1005, 0);
+            reloadMonitorsPictureBox.Location = new Point(1009, 0);
             reloadMonitorsPictureBox.Margin = new Padding(3, 0, 0, 0);
             reloadMonitorsPictureBox.Name = "reloadMonitorsPictureBox";
-            reloadMonitorsPictureBox.Size = new Size(24, 20);
-            reloadMonitorsPictureBox.SizeMode = PictureBoxSizeMode.Zoom;
+            reloadMonitorsPictureBox.Size = new Size(20, 20);
+            reloadMonitorsPictureBox.SizeMode = PictureBoxSizeMode.CenterImage;
             reloadMonitorsPictureBox.TabIndex = 6;
             reloadMonitorsPictureBox.TabStop = false;
             reloadMonitorsPictureBox.Click += reloadMonitorsPictureBox_Click;
@@ -104,7 +102,7 @@ namespace wK_Manager.PlugIns.MenuControls {
             // 
             identifyLabel.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
             identifyLabel.AutoSize = true;
-            identifyLabel.Location = new Point(828, 5);
+            identifyLabel.Location = new Point(832, 5);
             identifyLabel.Name = "identifyLabel";
             identifyLabel.Size = new Size(171, 15);
             identifyLabel.TabIndex = 1;
@@ -199,7 +197,6 @@ namespace wK_Manager.PlugIns.MenuControls {
             autoObtainCheckBox.TabIndex = 5;
             autoObtainCheckBox.Text = "Beim Starten automatisch beziehen";
             autoObtainCheckBox.UseVisualStyleBackColor = true;
-            autoObtainCheckBox.CheckedChanged += autoObtainCheckBox_CheckedChanged;
             // 
             // obtainButton
             // 
@@ -432,7 +429,6 @@ namespace wK_Manager.PlugIns.MenuControls {
             Controls.Add(diashowGroupBox);
             Controls.Add(displaysGroupBox);
             Controls.Add(tableLayoutPanel4);
-            MenuImageKey = "device-tv";
             MenuItemName = "Kneipe Monitor";
             Name = "BarMonitorControl";
             Size = new Size(1029, 628);

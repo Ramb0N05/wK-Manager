@@ -2,9 +2,8 @@
 using System.ComponentModel;
 using wK_Manager.Base;
 
-#pragma warning disable CS8618 // Ein Non-Nullable-Feld muss beim Beenden des Konstruktors einen Wert ungleich NULL enthalten. Erwägen Sie die Deklaration als Nullable.
-
 namespace wK_Manager.PlugIns.MenuControls {
+#pragma warning disable CS8618 // Ein Non-Nullable-Feld muss beim Beenden des Konstruktors einen Wert ungleich NULL enthalten. Erwägen Sie die Deklaration als Nullable.
 
     [JsonObject(MemberSerialization = MemberSerialization.OptOut)]
     public class BarMonitorControlConfig : WKMenuControlConfig {
@@ -46,6 +45,6 @@ namespace wK_Manager.PlugIns.MenuControls {
         [DefaultValue(false)]
         public bool Shuffle { get; set; }
     }
-}
 
 #pragma warning restore CS8618 // Ein Non-Nullable-Feld muss beim Beenden des Konstruktors einen Wert ungleich NULL enthalten. Erwägen Sie die Deklaration als Nullable.
+}

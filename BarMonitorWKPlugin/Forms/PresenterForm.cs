@@ -1,20 +1,26 @@
 ﻿using SharpRambo.ExtensionsLib;
 
 namespace BarMonitorWKPlugIn.Forms {
+
     public partial class PresenterForm : Form {
+        public const int DEFAULT_INTERVAL = 5000;
+
         private readonly Dictionary<string, Bitmap> cache = new();
         private readonly DirectoryInfo? diashowDir;
         private uint currentPosition;
         private IEnumerable<string> diashowFiles = Enumerable.Empty<string>();
 
         public bool CloseOnEnd { get; set; }
-        public uint Interval { get; set; } = 5000;
+        public uint Interval { get; set; }
         public bool Repeat { get; set; } = true;
         public bool Shuffle { get; set; }
 
         #region Constructor
 
-        public PresenterForm(string diashowPath, uint interval = 5000) {
+        public PresenterForm(string diashowPath) : this(diashowPath, DEFAULT_INTERVAL) {
+        }
+
+        public PresenterForm(string diashowPath, uint interval) {
             InitializeComponent();
 
             if (!diashowPath.IsNull())

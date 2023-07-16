@@ -3,8 +3,10 @@ using SharpRambo.ExtensionsLib;
 using System.ComponentModel;
 using System.Reflection;
 using wK_Manager.Base.Extensions;
+using wK_Manager.Base.Providers;
 
 namespace wK_Manager.Base {
+
     [JsonObject(MemberSerialization.OptOut)]
     public abstract class WKMenuControlConfig : IWKMenuControlConfig {
 
@@ -85,7 +87,7 @@ namespace wK_Manager.Base {
 
         public virtual bool SetData(string json, JsonSerializerSettings? jsonSerializerSettings = null) {
             object? data = JsonConvert.DeserializeObject(json, GetType(), jsonSerializerSettings);
-            return data != null && data is WKMenuControlConfig dataOfType && SetData(dataOfType);
+            return data is WKMenuControlConfig dataOfType && SetData(dataOfType);
         }
 
         public virtual bool SetData(IWKMenuControlConfig? configObject) => SetData(configObject as WKMenuControlConfig);

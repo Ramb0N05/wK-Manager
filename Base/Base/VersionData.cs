@@ -5,6 +5,7 @@ using wK_Manager.Base.Extensions;
 using wK_Manager.Base.Models;
 
 namespace wK_Manager.Base {
+
     public class VersionData {
 
         public static readonly IEnumerable<string> AcceptedDiashowArchiveContentTypes = new List<string> {
@@ -73,7 +74,6 @@ namespace wK_Manager.Base {
                 if (!respone.IsSuccessStatusCode || contentType == null || contentType.MediaType != MimeMapping.KnownMimeTypes.Json)
                     return null;
 
-                Memory<byte> buffer = new(Array.Empty<byte>());
                 using StreamReader versionDataStream = new(await respone.Content.ReadAsStreamAsync());
                 string versionDataJson = await versionDataStream.ReadToEndAsync();
                 VersionDataModel? versionDataModel = JsonConvert.DeserializeObject<VersionDataModel>(versionDataJson);
@@ -92,11 +92,11 @@ namespace wK_Manager.Base {
 
         public async Task<(bool Status, Exception? Error, DirectoryInfo? ExtractionDirectory)> Download(FileInfo destinationFile) => await Download(destinationFile, null, null, null);
 
-        public async Task<(bool Status, Exception? Error, DirectoryInfo? ExtractionDirectory)> Download(FileInfo destinationFile, IProgress<float>? downloadProgress = null) => await Download(destinationFile, downloadProgress, null, null);
+        public async Task<(bool Status, Exception? Error, DirectoryInfo? ExtractionDirectory)> Download(FileInfo destinationFile, IProgress<float> downloadProgress) => await Download(destinationFile, downloadProgress, null, null);
 
-        public async Task<(bool Status, Exception? Error, DirectoryInfo? ExtractionDirectory)> Download(FileInfo destinationFile, IProgress<float>? downloadProgress = null, IProgress<int>? extractProgress = null) => await Download(destinationFile, downloadProgress, extractProgress, null);
+        public async Task<(bool Status, Exception? Error, DirectoryInfo? ExtractionDirectory)> Download(FileInfo destinationFile, IProgress<float> downloadProgress, IProgress<int> extractProgress) => await Download(destinationFile, downloadProgress, extractProgress, null);
 
-        public async Task<(bool Status, Exception? Error, DirectoryInfo? ExtractionDirectory)> Download(FileInfo destinationFile, IProgress<float>? downloadProgress = null, IProgress<int>? extractProgress = null, HttpClient? httpClient = null) {
+        public async Task<(bool Status, Exception? Error, DirectoryInfo? ExtractionDirectory)> Download(FileInfo destinationFile, IProgress<float>? downloadProgress, IProgress<int>? extractProgress, HttpClient? httpClient) {
             httpClient ??= this.httpClient ?? new(new HttpClientHandler() { UseProxy = false });
             using HttpRequestMessage request = new(HttpMethod.Get, Uri);
             DirectoryInfo extractDir = destinationFile.Directory ?? new DirectoryInfo(FallbackUpdateExtractDirectory);

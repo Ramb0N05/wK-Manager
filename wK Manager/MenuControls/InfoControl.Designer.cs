@@ -25,11 +25,11 @@
         private void InitializeComponent() {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(InfoControl));
             tableLayoutPanel1 = new TableLayoutPanel();
-            pictureBox1 = new PictureBox();
+            logoPictureBox = new PictureBox();
             productInfoLabel = new Label();
             licenseTextBox = new TextBox();
             tableLayoutPanel1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)logoPictureBox).BeginInit();
             SuspendLayout();
             // 
             // tableLayoutPanel1
@@ -39,7 +39,7 @@
             tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 33.3333321F));
             tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 33.3333321F));
             tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 33.3333321F));
-            tableLayoutPanel1.Controls.Add(pictureBox1, 1, 0);
+            tableLayoutPanel1.Controls.Add(logoPictureBox, 1, 0);
             tableLayoutPanel1.Controls.Add(productInfoLabel, 1, 1);
             tableLayoutPanel1.Controls.Add(licenseTextBox, 0, 3);
             tableLayoutPanel1.Dock = DockStyle.Fill;
@@ -54,16 +54,15 @@
             tableLayoutPanel1.Size = new Size(1233, 702);
             tableLayoutPanel1.TabIndex = 0;
             // 
-            // pictureBox1
+            // logoPictureBox
             // 
-            pictureBox1.Anchor = AnchorStyles.None;
-            pictureBox1.Image = (Image)resources.GetObject("pictureBox1.Image");
-            pictureBox1.Location = new Point(568, 3);
-            pictureBox1.Name = "pictureBox1";
-            pictureBox1.Size = new Size(96, 96);
-            pictureBox1.SizeMode = PictureBoxSizeMode.AutoSize;
-            pictureBox1.TabIndex = 0;
-            pictureBox1.TabStop = false;
+            logoPictureBox.Anchor = AnchorStyles.None;
+            logoPictureBox.Location = new Point(568, 3);
+            logoPictureBox.Name = "logoPictureBox";
+            logoPictureBox.Size = new Size(96, 96);
+            logoPictureBox.SizeMode = PictureBoxSizeMode.AutoSize;
+            logoPictureBox.TabIndex = 0;
+            logoPictureBox.TabStop = false;
             // 
             // productInfoLabel
             // 
@@ -95,21 +94,21 @@
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             Controls.Add(tableLayoutPanel1);
-            MenuImageKey = "sign-info";
+            MenuImageKey = "sign_info";
             MenuItemName = "Info";
             MenuItemOrder = 999;
             Name = "InfoControl";
             Size = new Size(1233, 702);
             tableLayoutPanel1.ResumeLayout(false);
             tableLayoutPanel1.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)pictureBox1).EndInit();
+            ((System.ComponentModel.ISupportInitialize)logoPictureBox).EndInit();
             ResumeLayout(false);
         }
 
         #endregion
 
         private TableLayoutPanel tableLayoutPanel1;
-        private PictureBox pictureBox1;
+        private PictureBox logoPictureBox;
         private Label productInfoLabel;
         private TextBox licenseTextBox;
     }

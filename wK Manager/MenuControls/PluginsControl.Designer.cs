@@ -25,7 +25,7 @@
         private void InitializeComponent() {
             splitContainer1 = new SplitContainer();
             pluginsListView = new ListView();
-            tableLayoutPanel1 = new TableLayoutPanel();
+            plugInInfoTableLayoutPanel = new TableLayoutPanel();
             pluginNameLabel = new Label();
             disableButton = new Button();
             pluginVersionLabel = new Label();
@@ -36,7 +36,7 @@
             splitContainer1.Panel1.SuspendLayout();
             splitContainer1.Panel2.SuspendLayout();
             splitContainer1.SuspendLayout();
-            tableLayoutPanel1.SuspendLayout();
+            plugInInfoTableLayoutPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)pluginLogoPictureBox).BeginInit();
             SuspendLayout();
             // 
@@ -53,7 +53,7 @@
             // 
             // splitContainer1.Panel2
             // 
-            splitContainer1.Panel2.Controls.Add(tableLayoutPanel1);
+            splitContainer1.Panel2.Controls.Add(plugInInfoTableLayoutPanel);
             splitContainer1.Size = new Size(1000, 650);
             splitContainer1.SplitterDistance = 450;
             splitContainer1.TabIndex = 0;
@@ -70,28 +70,29 @@
             pluginsListView.View = View.List;
             pluginsListView.ItemSelectionChanged += plugInsListView_ItemSelectionChanged;
             // 
-            // tableLayoutPanel1
+            // plugInInfoTableLayoutPanel
             // 
-            tableLayoutPanel1.ColumnCount = 4;
-            tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 100F));
-            tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle());
-            tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
-            tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle());
-            tableLayoutPanel1.Controls.Add(pluginNameLabel, 1, 0);
-            tableLayoutPanel1.Controls.Add(disableButton, 3, 2);
-            tableLayoutPanel1.Controls.Add(pluginVersionLabel, 2, 0);
-            tableLayoutPanel1.Controls.Add(pluginDescriptionTextBox, 1, 1);
-            tableLayoutPanel1.Controls.Add(pluginLogoPictureBox, 0, 0);
-            tableLayoutPanel1.Controls.Add(openPluginDirButton, 1, 2);
-            tableLayoutPanel1.Dock = DockStyle.Fill;
-            tableLayoutPanel1.Location = new Point(0, 0);
-            tableLayoutPanel1.Name = "tableLayoutPanel1";
-            tableLayoutPanel1.RowCount = 3;
-            tableLayoutPanel1.RowStyles.Add(new RowStyle());
-            tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
-            tableLayoutPanel1.RowStyles.Add(new RowStyle());
-            tableLayoutPanel1.Size = new Size(1000, 196);
-            tableLayoutPanel1.TabIndex = 0;
+            plugInInfoTableLayoutPanel.ColumnCount = 4;
+            plugInInfoTableLayoutPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 100F));
+            plugInInfoTableLayoutPanel.ColumnStyles.Add(new ColumnStyle());
+            plugInInfoTableLayoutPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
+            plugInInfoTableLayoutPanel.ColumnStyles.Add(new ColumnStyle());
+            plugInInfoTableLayoutPanel.Controls.Add(pluginNameLabel, 1, 0);
+            plugInInfoTableLayoutPanel.Controls.Add(disableButton, 3, 2);
+            plugInInfoTableLayoutPanel.Controls.Add(pluginVersionLabel, 2, 0);
+            plugInInfoTableLayoutPanel.Controls.Add(pluginDescriptionTextBox, 1, 1);
+            plugInInfoTableLayoutPanel.Controls.Add(pluginLogoPictureBox, 0, 0);
+            plugInInfoTableLayoutPanel.Controls.Add(openPluginDirButton, 1, 2);
+            plugInInfoTableLayoutPanel.Dock = DockStyle.Fill;
+            plugInInfoTableLayoutPanel.Location = new Point(0, 0);
+            plugInInfoTableLayoutPanel.Name = "plugInInfoTableLayoutPanel";
+            plugInInfoTableLayoutPanel.RowCount = 3;
+            plugInInfoTableLayoutPanel.RowStyles.Add(new RowStyle());
+            plugInInfoTableLayoutPanel.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
+            plugInInfoTableLayoutPanel.RowStyles.Add(new RowStyle());
+            plugInInfoTableLayoutPanel.Size = new Size(1000, 196);
+            plugInInfoTableLayoutPanel.TabIndex = 0;
+            plugInInfoTableLayoutPanel.Visible = false;
             // 
             // pluginNameLabel
             // 
@@ -109,6 +110,7 @@
             // 
             disableButton.Anchor = AnchorStyles.None;
             disableButton.AutoSize = true;
+            disableButton.Enabled = false;
             disableButton.Location = new Point(915, 168);
             disableButton.Name = "disableButton";
             disableButton.Size = new Size(82, 25);
@@ -129,7 +131,7 @@
             // pluginDescriptionTextBox
             // 
             pluginDescriptionTextBox.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            tableLayoutPanel1.SetColumnSpan(pluginDescriptionTextBox, 3);
+            plugInInfoTableLayoutPanel.SetColumnSpan(pluginDescriptionTextBox, 3);
             pluginDescriptionTextBox.Location = new Point(103, 24);
             pluginDescriptionTextBox.Multiline = true;
             pluginDescriptionTextBox.Name = "pluginDescriptionTextBox";
@@ -143,7 +145,7 @@
             pluginLogoPictureBox.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             pluginLogoPictureBox.Location = new Point(3, 3);
             pluginLogoPictureBox.Name = "pluginLogoPictureBox";
-            tableLayoutPanel1.SetRowSpan(pluginLogoPictureBox, 3);
+            plugInInfoTableLayoutPanel.SetRowSpan(pluginLogoPictureBox, 3);
             pluginLogoPictureBox.Size = new Size(94, 190);
             pluginLogoPictureBox.SizeMode = PictureBoxSizeMode.Zoom;
             pluginLogoPictureBox.TabIndex = 4;
@@ -176,8 +178,8 @@
             splitContainer1.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)splitContainer1).EndInit();
             splitContainer1.ResumeLayout(false);
-            tableLayoutPanel1.ResumeLayout(false);
-            tableLayoutPanel1.PerformLayout();
+            plugInInfoTableLayoutPanel.ResumeLayout(false);
+            plugInInfoTableLayoutPanel.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)pluginLogoPictureBox).EndInit();
             ResumeLayout(false);
         }
@@ -186,7 +188,7 @@
 
         private SplitContainer splitContainer1;
         private ListView pluginsListView;
-        private TableLayoutPanel tableLayoutPanel1;
+        private TableLayoutPanel plugInInfoTableLayoutPanel;
         private Button disableButton;
         private Label pluginNameLabel;
         private Label pluginVersionLabel;

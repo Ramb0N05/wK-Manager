@@ -3,7 +3,8 @@ using System.Reflection;
 using wK_Manager.Base.Extensions;
 
 namespace wK_Manager.Base {
-    public class PlugInManager {
+
+    public class PlugInManager : IDisposable {
         public const string MenuControlsNamespace = $"{nameof(wK_Manager)}.{nameof(PlugIns)}.MenuControls";
 
         public static Type ControlType { get; private set; } = typeof(IWKMenuControl);
@@ -11,8 +12,10 @@ namespace wK_Manager.Base {
 
         public Dictionary<string, IEnumerable<WKMenuControl>> PlugInMenuControls { get; } = new();
         public IEnumerable<IWKPlugIn> PlugIns { get; private set; } = Enumerable.Empty<IWKPlugIn>();
+        public WKManagerBase? Base { get; private set; }
 
         #region Constructor
+
         public PlugInManager() : this(null, null) {
         }
 
@@ -26,19 +29,37 @@ namespace wK_Manager.Base {
             if (!plugInSearchPaths.IsNull())
                 PlugInSearchDirectories = plugInSearchPaths;
         }
+
         #endregion Constructor
 
         #region Methods
-        public void Dispose() {
-            foreach (KeyValuePair<string, IEnumerable<WKMenuControl>> pluginControls in PlugInMenuControls)
-                foreach (WKMenuControl control in pluginControls.Value)
-                    control.Dispose();
 
-            foreach (IWKPlugIn plugin in PlugIns)
-                plugin.Dispose();
+        public void Dispose() {
+            Dispose(true);
+            GC.SuppressFinalize(this);
         }
 
-        public async Task Initialize(object sender) {
+        protected virtual void Dispose(bool disposing) {
+            if (disposing) {
+                foreach (KeyValuePair<string, IEnumerable<WKMenuControl>> pluginControls in PlugInMenuControls) {
+                    foreach (WKMenuControl control in pluginControls.Value)
+                        control.Dispose();
+                }
+
+                foreach (IWKPlugIn plugin in PlugIns)
+                    plugin.Dispose();
+            }
+        }
+
+        public Task Initialize(ref WKManagerBase @base) {
+            Base = @base;
+            return initializeImpl();
+        }
+
+        private async Task initializeImpl() {
+            if (Base is null)
+                throw new InvalidOperationException(nameof(Base) + " is empty!");
+
             await PlugInSearchDirectories.ForEachAsync(async (path) => {
                 if (!path.IsNull() && Directory.Exists(path)) {
                     string fullPath = Path.GetFullPath(path);
@@ -48,9 +69,9 @@ namespace wK_Manager.Base {
                         string pluginName = new DirectoryInfo(pluginPath).Name;
                         FileInfo pluginFile = new(Path.Combine(pluginPath, pluginName + ".dll"));
 
-                        if (pluginName != null && pluginFile?.Exists == true) {
-                            Assembly pluginAssembly = loadPlugin(pluginFile.FullName);
-                            PlugIns = PlugIns.Concat(await createPlugins(pluginAssembly, sender ?? this));
+                        if (!pluginName.IsNull() && pluginFile?.Exists == true) {
+                            Assembly pluginAssembly = loadPlugIn(pluginFile.FullName);
+                            PlugIns = PlugIns.Concat(await createPlugIns(pluginAssembly, Base));
                         }
 
                         await Task.CompletedTask;
@@ -77,11 +98,11 @@ namespace wK_Manager.Base {
             });
         }
 
-        private static async Task<IEnumerable<IWKPlugIn>> createPlugins(Assembly assembly, object sender) {
+        private static async Task<IEnumerable<IWKPlugIn>> createPlugIns(Assembly assembly, WKManagerBase @base) {
             IEnumerable<IWKPlugIn> plugins = Enumerable.Empty<IWKPlugIn>();
 
             await assembly.GetTypes().ForEachAsync(async (type) => {
-                if (typeof(IWKPlugIn).IsAssignableFrom(type) && Activator.CreateInstance(type, "", sender) is IWKPlugIn result)
+                if (typeof(IWKPlugIn).IsAssignableFrom(type) && Activator.CreateInstance(type, assembly.Location, @base) is IWKPlugIn result)
                     plugins = plugins.Append(result);
 
                 await Task.CompletedTask;
@@ -90,19 +111,14 @@ namespace wK_Manager.Base {
             return plugins;
         }
 
-        private static Assembly loadPlugin(string relativePath) {
-            // Navigate up to the solution root
-            string root = Path.GetFullPath(Path.Combine(
-                Path.GetDirectoryName(
-                    Path.GetDirectoryName(
-                        Path.GetDirectoryName(
-                            Path.GetDirectoryName(
-                                Path.GetDirectoryName(typeof(PlugInManager).Assembly.Location))))) ?? string.Empty));
-
+        private Assembly loadPlugIn(string relativePath) {
+            string root = Path.GetFullPath(GetType().Assembly.Location);
             string pluginLocation = Path.GetFullPath(Path.Combine(root, relativePath.Replace('\\', Path.DirectorySeparatorChar)));
+
             PlugInLoadContext loadContext = new(pluginLocation);
             return loadContext.LoadFromAssemblyName(new AssemblyName(Path.GetFileNameWithoutExtension(pluginLocation)));
         }
+
         #endregion Methods
     }
 }

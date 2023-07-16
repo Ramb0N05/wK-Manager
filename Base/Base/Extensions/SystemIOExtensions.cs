@@ -39,9 +39,6 @@ namespace wK_Manager.Base.Extensions {
             if (!Directory.Exists(destinationPath))
                 Directory.CreateDirectory(destinationPath);
 
-            /*foreach(DirectoryInfo srcInfo in srcPath.GetDirectories("*", SearchOption.AllDirectories))
-                Directory.CreateDirectory(Path.Combine(destPath, srcInfo.Name));*/
-
             await srcPath.GetDirectories("*", SearchOption.AllDirectories).ForEachAsync(async (srcInfo) => {
                 Directory.CreateDirectory(Path.Combine(destinationPath, srcInfo.Name));
                 await Task.CompletedTask;
@@ -51,9 +48,6 @@ namespace wK_Manager.Base.Extensions {
                 File.Copy(srcInfo.FullName, Path.Combine(destinationPath, srcInfo.Name), true);
                 await Task.CompletedTask;
             });
-
-            /*foreach (FileInfo srcInfo in srcPath.GetFiles("*", SearchOption.AllDirectories))
-                File.Copy(srcInfo.FullName, Path.Combine(destPath, srcInfo.Name), true);*/
         }
 
         public static async Task DeleteContents(this DirectoryInfo srcPath) {
@@ -63,16 +57,10 @@ namespace wK_Manager.Base.Extensions {
                     await Task.CompletedTask;
                 });
 
-                /*foreach (DirectoryInfo srcInfo in srcPath.GetDirectories("*", SearchOption.AllDirectories))
-                    Directory.Delete(Path.Combine(srcPath.FullName, srcInfo.Name), true);*/
-
                 await srcPath.GetFiles("*", SearchOption.AllDirectories).ForEachAsync(async (srcInfo) => {
                     File.Delete(Path.Combine(srcPath.FullName, srcInfo.Name));
                     await Task.CompletedTask;
                 });
-
-                /*foreach (FileInfo srcInfo in srcPath.GetFiles("*", SearchOption.AllDirectories))
-                    File.Delete(Path.Combine(srcPath.FullName, srcInfo.Name));*/
             }
         }
 
@@ -83,9 +71,6 @@ namespace wK_Manager.Base.Extensions {
                     await Task.CompletedTask;
                 });
             }
-
-            /*foreach (DirectoryInfo srcInfo in srcPath.GetDirectories("*", SearchOption.AllDirectories))
-                Directory.Delete(Path.Combine(srcPath.FullName, srcInfo.Name), recursive);*/
         }
     }
 }

@@ -2,7 +2,7 @@
 using SharpRambo.ExtensionsLib;
 using System.Text.RegularExpressions;
 using WindowsDisplayAPI;
-using wK_Manager.Base;
+using wK_Manager.Base.Providers;
 
 namespace BarMonitorWKPlugIn.Base {
 
@@ -51,7 +51,7 @@ namespace BarMonitorWKPlugIn.Base {
             DisplayName = !displayName.IsNull() ? displayName : throw new ArgumentNullException(nameof(displayName));
             DeviceName = !deviceName.IsNull() ? deviceName : UnknownDeviceName;
             FriendlyName = !friendlyName.IsNull() ? friendlyName : throw new ArgumentNullException(nameof(friendlyName));
-            Identifier = !identifier.IsNull() ? Hashing.SHA1_Simple(identifier) : Hashing.SHA1_Simple(UnknownIdentifier);
+            Identifier = !identifier.IsNull() ? HashingProvider.SHA1_Simple(identifier) : HashingProvider.SHA1_Simple(UnknownIdentifier);
             IsPrimary = isPrimary;
             Number = number;
             Position = position;
@@ -109,7 +109,7 @@ namespace BarMonitorWKPlugIn.Base {
                                 displayName: monitor.DisplayName,
                                 deviceName: deviceName,
                                 friendlyName: friendlyName,
-                                identifier: Hashing.SHA1_Simple(monitor.DevicePath),
+                                identifier: HashingProvider.SHA1_Simple(monitor.DevicePath),
                                 isPrimary: monitor.IsGDIPrimary,
                                 number: numberIterator,
                                 position: monitor.CurrentSetting.Position,

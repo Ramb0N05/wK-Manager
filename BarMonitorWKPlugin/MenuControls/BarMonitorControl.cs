@@ -7,6 +7,7 @@ using DotNet.Basics.SevenZip;
 using BarMonitorWKPlugIn.Base;
 using WindowsDisplayAPI;
 using wK_Manager.Base.Extensions;
+using wK_Manager.Base.Providers;
 
 namespace wK_Manager.PlugIns.MenuControls {
 
@@ -16,7 +17,7 @@ namespace wK_Manager.PlugIns.MenuControls {
 
         private readonly FolderBrowserDialog fbd = new();
         private readonly OpenFileDialog ofd = new();
-        private readonly BarMonitorWKPlugIn? sender;
+        private readonly BarMonitorWKPlugIn plugIn;
         private BarMonitorControlConfig config = new();
         private PresenterForm? presenter;
 
@@ -25,9 +26,9 @@ namespace wK_Manager.PlugIns.MenuControls {
 
         #region Constructor
 
-        public BarMonitorControl(object sender) : base(sender) {
-            if (sender is BarMonitorWKPlugIn plugin)
-                this.sender = plugin;
+        public BarMonitorControl(BarMonitorWKPlugIn sender) : base(sender.Base) {
+            plugIn = sender;
+            MenuImageKey = plugIn.ImageKey;
 
             InitializeComponent();
 
@@ -40,6 +41,7 @@ namespace wK_Manager.PlugIns.MenuControls {
             ofd.ValidateNames = true;
 
             intervalNumericUpDown.Maximum = decimal.MaxValue;
+            reloadMonitorsPictureBox.Image = Base.GetImage("sign_sync", reloadMonitorsPictureBox.Size.GetWithAspectRatio());
         }
 
         #endregion Constructor
@@ -80,29 +82,40 @@ namespace wK_Manager.PlugIns.MenuControls {
 
         #region Methods
 
-        private static async Task<bool> extractAtLocalPath(string filePath, DirectoryInfo extractDirectory) {
-            if (extractDirectory.Exists)
-                extractDirectory.Delete(true);
+        private static string getDisplayButtonName(string? displayName)
+                    => DisplayButtonPrefix + displayName;
 
-            if (!filePath.IsNull() && File.Exists(filePath)) {
-                int result = 1;
+        private static async Task<(bool Status, string? ContentType, Exception? Error)?> validateRemotePath(string remotePath) {
+            (bool Status, string? ContentType, Exception? Error)? result = new() {
+                Status = false,
+                ContentType = string.Empty,
+                Error = null
+            };
 
-                await Task.Run(() => {
-                    SevenZipExe sevenZipExe = new();
-                    result = sevenZipExe.ExtractToDirectory(filePath, extractDirectory.FullName);
-                });
+            Uri? uri = Uri.IsWellFormedUriString(remotePath, UriKind.Absolute) ? new(remotePath) : null;
+            if (uri != null) {
+                using HttpRequestMessage request = new(HttpMethod.Head, uri);
 
-                if (result == 0) {
-                    File.Delete(filePath);
-                    return true;
+                try {
+                    using HttpResponseMessage response = await NetworkingProvider.HttpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
+                    MediaTypeHeaderValue? contentType = response.Content.Headers.ContentType;
+
+                    result = new() {
+                        Status = contentType != null && BarMonitorWKPlugIn.AcceptedDiashowArchiveContentTypes.Contains(contentType.MediaType),
+                        ContentType = contentType?.MediaType,
+                        Error = null
+                    };
+                } catch (Exception ex) {
+                    result = new() {
+                        Status = false,
+                        ContentType = string.Empty,
+                        Error = ex
+                    };
                 }
             }
 
-            return false;
+            return result;
         }
-
-        private static string getDisplayButtonName(string? displayName)
-                    => DisplayButtonPrefix + displayName;
 
         private async Task createDisplayTargets() {
             displaysFlowLayoutPanel.Controls.Clear();
@@ -120,8 +133,10 @@ namespace wK_Manager.PlugIns.MenuControls {
                     TextAlign = ContentAlignment.MiddleCenter
                 };
 
-                int itemHeight = displaysFlowLayoutPanel.Height - displaysFlowLayoutPanel.Padding.Vertical -
-                                 displayButton.Padding.Vertical - displayButton.Margin.Vertical;
+                int itemHeight = displaysFlowLayoutPanel.Height
+                    - displaysFlowLayoutPanel.Padding.Vertical
+                    - displayButton.Padding.Vertical
+                    - displayButton.Margin.Vertical;
 
                 displayButton.MinimumSize = new Size(itemHeight, itemHeight);
                 displayButton.Font = new Font(displayButton.Font, fontStyle);
@@ -134,45 +149,43 @@ namespace wK_Manager.PlugIns.MenuControls {
         }
 
         private async Task<bool> downloadFromRemotePath(string remotePath, DirectoryInfo downloadDirectory) {
-            if (sender != null) {
-                (bool Status, string? ContentType, Exception? Error)? check = await validateRemotePath(remotePath);
+            (bool Status, string? ContentType, Exception? Error)? check = await validateRemotePath(remotePath);
 
-                if (check.HasValue) {
-                    string[] exts = MimeMapping.MimeUtility.GetExtensions(check.Value.ContentType);
+            if (check.HasValue) {
+                string[] exts = MimeMapping.MimeUtility.GetExtensions(check.Value.ContentType);
 
-                    if (check.Value.Status) {
-                        Uri uri = new(remotePath);
-                        string downloadPath = Path.Combine(downloadDirectory.FullName, "diashow." + exts?.FirstOrDefault() ?? "zip");
+                if (check.Value.Status) {
+                    Uri uri = new(remotePath);
+                    string downloadPath = Path.Combine(downloadDirectory.FullName, "diashow." + exts?.FirstOrDefault() ?? "zip");
 
-                        try {
-                            await downloadDirectory.DeleteContents();
-                            Progress<float> downloadProgress = new((p) => obtainProgressBar.Value = (int)(p * 100));
-                            DirectoryInfo extractDirectory = new(Path.Combine(downloadDirectory.FullName, "tmp"));
-                            FileStream fStream = new(downloadPath, FileMode.Create);
+                    try {
+                        await downloadDirectory.DeleteContents();
+                        Progress<float> downloadProgress = new((p) => obtainProgressBar.Value = (int)(p * 100));
+                        DirectoryInfo extractDirectory = new(Path.Combine(downloadDirectory.FullName, "tmp"));
+                        FileStream fStream = new(downloadPath, FileMode.Create);
 
-                            obtainProgressBar.Value = 0;
-                            obtainProgressBar.Visible = true;
+                        obtainProgressBar.Value = 0;
+                        obtainProgressBar.Visible = true;
 
-                            await sender.HttpClient.DownloadAsync(uri.AbsoluteUri, fStream, downloadProgress);
-                            await fStream.FlushAsync();
-                            fStream.Close();
+                        await NetworkingProvider.HttpClient.DownloadAsync(uri.AbsoluteUri, fStream, downloadProgress);
+                        await fStream.FlushAsync();
+                        fStream.Close();
 
-                            obtainProgressBar.Visible = false;
+                        obtainProgressBar.Visible = false;
+                        SevenZipExe sevenZipExe = new();
 
-                            if (await extractAtLocalPath(downloadPath, extractDirectory)) {
-                                await extractDirectory.CopyTo(downloadDirectory.FullName);
-                                extractDirectory.Delete(true);
-                                await downloadDirectory.DeleteDirectories();
+                        if (await sevenZipExe.ExtractAtLocalPath(downloadPath, extractDirectory)) {
+                            await extractDirectory.CopyTo(downloadDirectory.FullName);
+                            extractDirectory.Delete(true);
+                            await downloadDirectory.DeleteDirectories();
 
-                                return true;
-                            }
-
-                            return false;
-                        } catch (Exception) {
-                            return false;
+                            return true;
                         }
-                    } else
+
                         return false;
+                    } catch (Exception) {
+                        return false;
+                    }
                 } else
                     return false;
             } else
@@ -191,79 +204,25 @@ namespace wK_Manager.PlugIns.MenuControls {
             if (displayTarget.IsNull())
                 return;
 
-            CheckBox? detectedMonitorCb = await Task.Run(() => {
-                CheckBox? dCb = null;
+            CheckBox? detectedMonitorCb = await Task.Run(() => displaysFlowLayoutPanel.Controls
+                .Cast<Control>()
+                .FirstOrDefault((c) => c?.Name == getDisplayButtonName(displayTarget) && c is CheckBox, null)
+                as CheckBox
+            );
 
-                foreach (Control c in displaysFlowLayoutPanel.Controls) {
-                    if (c.Name == getDisplayButtonName(displayTarget) && c is CheckBox cb) {
-                        dCb = cb;
-                        break;
-                    }
-                }
-
-                return dCb;
-            });
-
-            if (detectedMonitorCb != null) {
-                await Task.Run(() => {
-                    CheckBox? dCb = null;
-
-                    foreach (Control c in displaysFlowLayoutPanel.Controls) {
-                        if (c is CheckBox cb && c.Tag != null && c.Tag is DisplayTarget monitor && monitor.Identifier == displayTarget) {
-                            dCb = cb;
-                            break;
-                        }
-                    }
-
-                    return dCb;
-                });
-            }
+            detectedMonitorCb ??= await Task.Run(() => displaysFlowLayoutPanel.Controls
+                .Cast<Control>()
+                .FirstOrDefault((c) => c is CheckBox cb && cb.Tag is DisplayTarget target && target.Identifier == displayTarget, null)
+                as CheckBox
+            );
 
             if (detectedMonitorCb != null)
                 detectedMonitorCb.Checked = true;
         }
 
-        private async Task<(bool Status, string? ContentType, Exception? Error)?> validateRemotePath(string remotePath) {
-            (bool Status, string? ContentType, Exception? Error)? result = new() {
-                Status = false,
-                ContentType = string.Empty,
-                Error = null
-            };
-
-            if (sender != null) {
-                Uri? uri = Uri.IsWellFormedUriString(remotePath, UriKind.Absolute) ? new(remotePath) : null;
-                if (uri != null) {
-                    using HttpRequestMessage request = new(HttpMethod.Head, uri);
-
-                    try {
-                        using HttpResponseMessage response = await sender.HttpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
-                        MediaTypeHeaderValue? contentType = response.Content.Headers.ContentType;
-
-                        result = new() {
-                            Status = contentType != null && BarMonitorWKPlugIn.AcceptedDiashowArchiveContentTypes.Contains(contentType.MediaType),
-                            ContentType = contentType?.MediaType,
-                            Error = null
-                        };
-                    } catch (Exception ex) {
-                        result = new() {
-                            Status = false,
-                            ContentType = string.Empty,
-                            Error = ex
-                        };
-                    }
-                }
-            } else
-                result = null;
-
-            return result;
-        }
-
         #endregion Methods
 
         #region EventHandlers
-
-        private void autoObtainCheckBox_CheckedChanged(object sender, EventArgs e) {
-        }
 
         private async void barMonitorControl_Load(object sender, EventArgs e) {
             await createDisplayTargets();
@@ -296,7 +255,7 @@ namespace wK_Manager.PlugIns.MenuControls {
         }
 
         private void lockSettingsCheckBox_CheckedChanged(object sender, EventArgs e) {
-            if (sender is not null and CheckBox cb) {
+            if (sender is CheckBox cb) {
                 displaysGroupBox.Enabled = !cb.Checked;
                 diashowGroupBox.Enabled = !cb.Checked;
                 identifyLabel.Enabled = !cb.Checked;
@@ -316,7 +275,7 @@ namespace wK_Manager.PlugIns.MenuControls {
         }
 
         private void onMonitorRightClick(object? sender, MouseEventArgs e) {
-            if (sender is not null and CheckBox cb && e.Button == MouseButtons.Right) {
+            if (sender is CheckBox cb && e.Button == MouseButtons.Right) {
                 DisplayTarget target = cb.Tag as DisplayTarget ?? DisplayTarget.Unknown;
 
                 if (!VisibleMonitorIdentifiers.Any(id => id == target.Identifier)) {
@@ -337,7 +296,7 @@ namespace wK_Manager.PlugIns.MenuControls {
         }
 
         private void onMonitorToggle(object? sender, EventArgs e) {
-            if (sender is not null and CheckBox cb && cb.Checked) {
+            if (sender is CheckBox cb && cb.Checked) {
                 foreach (CheckBox cbCtl in displaysFlowLayoutPanel.Controls.OfType<CheckBox>())
                     if (cbCtl.Name != cb.Name)
                         cbCtl.Checked = false;
@@ -345,7 +304,7 @@ namespace wK_Manager.PlugIns.MenuControls {
         }
 
         private void onTimerTick(object? sender, EventArgs e) {
-            if (sender is not null and System.Windows.Forms.Timer t && t.Tag is Form f) {
+            if (sender is System.Windows.Forms.Timer t && t.Tag is Form f) {
                 VisibleMonitorIdentifiers = VisibleMonitorIdentifiers.SelectMany(
                     id => id != f.Name ? new[] { id } : Enumerable.Empty<string>()
                 );
@@ -357,7 +316,7 @@ namespace wK_Manager.PlugIns.MenuControls {
         private async void presentButton_Click(object sender, EventArgs e) {
             string diashowPath = localPathTextBox.Text;
 
-            if (this.sender != null) {
+            if (plugIn != null) {
                 if (presenter?.Visible == true)
                     presenter.Close();
 
@@ -394,8 +353,8 @@ namespace wK_Manager.PlugIns.MenuControls {
         }
 
         private async void remotePathTextBox_TextChanged(object sender, EventArgs e) {
-            if (sender is not null and TextBox tb) {
-                if (tb.Text.Trim() != string.Empty) {
+            if (sender is TextBox tb) {
+                if (!tb.Text.Trim().IsNull()) {
                     (bool Status, string? ContentType, Exception? Error)? check = await validateRemotePath(tb.Text);
 
                     if (check.HasValue) {
@@ -407,8 +366,9 @@ namespace wK_Manager.PlugIns.MenuControls {
                             remotePathStatusLabel.Text = "Fehler";
                         }
                     }
-                } else
-                    remotePathStatusLabel.Text = string.Empty;
+                }
+
+                remotePathStatusLabel.Text = string.Empty;
             }
         }
 

@@ -2,18 +2,24 @@
 
 namespace wK_Manager.Base {
 
-    [TypeDescriptionProvider(typeof(AbstractControlDescriptionProvider<WKMenuControl, WKMenuControl_Design>))]
+    [TypeDescriptionProvider(typeof(AbstractControlDescriptionProvider<WKMenuControl, WKMenuControlDesign>))]
     public abstract class WKMenuControl : UserControl, IWKMenuControl {
-        private readonly object sender;
-
         public abstract IWKMenuControlConfig Config { get; set; }
         public virtual string MenuImageKey { get; set; } = string.Empty;
         public virtual string MenuItemName { get; set; } = string.Empty;
         public virtual int MenuItemOrder { get; set; }
 
-        protected WKMenuControl(object sender) {
-            this.sender = sender;
+        protected virtual WKManagerBase Base { get; set; }
+
+        #region Constructor
+
+        protected WKMenuControl(WKManagerBase @base) {
+            Base = @base;
         }
+
+        #endregion Constructor
+
+        #region Methods
 
         public virtual IWKMenuControlConfig? ConfigFromControls()
             => throw new NotImplementedException();
@@ -34,9 +40,13 @@ namespace wK_Manager.Base {
             Config = ConfigFromControls() ?? throw new NullReferenceException(nameof(ConfigFromControls));
             return await Config.Save();
         }
+
+        #endregion Methods
     }
 
-    public class WKMenuControl_Design : UserControl, IWKMenuControl {
+    #region DesignerClass
+
+    public class WKMenuControlDesign : UserControl, IWKMenuControl {
 
         [Category("wK")]
         [Description("Set the displayed image in menu.")]
@@ -68,4 +78,6 @@ namespace wK_Manager.Base {
         public virtual Task<bool> SaveConfig()
             => throw new NotImplementedException();
     }
+
+    #endregion DesignerClass
 }

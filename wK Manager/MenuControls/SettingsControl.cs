@@ -2,6 +2,7 @@
 using System.Security.AccessControl;
 using wK_Manager.Base;
 using wK_Manager.Base.Extensions;
+using wK_Manager.Base.Providers;
 
 namespace wK_Manager.MenuControls {
 
@@ -13,7 +14,7 @@ namespace wK_Manager.MenuControls {
 
         #region Constructor
 
-        public SettingsControl(object sender) : base(sender) {
+        public SettingsControl(WKManagerBase @base) : base(@base) {
             InitializeComponent();
 
             ofd.AddExtension = true;
@@ -34,7 +35,7 @@ namespace wK_Manager.MenuControls {
 
         public override MainConfig ConfigFromControls() {
             ConfigProvider.Global.UserConfigDirectory = userConfigPathTextBox.Text;
-            ConfigProvider.Global.StartupWindowName = MainForm.MenuItems.FirstOrDefault((i) => i.Value == startWindowComboBox.SelectedItem.ToString()).Key;
+            ConfigProvider.Global.StartupWindowName = Base.MenuItems.FirstOrDefault((i) => i.DisplayName == startWindowComboBox.SelectedItem.ToString()).Name;
 
             return ConfigProvider.Global;
         }
@@ -44,7 +45,7 @@ namespace wK_Manager.MenuControls {
                 userConfigPathTextBox.Text = conf.UserConfigDirectory ?? string.Empty;
 
                 if (conf.StartupWindowName != null && conf.StartupWindowName.Trim() != string.Empty)
-                    startWindowComboBox.SelectedItem = MainForm.MenuItems.First((i) => i.Key == conf.StartupWindowName).Value;
+                    startWindowComboBox.SelectedItem = Base.MenuItems.First((i) => i.Name == conf.StartupWindowName).DisplayName;
                 else
                     startWindowComboBox.SelectedIndex = 0;
             }
@@ -73,8 +74,8 @@ namespace wK_Manager.MenuControls {
             checkPermissionPictureBox.Visible = !confDirIsWritable;
             checkPermissionLabel.Visible = !confDirIsWritable;
 
-            await MainForm.MenuItems.ForEachAsync(async (item) => {
-                startWindowComboBox.Items.Add(item.Value);
+            await Base.MenuItems.ForEachAsync(async (item) => {
+                startWindowComboBox.Items.Add(item.DisplayName);
                 await Task.CompletedTask;
             });
 

@@ -1,8 +1,10 @@
 ﻿using Newtonsoft.Json;
 using SharpRambo.ExtensionsLib;
 using System.ComponentModel;
+using wK_Manager.Base.Providers;
 
 namespace wK_Manager.Base {
+
     [JsonObject(MemberSerialization.OptOut)]
     public class MainConfig : WKMenuControlConfig {
 
@@ -37,12 +39,12 @@ namespace wK_Manager.Base {
 
         #region Methods
 
-        public string GetUserConfigFilePath(string filename)
-            => !filename.IsNull()
-                ? (!UserConfigDirectory.IsNull()
-                    ? Path.Combine(UserConfigDirectory, filename)
-                    : filename)
-                : string.Empty;
+        public string GetUserConfigFilePath(string filename) {
+            if (!filename.IsNull())
+                return !UserConfigDirectory.IsNull() ? Path.Combine(UserConfigDirectory, filename) : filename;
+
+            return string.Empty;
+        }
 
         #endregion Methods
     }

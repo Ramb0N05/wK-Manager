@@ -60,7 +60,7 @@
             updatesImagePictureBox.Location = new Point(3, 3);
             updatesImagePictureBox.Name = "updatesImagePictureBox";
             updatesImagePictureBox.Size = new Size(64, 67);
-            updatesImagePictureBox.SizeMode = PictureBoxSizeMode.Zoom;
+            updatesImagePictureBox.SizeMode = PictureBoxSizeMode.CenterImage;
             updatesImagePictureBox.TabIndex = 0;
             updatesImagePictureBox.TabStop = false;
             updatesImagePictureBox.Click += updatesImagePictureBox_Click;
@@ -119,7 +119,7 @@
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             Controls.Add(tableLayoutPanel1);
-            MenuImageKey = "cloud-sync";
+            MenuImageKey = "cloud_sync";
             MenuItemName = "Aktualisierungen";
             MenuItemOrder = 998;
             Name = "UpdatesControl";

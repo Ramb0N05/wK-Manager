@@ -1,11 +1,16 @@
 ﻿namespace wK_Manager.Forms {
 
     public partial class DisplayIdentifierForm : Form {
-        private readonly int viewTimeout = 3000;
+        public const int DEFAULT_VIEW_TIMEOUT = 3000;
+
+        private readonly int viewTimeout;
 
         #region Constructor
 
-        public DisplayIdentifierForm(uint displayNumber, string displayName, int viewTimeout = 3000) {
+        public DisplayIdentifierForm(uint displayNumber, string displayName) : this(displayNumber, displayName, DEFAULT_VIEW_TIMEOUT) {
+        }
+
+        public DisplayIdentifierForm(uint displayNumber, string displayName, int viewTimeout) {
             this.viewTimeout = viewTimeout;
             InitializeComponent();
 

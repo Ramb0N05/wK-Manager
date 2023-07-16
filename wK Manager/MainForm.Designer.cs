@@ -8,6 +8,8 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
+using wK_Manager.Base.Providers;
+
 namespace wK_Manager {
     partial class MainForm {
         /// <summary>
@@ -20,9 +22,13 @@ namespace wK_Manager {
         /// </summary>
         /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
         protected override void Dispose(bool disposing) {
-            if (disposing && (components != null)) {
-                components.Dispose();
+            if (disposing) {
+                Base.Dispose();
+
+                if (components != null)
+                    components.Dispose();
             }
+
             base.Dispose(disposing);
         }
 
@@ -33,14 +39,11 @@ namespace wK_Manager {
         ///  the contents of this method with the code editor.
         /// </summary>
         private void InitializeComponent() {
-            components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             mainSplitContainer = new SplitContainer();
             menuListView = new ListView();
             columnHeader1 = new ColumnHeader();
-            menuImageList = new ImageList(components);
             menuTabControl = new TabControl();
-            menuImageList_large = new ImageList(components);
             ((System.ComponentModel.ISupportInitialize)mainSplitContainer).BeginInit();
             mainSplitContainer.Panel1.SuspendLayout();
             mainSplitContainer.Panel2.SuspendLayout();
@@ -76,187 +79,11 @@ namespace wK_Manager {
             menuListView.Name = "menuListView";
             menuListView.Scrollable = false;
             menuListView.Size = new Size(175, 450);
-            menuListView.SmallImageList = menuImageList;
             menuListView.TabIndex = 0;
             menuListView.UseCompatibleStateImageBehavior = false;
             menuListView.View = View.Details;
             menuListView.ItemSelectionChanged += menuListView_ItemSelectionChanged;
             menuListView.Resize += menuListView_Resize;
-            // 
-            // menuImageList
-            // 
-            menuImageList.ColorDepth = ColorDepth.Depth32Bit;
-            menuImageList.ImageStream = (ImageListStreamer)resources.GetObject("menuImageList.ImageStream");
-            menuImageList.TransparentColor = Color.Transparent;
-            menuImageList.Images.SetKeyName(0, "address-book");
-            menuImageList.Images.SetKeyName(1, "address-book-alt");
-            menuImageList.Images.SetKeyName(2, "bag");
-            menuImageList.Images.SetKeyName(3, "basket");
-            menuImageList.Images.SetKeyName(4, "beer");
-            menuImageList.Images.SetKeyName(5, "bell");
-            menuImageList.Images.SetKeyName(6, "bitcoin");
-            menuImageList.Images.SetKeyName(7, "book");
-            menuImageList.Images.SetKeyName(8, "book-bookmark");
-            menuImageList.Images.SetKeyName(9, "box");
-            menuImageList.Images.SetKeyName(10, "box-full");
-            menuImageList.Images.SetKeyName(11, "box-in");
-            menuImageList.Images.SetKeyName(12, "box-out");
-            menuImageList.Images.SetKeyName(13, "brick-alt");
-            menuImageList.Images.SetKeyName(14, "bubble");
-            menuImageList.Images.SetKeyName(15, "bubbles");
-            menuImageList.Images.SetKeyName(16, "bubbles-alt");
-            menuImageList.Images.SetKeyName(17, "building");
-            menuImageList.Images.SetKeyName(18, "bullhorn");
-            menuImageList.Images.SetKeyName(19, "calculator");
-            menuImageList.Images.SetKeyName(20, "calendar");
-            menuImageList.Images.SetKeyName(21, "calendar-clock");
-            menuImageList.Images.SetKeyName(22, "carton");
-            menuImageList.Images.SetKeyName(23, "cat");
-            menuImageList.Images.SetKeyName(24, "clock");
-            menuImageList.Images.SetKeyName(25, "cloud");
-            menuImageList.Images.SetKeyName(26, "cloud-down");
-            menuImageList.Images.SetKeyName(27, "cloud-sync");
-            menuImageList.Images.SetKeyName(28, "cloud-up");
-            menuImageList.Images.SetKeyName(29, "cog");
-            menuImageList.Images.SetKeyName(30, "cogs");
-            menuImageList.Images.SetKeyName(31, "compass");
-            menuImageList.Images.SetKeyName(32, "cone");
-            menuImageList.Images.SetKeyName(33, "dashboard");
-            menuImageList.Images.SetKeyName(34, "dashboard-alt");
-            menuImageList.Images.SetKeyName(35, "database");
-            menuImageList.Images.SetKeyName(36, "device-camera");
-            menuImageList.Images.SetKeyName(37, "device-computer");
-            menuImageList.Images.SetKeyName(38, "device-drive");
-            menuImageList.Images.SetKeyName(39, "device-laptop");
-            menuImageList.Images.SetKeyName(40, "device-mobile-phone");
-            menuImageList.Images.SetKeyName(41, "device-tablet");
-            menuImageList.Images.SetKeyName(42, "device-tv");
-            menuImageList.Images.SetKeyName(43, "disc");
-            menuImageList.Images.SetKeyName(44, "disc-vinyl");
-            menuImageList.Images.SetKeyName(45, "drop");
-            menuImageList.Images.SetKeyName(46, "envelope");
-            menuImageList.Images.SetKeyName(47, "envelope-letter");
-            menuImageList.Images.SetKeyName(48, "file-bookmark");
-            menuImageList.Images.SetKeyName(49, "file-code");
-            menuImageList.Images.SetKeyName(50, "file-empty");
-            menuImageList.Images.SetKeyName(51, "file-excel");
-            menuImageList.Images.SetKeyName(52, "file-exe");
-            menuImageList.Images.SetKeyName(53, "file-font");
-            menuImageList.Images.SetKeyName(54, "file-illustrator");
-            menuImageList.Images.SetKeyName(55, "file-indesign");
-            menuImageList.Images.SetKeyName(56, "file-link");
-            menuImageList.Images.SetKeyName(57, "file-note");
-            menuImageList.Images.SetKeyName(58, "file-pdf");
-            menuImageList.Images.SetKeyName(59, "file-photoshop");
-            menuImageList.Images.SetKeyName(60, "file-picture");
-            menuImageList.Images.SetKeyName(61, "file-powerpoint");
-            menuImageList.Images.SetKeyName(62, "file-premiere");
-            menuImageList.Images.SetKeyName(63, "file-sound");
-            menuImageList.Images.SetKeyName(64, "file-text");
-            menuImageList.Images.SetKeyName(65, "file-video");
-            menuImageList.Images.SetKeyName(66, "file-word");
-            menuImageList.Images.SetKeyName(67, "file-zip");
-            menuImageList.Images.SetKeyName(68, "flag");
-            menuImageList.Images.SetKeyName(69, "flag-alt");
-            menuImageList.Images.SetKeyName(70, "flask");
-            menuImageList.Images.SetKeyName(71, "floppy");
-            menuImageList.Images.SetKeyName(72, "flower");
-            menuImageList.Images.SetKeyName(73, "folder");
-            menuImageList.Images.SetKeyName(74, "folder-document");
-            menuImageList.Images.SetKeyName(75, "folder-house");
-            menuImageList.Images.SetKeyName(76, "folder-music");
-            menuImageList.Images.SetKeyName(77, "folder-picture");
-            menuImageList.Images.SetKeyName(78, "folder-video");
-            menuImageList.Images.SetKeyName(79, "funnel");
-            menuImageList.Images.SetKeyName(80, "gamepad");
-            menuImageList.Images.SetKeyName(81, "gift");
-            menuImageList.Images.SetKeyName(82, "globe");
-            menuImageList.Images.SetKeyName(83, "handshake");
-            menuImageList.Images.SetKeyName(84, "headphone");
-            menuImageList.Images.SetKeyName(85, "heart");
-            menuImageList.Images.SetKeyName(86, "house");
-            menuImageList.Images.SetKeyName(87, "institution");
-            menuImageList.Images.SetKeyName(88, "key");
-            menuImageList.Images.SetKeyName(89, "keyring");
-            menuImageList.Images.SetKeyName(90, "layers");
-            menuImageList.Images.SetKeyName(91, "life-buoy");
-            menuImageList.Images.SetKeyName(92, "light-bulb");
-            menuImageList.Images.SetKeyName(93, "lightning");
-            menuImageList.Images.SetKeyName(94, "lock");
-            menuImageList.Images.SetKeyName(95, "lock-open");
-            menuImageList.Images.SetKeyName(96, "magnify");
-            menuImageList.Images.SetKeyName(97, "magnify-less");
-            menuImageList.Images.SetKeyName(98, "map");
-            menuImageList.Images.SetKeyName(99, "map-map-marker");
-            menuImageList.Images.SetKeyName(100, "map-marker");
-            menuImageList.Images.SetKeyName(101, "microphone");
-            menuImageList.Images.SetKeyName(102, "mixer");
-            menuImageList.Images.SetKeyName(103, "money");
-            menuImageList.Images.SetKeyName(104, "monitor");
-            menuImageList.Images.SetKeyName(105, "news");
-            menuImageList.Images.SetKeyName(106, "notepad");
-            menuImageList.Images.SetKeyName(107, "paperclip");
-            menuImageList.Images.SetKeyName(108, "paper-plane");
-            menuImageList.Images.SetKeyName(109, "pencil");
-            menuImageList.Images.SetKeyName(110, "phone");
-            menuImageList.Images.SetKeyName(111, "pin");
-            menuImageList.Images.SetKeyName(112, "post-it");
-            menuImageList.Images.SetKeyName(113, "profile");
-            menuImageList.Images.SetKeyName(114, "profile-group");
-            menuImageList.Images.SetKeyName(115, "puzzle");
-            menuImageList.Images.SetKeyName(116, "radio");
-            menuImageList.Images.SetKeyName(117, "rss");
-            menuImageList.Images.SetKeyName(118, "safe");
-            menuImageList.Images.SetKeyName(119, "search");
-            menuImageList.Images.SetKeyName(120, "shield");
-            menuImageList.Images.SetKeyName(121, "shield-error");
-            menuImageList.Images.SetKeyName(122, "shield-ok");
-            menuImageList.Images.SetKeyName(123, "shield-warning");
-            menuImageList.Images.SetKeyName(124, "shop");
-            menuImageList.Images.SetKeyName(125, "sign-add");
-            menuImageList.Images.SetKeyName(126, "sign-ban");
-            menuImageList.Images.SetKeyName(127, "sign-check");
-            menuImageList.Images.SetKeyName(128, "sign-delete");
-            menuImageList.Images.SetKeyName(129, "sign-down");
-            menuImageList.Images.SetKeyName(130, "sign-error");
-            menuImageList.Images.SetKeyName(131, "sign-info");
-            menuImageList.Images.SetKeyName(132, "sign-left");
-            menuImageList.Images.SetKeyName(133, "sign-question");
-            menuImageList.Images.SetKeyName(134, "sign-right");
-            menuImageList.Images.SetKeyName(135, "sign-sync");
-            menuImageList.Images.SetKeyName(136, "sign-up");
-            menuImageList.Images.SetKeyName(137, "sign-warning");
-            menuImageList.Images.SetKeyName(138, "skull");
-            menuImageList.Images.SetKeyName(139, "snow-flake");
-            menuImageList.Images.SetKeyName(140, "social-facebook");
-            menuImageList.Images.SetKeyName(141, "social-google-plus");
-            menuImageList.Images.SetKeyName(142, "social-twitter");
-            menuImageList.Images.SetKeyName(143, "social-youtube");
-            menuImageList.Images.SetKeyName(144, "stamp");
-            menuImageList.Images.SetKeyName(145, "star");
-            menuImageList.Images.SetKeyName(146, "star-alt");
-            menuImageList.Images.SetKeyName(147, "sun");
-            menuImageList.Images.SetKeyName(148, "switch-off");
-            menuImageList.Images.SetKeyName(149, "switch-on");
-            menuImageList.Images.SetKeyName(150, "tag");
-            menuImageList.Images.SetKeyName(151, "tag-alt");
-            menuImageList.Images.SetKeyName(152, "terminal");
-            menuImageList.Images.SetKeyName(153, "thumb-up");
-            menuImageList.Images.SetKeyName(154, "trashcan");
-            menuImageList.Images.SetKeyName(155, "trashcan-full");
-            menuImageList.Images.SetKeyName(156, "user-female");
-            menuImageList.Images.SetKeyName(157, "user-female-alt");
-            menuImageList.Images.SetKeyName(158, "user-id");
-            menuImageList.Images.SetKeyName(159, "user-male");
-            menuImageList.Images.SetKeyName(160, "user-male-alt");
-            menuImageList.Images.SetKeyName(161, "webcam");
-            menuImageList.Images.SetKeyName(162, "window");
-            menuImageList.Images.SetKeyName(163, "window-layout");
-            menuImageList.Images.SetKeyName(164, "window-system");
-            menuImageList.Images.SetKeyName(165, "wine");
-            menuImageList.Images.SetKeyName(166, "wrench");
-            menuImageList.Images.SetKeyName(167, "wrench-screwdriver");
-            menuImageList.Images.SetKeyName(168, "brick");
             // 
             // menuTabControl
             // 
@@ -270,181 +97,6 @@ namespace wK_Manager {
             menuTabControl.SizeMode = TabSizeMode.Fixed;
             menuTabControl.TabIndex = 0;
             // 
-            // menuImageList_large
-            // 
-            menuImageList_large.ColorDepth = ColorDepth.Depth32Bit;
-            menuImageList_large.ImageStream = (ImageListStreamer)resources.GetObject("menuImageList_large.ImageStream");
-            menuImageList_large.TransparentColor = Color.Transparent;
-            menuImageList_large.Images.SetKeyName(0, "address-book");
-            menuImageList_large.Images.SetKeyName(1, "address-book-alt");
-            menuImageList_large.Images.SetKeyName(2, "bag");
-            menuImageList_large.Images.SetKeyName(3, "basket");
-            menuImageList_large.Images.SetKeyName(4, "beer");
-            menuImageList_large.Images.SetKeyName(5, "bell");
-            menuImageList_large.Images.SetKeyName(6, "bitcoin");
-            menuImageList_large.Images.SetKeyName(7, "book");
-            menuImageList_large.Images.SetKeyName(8, "book-bookmark");
-            menuImageList_large.Images.SetKeyName(9, "box");
-            menuImageList_large.Images.SetKeyName(10, "box-full");
-            menuImageList_large.Images.SetKeyName(11, "box-in");
-            menuImageList_large.Images.SetKeyName(12, "box-out");
-            menuImageList_large.Images.SetKeyName(13, "brick");
-            menuImageList_large.Images.SetKeyName(14, "brick-alt");
-            menuImageList_large.Images.SetKeyName(15, "bubble");
-            menuImageList_large.Images.SetKeyName(16, "bubbles");
-            menuImageList_large.Images.SetKeyName(17, "bubbles-alt");
-            menuImageList_large.Images.SetKeyName(18, "building");
-            menuImageList_large.Images.SetKeyName(19, "bullhorn");
-            menuImageList_large.Images.SetKeyName(20, "calculator");
-            menuImageList_large.Images.SetKeyName(21, "calendar");
-            menuImageList_large.Images.SetKeyName(22, "calendar-clock");
-            menuImageList_large.Images.SetKeyName(23, "carton");
-            menuImageList_large.Images.SetKeyName(24, "cat");
-            menuImageList_large.Images.SetKeyName(25, "clock");
-            menuImageList_large.Images.SetKeyName(26, "cloud");
-            menuImageList_large.Images.SetKeyName(27, "cloud-down");
-            menuImageList_large.Images.SetKeyName(28, "cloud-sync");
-            menuImageList_large.Images.SetKeyName(29, "cloud-up");
-            menuImageList_large.Images.SetKeyName(30, "cog");
-            menuImageList_large.Images.SetKeyName(31, "cogs");
-            menuImageList_large.Images.SetKeyName(32, "compass");
-            menuImageList_large.Images.SetKeyName(33, "cone");
-            menuImageList_large.Images.SetKeyName(34, "dashboard");
-            menuImageList_large.Images.SetKeyName(35, "dashboard-alt");
-            menuImageList_large.Images.SetKeyName(36, "database");
-            menuImageList_large.Images.SetKeyName(37, "device-camera");
-            menuImageList_large.Images.SetKeyName(38, "device-computer");
-            menuImageList_large.Images.SetKeyName(39, "device-drive");
-            menuImageList_large.Images.SetKeyName(40, "device-laptop");
-            menuImageList_large.Images.SetKeyName(41, "device-mobile-phone");
-            menuImageList_large.Images.SetKeyName(42, "device-tablet");
-            menuImageList_large.Images.SetKeyName(43, "device-tv");
-            menuImageList_large.Images.SetKeyName(44, "disc");
-            menuImageList_large.Images.SetKeyName(45, "disc-vinyl");
-            menuImageList_large.Images.SetKeyName(46, "drop");
-            menuImageList_large.Images.SetKeyName(47, "envelope");
-            menuImageList_large.Images.SetKeyName(48, "envelope-letter");
-            menuImageList_large.Images.SetKeyName(49, "file-bookmark");
-            menuImageList_large.Images.SetKeyName(50, "file-code");
-            menuImageList_large.Images.SetKeyName(51, "file-empty");
-            menuImageList_large.Images.SetKeyName(52, "file-excel");
-            menuImageList_large.Images.SetKeyName(53, "file-exe");
-            menuImageList_large.Images.SetKeyName(54, "file-font");
-            menuImageList_large.Images.SetKeyName(55, "file-illustrator");
-            menuImageList_large.Images.SetKeyName(56, "file-indesign");
-            menuImageList_large.Images.SetKeyName(57, "file-link");
-            menuImageList_large.Images.SetKeyName(58, "file-note");
-            menuImageList_large.Images.SetKeyName(59, "file-pdf");
-            menuImageList_large.Images.SetKeyName(60, "file-photoshop");
-            menuImageList_large.Images.SetKeyName(61, "file-picture");
-            menuImageList_large.Images.SetKeyName(62, "file-powerpoint");
-            menuImageList_large.Images.SetKeyName(63, "file-premiere");
-            menuImageList_large.Images.SetKeyName(64, "file-sound");
-            menuImageList_large.Images.SetKeyName(65, "file-text");
-            menuImageList_large.Images.SetKeyName(66, "file-video");
-            menuImageList_large.Images.SetKeyName(67, "file-word");
-            menuImageList_large.Images.SetKeyName(68, "file-zip");
-            menuImageList_large.Images.SetKeyName(69, "flag");
-            menuImageList_large.Images.SetKeyName(70, "flag-alt");
-            menuImageList_large.Images.SetKeyName(71, "flask");
-            menuImageList_large.Images.SetKeyName(72, "floppy");
-            menuImageList_large.Images.SetKeyName(73, "flower");
-            menuImageList_large.Images.SetKeyName(74, "folder");
-            menuImageList_large.Images.SetKeyName(75, "folder-document");
-            menuImageList_large.Images.SetKeyName(76, "folder-house");
-            menuImageList_large.Images.SetKeyName(77, "folder-music");
-            menuImageList_large.Images.SetKeyName(78, "folder-picture");
-            menuImageList_large.Images.SetKeyName(79, "folder-video");
-            menuImageList_large.Images.SetKeyName(80, "funnel");
-            menuImageList_large.Images.SetKeyName(81, "gamepad");
-            menuImageList_large.Images.SetKeyName(82, "gift");
-            menuImageList_large.Images.SetKeyName(83, "globe");
-            menuImageList_large.Images.SetKeyName(84, "handshake");
-            menuImageList_large.Images.SetKeyName(85, "headphone");
-            menuImageList_large.Images.SetKeyName(86, "heart");
-            menuImageList_large.Images.SetKeyName(87, "house");
-            menuImageList_large.Images.SetKeyName(88, "institution");
-            menuImageList_large.Images.SetKeyName(89, "key");
-            menuImageList_large.Images.SetKeyName(90, "keyring");
-            menuImageList_large.Images.SetKeyName(91, "layers");
-            menuImageList_large.Images.SetKeyName(92, "life-buoy");
-            menuImageList_large.Images.SetKeyName(93, "light-bulb");
-            menuImageList_large.Images.SetKeyName(94, "lightning");
-            menuImageList_large.Images.SetKeyName(95, "lock");
-            menuImageList_large.Images.SetKeyName(96, "lock-open");
-            menuImageList_large.Images.SetKeyName(97, "magnify");
-            menuImageList_large.Images.SetKeyName(98, "magnify-less");
-            menuImageList_large.Images.SetKeyName(99, "map");
-            menuImageList_large.Images.SetKeyName(100, "map-map-marker");
-            menuImageList_large.Images.SetKeyName(101, "map-marker");
-            menuImageList_large.Images.SetKeyName(102, "microphone");
-            menuImageList_large.Images.SetKeyName(103, "mixer");
-            menuImageList_large.Images.SetKeyName(104, "money");
-            menuImageList_large.Images.SetKeyName(105, "monitor");
-            menuImageList_large.Images.SetKeyName(106, "news");
-            menuImageList_large.Images.SetKeyName(107, "notepad");
-            menuImageList_large.Images.SetKeyName(108, "paperclip");
-            menuImageList_large.Images.SetKeyName(109, "paper-plane");
-            menuImageList_large.Images.SetKeyName(110, "pencil");
-            menuImageList_large.Images.SetKeyName(111, "phone");
-            menuImageList_large.Images.SetKeyName(112, "pin");
-            menuImageList_large.Images.SetKeyName(113, "post-it");
-            menuImageList_large.Images.SetKeyName(114, "profile");
-            menuImageList_large.Images.SetKeyName(115, "profile-group");
-            menuImageList_large.Images.SetKeyName(116, "puzzle");
-            menuImageList_large.Images.SetKeyName(117, "radio");
-            menuImageList_large.Images.SetKeyName(118, "rss");
-            menuImageList_large.Images.SetKeyName(119, "safe");
-            menuImageList_large.Images.SetKeyName(120, "search");
-            menuImageList_large.Images.SetKeyName(121, "shield");
-            menuImageList_large.Images.SetKeyName(122, "shield-error");
-            menuImageList_large.Images.SetKeyName(123, "shield-ok");
-            menuImageList_large.Images.SetKeyName(124, "shield-warning");
-            menuImageList_large.Images.SetKeyName(125, "shop");
-            menuImageList_large.Images.SetKeyName(126, "sign-add");
-            menuImageList_large.Images.SetKeyName(127, "sign-ban");
-            menuImageList_large.Images.SetKeyName(128, "sign-check");
-            menuImageList_large.Images.SetKeyName(129, "sign-delete");
-            menuImageList_large.Images.SetKeyName(130, "sign-down");
-            menuImageList_large.Images.SetKeyName(131, "sign-error");
-            menuImageList_large.Images.SetKeyName(132, "sign-info");
-            menuImageList_large.Images.SetKeyName(133, "sign-left");
-            menuImageList_large.Images.SetKeyName(134, "sign-question");
-            menuImageList_large.Images.SetKeyName(135, "sign-right");
-            menuImageList_large.Images.SetKeyName(136, "sign-sync");
-            menuImageList_large.Images.SetKeyName(137, "sign-up");
-            menuImageList_large.Images.SetKeyName(138, "sign-warning");
-            menuImageList_large.Images.SetKeyName(139, "skull");
-            menuImageList_large.Images.SetKeyName(140, "snow-flake");
-            menuImageList_large.Images.SetKeyName(141, "social-facebook");
-            menuImageList_large.Images.SetKeyName(142, "social-google-plus");
-            menuImageList_large.Images.SetKeyName(143, "social-twitter");
-            menuImageList_large.Images.SetKeyName(144, "social-youtube");
-            menuImageList_large.Images.SetKeyName(145, "stamp");
-            menuImageList_large.Images.SetKeyName(146, "star");
-            menuImageList_large.Images.SetKeyName(147, "star-alt");
-            menuImageList_large.Images.SetKeyName(148, "sun");
-            menuImageList_large.Images.SetKeyName(149, "switch-off");
-            menuImageList_large.Images.SetKeyName(150, "switch-on");
-            menuImageList_large.Images.SetKeyName(151, "tag");
-            menuImageList_large.Images.SetKeyName(152, "tag-alt");
-            menuImageList_large.Images.SetKeyName(153, "terminal");
-            menuImageList_large.Images.SetKeyName(154, "thumb-up");
-            menuImageList_large.Images.SetKeyName(155, "trashcan");
-            menuImageList_large.Images.SetKeyName(156, "trashcan-full");
-            menuImageList_large.Images.SetKeyName(157, "user-female");
-            menuImageList_large.Images.SetKeyName(158, "user-female-alt");
-            menuImageList_large.Images.SetKeyName(159, "user-id");
-            menuImageList_large.Images.SetKeyName(160, "user-male");
-            menuImageList_large.Images.SetKeyName(161, "user-male-alt");
-            menuImageList_large.Images.SetKeyName(162, "webcam");
-            menuImageList_large.Images.SetKeyName(163, "window");
-            menuImageList_large.Images.SetKeyName(164, "window-layout");
-            menuImageList_large.Images.SetKeyName(165, "window-system");
-            menuImageList_large.Images.SetKeyName(166, "wine");
-            menuImageList_large.Images.SetKeyName(167, "wrench");
-            menuImageList_large.Images.SetKeyName(168, "wrench-screwdriver");
-            // 
             // MainForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -455,9 +107,7 @@ namespace wK_Manager {
             MinimumSize = new Size(370, 250);
             Name = "MainForm";
             Text = "wK Manager";
-            FormClosing += mainForm_FormClosing;
             Load += mainForm_Load;
-            Shown += mainForm_Shown;
             mainSplitContainer.Panel1.ResumeLayout(false);
             mainSplitContainer.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)mainSplitContainer).EndInit();
@@ -470,8 +120,6 @@ namespace wK_Manager {
         private SplitContainer mainSplitContainer;
         private ListView menuListView;
         private TabControl menuTabControl;
-        public ImageList menuImageList;
         private ColumnHeader columnHeader1;
-        public ImageList menuImageList_large;
     }
 }

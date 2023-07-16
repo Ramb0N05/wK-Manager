@@ -1,33 +1,29 @@
-﻿using System.Reflection;
+﻿using System.Drawing.Imaging;
+using System.Reflection;
 using wK_Manager.Base;
 using wK_Manager.Base.Extensions;
+using wK_Manager.Base.Providers;
+using wK_Manager.Base.Resources;
 
 namespace wK_Manager.MenuControls {
 
     public partial class UpdatesControl : WKMenuControl {
         public static readonly string UpdateDownloadFilePath = Path.Combine(Application.StartupPath, "latest-update.7z");
 
-        private readonly HttpClient httpClient = new(new HttpClientHandler() { UseProxy = false });
-        private readonly MainForm main;
         private readonly string updateManifestURL = Properties.Settings.Default.updateManifestURL;
 
         public override IWKMenuControlConfig Config { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
         #region Constructor
 
-        public UpdatesControl(object sender) : base(sender) {
+        public UpdatesControl(WKManagerBase @base) : base(@base) {
             InitializeComponent();
-            main = sender as MainForm ?? throw new ArgumentNullException(nameof(sender));
+            updatesImagePictureBox.Image = Base.GetImage(MenuImageKey, updatesImagePictureBox.Size.GetWithAspectRatio());
         }
 
         #endregion Constructor
 
         #region Methods
-
-        public new void Dispose() {
-            httpClient.Dispose();
-            base.Dispose();
-        }
 
         private async Task checkUpdates() {
             updateButton.Visible = false;
@@ -35,7 +31,7 @@ namespace wK_Manager.MenuControls {
             updateStatusLabel.Text = "Prüfe auf updates ...";
             updateProgressBar.Visible = false;
             updateProgressLabel.Visible = false;
-            VersionData? versionData = await VersionData.GetCurrent(updateManifestURL, httpClient);
+            VersionData? versionData = await VersionData.GetCurrent(updateManifestURL, NetworkingProvider.HttpClient);
 
             if (versionData != null) {
                 Version? assemblyVersion = Assembly.GetExecutingAssembly().GetName().Version;
@@ -79,8 +75,8 @@ namespace wK_Manager.MenuControls {
         #region EventHandlers
 
         private async void updateButton_Click(object sender, EventArgs e) {
-            if (sender is Button updateButton) {
-                if (updateButton.Tag is VersionData versionData) {
+            if (sender is Button button) {
+                if (button.Tag is VersionData versionData) {
                     FileInfo destinationFile = new(UpdateDownloadFilePath);
 
                     updateProgressBar.Value = 0;
@@ -119,29 +115,26 @@ namespace wK_Manager.MenuControls {
                         updateProgressBar.Value = newValue <= max ? newValue : max;
                     });
 
-                    (bool Status, Exception? Error, DirectoryInfo? ExtractionDirectory) = await versionData.Download(destinationFile, downloadProgress, extractProgress, httpClient);
+                    (bool Status, Exception? Error, DirectoryInfo? ExtractionDirectory)
+                        = await versionData.Download(destinationFile, downloadProgress, extractProgress, NetworkingProvider.HttpClient);
 
                     if (Status) {
-                        updateButton.Text = "Anwenden ↪";
-                        updateButton.Tag = ExtractionDirectory;
+                        button.Text = "Anwenden ↪";
+                        button.Tag = ExtractionDirectory;
                         updateProgressLabel.Text = "Aktualisierung breit!";
                     } else {
-                        updateButton.Enabled = false;
+                        button.Enabled = false;
                         updateProgressLabel.Text = Error != null
                             ? Error.Message
                             : "Unbekannter Fehler!";
                     }
-                } else if (updateButton.Tag is DirectoryInfo extractionDirectory) {
+                } else if (button.Tag is DirectoryInfo extractionDirectory) {
                 }
             }
         }
 
-        private async void updatesControl_Load(object sender, EventArgs e) {
-            if (main.menuImageList_large.Images.ContainsKey(MenuImageKey))
-                updatesImagePictureBox.Image = main.menuImageList_large.Images[MenuImageKey];
-
-            await checkUpdates();
-        }
+        private async void updatesControl_Load(object sender, EventArgs e)
+            => await checkUpdates();
 
         private async void updatesImagePictureBox_Click(object sender, EventArgs e)
             => await checkUpdates();
