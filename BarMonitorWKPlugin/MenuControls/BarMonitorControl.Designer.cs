@@ -1,7 +1,7 @@
 ﻿using System.Drawing;
 using System.Windows.Forms;
 
-namespace wK_Manager.PlugIns.MenuControls {
+namespace BarMonitorWKPlugIn.MenuControls {
     partial class BarMonitorControl {
         /// <summary> 
         /// Erforderliche Designervariable.

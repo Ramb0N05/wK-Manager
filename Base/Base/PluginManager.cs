@@ -5,29 +5,29 @@ using wK_Manager.Base.Extensions;
 namespace wK_Manager.Base {
 
     public class PlugInManager : IDisposable {
-        public const string MenuControlsNamespace = $"{nameof(wK_Manager)}.{nameof(PlugIns)}.MenuControls";
+        public const string DefaultPlugInDirectory = "plugins";
+        public const string PlugInsMenuControlsNamespace = "MenuControls";
 
-        public static Type ControlType { get; private set; } = typeof(IWKMenuControl);
-        public static IEnumerable<string>? PlugInSearchDirectories { get; private set; } = new[] { "plugins" };
-
+        public WKManagerBase? Base { get; private set; }
+        public Type ControlType { get; }
         public Dictionary<string, IEnumerable<WKMenuControl>> PlugInMenuControls { get; } = new();
         public IEnumerable<IWKPlugIn> PlugIns { get; private set; } = Enumerable.Empty<IWKPlugIn>();
-        public WKManagerBase? Base { get; private set; }
+        public IEnumerable<string> PlugInSearchDirectories { get; }
 
         #region Constructor
 
         public PlugInManager() : this(null, null) {
         }
 
-        public PlugInManager(Type? controlType) : this(controlType, null) {
+        public PlugInManager(Type controlType) : this(controlType, null) {
         }
 
         public PlugInManager(Type? controlType, IEnumerable<string>? plugInSearchPaths) {
-            if (controlType != null)
-                ControlType = controlType;
+            ControlType = controlType ?? typeof(IWKMenuControl);
+            PlugInSearchDirectories = new[] { DefaultPlugInDirectory };
 
-            if (!plugInSearchPaths.IsNull())
-                PlugInSearchDirectories = plugInSearchPaths;
+            if (plugInSearchPaths is not null)
+                PlugInSearchDirectories = PlugInSearchDirectories.Concat(plugInSearchPaths);
         }
 
         #endregion Constructor
@@ -37,6 +37,11 @@ namespace wK_Manager.Base {
         public void Dispose() {
             Dispose(true);
             GC.SuppressFinalize(this);
+        }
+
+        public Task Initialize(ref WKManagerBase @base) {
+            Base = @base;
+            return initializeImpl();
         }
 
         protected virtual void Dispose(bool disposing) {
@@ -51,9 +56,17 @@ namespace wK_Manager.Base {
             }
         }
 
-        public Task Initialize(ref WKManagerBase @base) {
-            Base = @base;
-            return initializeImpl();
+        private static async Task<IEnumerable<IWKPlugIn>> createPlugIns(Assembly assembly, WKManagerBase @base) {
+            IEnumerable<IWKPlugIn> plugins = Enumerable.Empty<IWKPlugIn>();
+
+            await assembly.GetTypes().ForEachAsync(async (type) => {
+                if (typeof(IWKPlugIn).IsAssignableFrom(type) && Activator.CreateInstance(type, assembly.Location, @base) is IWKPlugIn result)
+                    plugins = plugins.Append(result);
+
+                await Task.CompletedTask;
+            });
+
+            return plugins;
         }
 
         private async Task initializeImpl() {
@@ -83,32 +96,25 @@ namespace wK_Manager.Base {
 
             await PlugIns.ForEachAsync(async (plugin) => {
                 if (plugin is WKPlugIn p) {
-                    IEnumerable<Type> controlTypes = plugin.GetType().Assembly.GetTypes().Where(
-                        (type) => type.ImplementsOrDerives(ControlType) && type.Namespace == MenuControlsNamespace
-                    );
+                    string? pAssemblyName = plugin.GetType().Assembly.GetName().Name;
 
-                    PlugInMenuControls.Add(p.Identifier, controlTypes.SelectMany((cType) => {
-                        WKMenuControl? cInstance = (WKMenuControl?)Activator.CreateInstance(cType, p);
-                        return cInstance != null ? (new[] { cInstance }) : Enumerable.Empty<WKMenuControl>();
-                    }));
+                    if (pAssemblyName is not null) {
+                        IEnumerable<Type> controlTypes = plugin.GetType().Assembly.GetTypes().Where(
+                            (type) => type.ImplementsOrDerives(ControlType) && type.Namespace == $"{pAssemblyName}.{PlugInsMenuControlsNamespace}"
+                        );
 
-                    p.Version = p.GetType().Assembly.GetName().Version?.ToString() ?? IWKPlugIn.UnknownVersion;
-                    await p.Initialize();
+                        PlugInMenuControls.Add(p.Identifier, controlTypes.SelectMany((cType) => {
+                            WKMenuControl? cInstance = (WKMenuControl?)Activator.CreateInstance(cType, p);
+                            return cInstance != null ? (new[] { cInstance }) : Enumerable.Empty<WKMenuControl>();
+                        }));
+
+                        p.Version = p.GetType().Assembly.GetName().Version?.ToString() ?? IWKPlugIn.UnknownVersion;
+                        await p.Initialize();
+                    }
                 }
-            });
-        }
-
-        private static async Task<IEnumerable<IWKPlugIn>> createPlugIns(Assembly assembly, WKManagerBase @base) {
-            IEnumerable<IWKPlugIn> plugins = Enumerable.Empty<IWKPlugIn>();
-
-            await assembly.GetTypes().ForEachAsync(async (type) => {
-                if (typeof(IWKPlugIn).IsAssignableFrom(type) && Activator.CreateInstance(type, assembly.Location, @base) is IWKPlugIn result)
-                    plugins = plugins.Append(result);
 
                 await Task.CompletedTask;
             });
-
-            return plugins;
         }
 
         private Assembly loadPlugIn(string relativePath) {

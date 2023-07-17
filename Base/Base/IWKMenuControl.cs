@@ -5,9 +5,9 @@
         public abstract string MenuItemName { get; set; }
         public abstract int MenuItemOrder { get; set; }
 
-        public abstract void ConfigToControls(IWKMenuControlConfig config);
+        public abstract void ConfigToControls(IWKConfig config);
 
-        public abstract IWKMenuControlConfig? ConfigFromControls();
+        public abstract IWKConfig? ConfigFromControls();
 
         public abstract Task<bool> LoadConfig();
 

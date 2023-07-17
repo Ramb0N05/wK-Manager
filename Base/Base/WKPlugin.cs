@@ -3,6 +3,7 @@
 namespace wK_Manager.Base {
 
     public abstract class WKPlugIn : IWKPlugIn {
+        public abstract string ConfigIdentifier { get; }
         public abstract string Description { get; }
         public virtual string DirectoryPath { get; }
         public virtual string Identifier => IWKPlugIn.PlugInListNamePrefix + HashingProvider.SHA1_Simple(Name);

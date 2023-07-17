@@ -10,7 +10,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "wK Manager", "wK Manager\wK
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Base", "Base\Base.csproj", "{718434AB-1E83-4C11-99DB-FB82CD1896BD}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BarMonitorWKPlugin", "BarMonitorWKPlugin\BarMonitorWKPlugin.csproj", "{25795E81-0F69-42E4-8B31-D60A00B23403}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BarMonitorWKPlugIn", "BarMonitorWKPlugIn\BarMonitorWKPlugIn.csproj", "{25795E81-0F69-42E4-8B31-D60A00B23403}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

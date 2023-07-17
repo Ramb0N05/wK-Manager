@@ -2,11 +2,11 @@
 using System.ComponentModel;
 using wK_Manager.Base;
 
-namespace wK_Manager.PlugIns.MenuControls {
+namespace BarMonitorWKPlugIn {
 #pragma warning disable CS8618 // Ein Non-Nullable-Feld muss beim Beenden des Konstruktors einen Wert ungleich NULL enthalten. Erwägen Sie die Deklaration als Nullable.
 
     [JsonObject(MemberSerialization = MemberSerialization.OptOut)]
-    public class BarMonitorControlConfig : WKMenuControlConfig {
+    public class BarMonitorWKConfig : WKConfig {
 
         [JsonIgnore]
         public new const string ConfigFileName = "bar_monitor.json";
@@ -16,7 +16,7 @@ namespace wK_Manager.PlugIns.MenuControls {
         public bool AutoObtainDiashow { get; set; }
 
         [JsonIgnore]
-        public override string ConfigFilePath { get; set; } = IWKMenuControlConfig.AutoDetect_ConfigFilePath;
+        public override string ConfigFilePath { get; set; } = IWKConfig.AutoDetect_ConfigFilePath;
 
         [JsonProperty(Required = Required.AllowNull)]
         public string? DisplayTarget { get; set; }

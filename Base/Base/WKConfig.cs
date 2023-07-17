@@ -3,15 +3,14 @@ using SharpRambo.ExtensionsLib;
 using System.ComponentModel;
 using System.Reflection;
 using wK_Manager.Base.Extensions;
-using wK_Manager.Base.Providers;
 
 namespace wK_Manager.Base {
 
     [JsonObject(MemberSerialization.OptOut)]
-    public abstract class WKMenuControlConfig : IWKMenuControlConfig {
+    public abstract class WKConfig : IWKConfig {
 
         [JsonIgnore]
-        public const string ConfigFileName = IWKMenuControlConfig.ConfigFileName;
+        public const string ConfigFileName = IWKConfig.ConfigFileName;
 
         [JsonIgnore]
         public abstract string ConfigFilePath { get; set; }
@@ -20,22 +19,6 @@ namespace wK_Manager.Base {
         public JsonSerializerSettings GlobalJsonSerializerSettings { get; set; } = new JsonSerializerSettings() {
             Formatting = Formatting.Indented
         };
-
-        protected WKMenuControlConfig() {
-            if (ConfigProvider.Global != null) {
-                Type baseType = GetType();
-                FieldInfo? cfnField = baseType.GetField(nameof(ConfigFileName));
-                PropertyInfo? cfpProperty = baseType.GetProperty(nameof(ConfigFilePath));
-
-                if (cfnField != null && cfpProperty != null) {
-                    string cfnValue = (string?)cfnField.GetValue(null) ?? string.Empty;
-                    string cfpValue = (string?)cfpProperty.GetValue(this) ?? string.Empty;
-
-                    if (!cfnValue.IsNull() && cfnValue != IWKMenuControlConfig.ConfigFileName && cfpValue == IWKMenuControlConfig.AutoDetect_ConfigFilePath)
-                        cfpProperty.SetValue(this, ConfigProvider.Global.GetUserConfigFilePath(cfnValue));
-                }
-            }
-        }
 
         public virtual string GetData(JsonSerializerSettings? jsonSerializerSettings = null)
             => JsonConvert.SerializeObject(this, GetType(), jsonSerializerSettings);
@@ -87,12 +70,12 @@ namespace wK_Manager.Base {
 
         public virtual bool SetData(string json, JsonSerializerSettings? jsonSerializerSettings = null) {
             object? data = JsonConvert.DeserializeObject(json, GetType(), jsonSerializerSettings);
-            return data is WKMenuControlConfig dataOfType && SetData(dataOfType);
+            return data is WKConfig dataOfType && SetData(dataOfType);
         }
 
-        public virtual bool SetData(IWKMenuControlConfig? configObject) => SetData(configObject as WKMenuControlConfig);
+        public virtual bool SetData(IWKConfig? configObject) => SetData(configObject as WKConfig);
 
-        public virtual bool SetData(WKMenuControlConfig? configObject) {
+        public virtual bool SetData(WKConfig? configObject) {
             if (configObject != null) {
                 Type dataType = configObject.GetType();
                 Type targetType = GetType();

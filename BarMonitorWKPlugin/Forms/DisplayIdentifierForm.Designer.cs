@@ -1,7 +1,7 @@
 ﻿using System.Drawing;
 using System.Windows.Forms;
 
-namespace wK_Manager.Forms {
+namespace BarMonitorWKPlugIn.Forms {
     partial class DisplayIdentifierForm {
         /// <summary>
         /// Required designer variable.

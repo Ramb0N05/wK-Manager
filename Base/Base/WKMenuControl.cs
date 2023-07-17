@@ -4,7 +4,7 @@ namespace wK_Manager.Base {
 
     [TypeDescriptionProvider(typeof(AbstractControlDescriptionProvider<WKMenuControl, WKMenuControlDesign>))]
     public abstract class WKMenuControl : UserControl, IWKMenuControl {
-        public abstract IWKMenuControlConfig Config { get; set; }
+        public abstract IWKConfig Config { get; set; }
         public virtual string MenuImageKey { get; set; } = string.Empty;
         public virtual string MenuItemName { get; set; } = string.Empty;
         public virtual int MenuItemOrder { get; set; }
@@ -21,10 +21,10 @@ namespace wK_Manager.Base {
 
         #region Methods
 
-        public virtual IWKMenuControlConfig? ConfigFromControls()
+        public virtual IWKConfig? ConfigFromControls()
             => throw new NotImplementedException();
 
-        public virtual void ConfigToControls(IWKMenuControlConfig config)
+        public virtual void ConfigToControls(IWKConfig config)
             => throw new NotImplementedException();
 
         public virtual async Task<bool> LoadConfig() {
@@ -66,10 +66,10 @@ namespace wK_Manager.Base {
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
         public virtual int MenuItemOrder { get; set; }
 
-        public virtual IWKMenuControlConfig? ConfigFromControls()
+        public virtual IWKConfig? ConfigFromControls()
             => throw new NotImplementedException();
 
-        public virtual void ConfigToControls(IWKMenuControlConfig config)
+        public virtual void ConfigToControls(IWKConfig config)
             => throw new NotImplementedException();
 
         public virtual Task<bool> LoadConfig()

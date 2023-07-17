@@ -1,6 +1,7 @@
 ﻿using SharpRambo.ExtensionsLib;
 using Stimulsoft.Svg;
 using System.Collections;
+using System.Net;
 using System.Reflection;
 using System.Resources;
 using wK_Manager.Base;
@@ -14,22 +15,31 @@ namespace wK_Manager {
         public static readonly ResourceManager DefaultResourceManager = Images.ResourceManager;
         private const string MenuItemTabPostfix = "_tab";
 
+        public MainConfig GlobalConfig { get; private set; }
         public ResourceManager GlobalResourceManager { get; }
+        public HttpClient HttpClient { get; }
         public ImageList LargeImageList { get; }
         public IEnumerable<(string Name, string DisplayName)> MenuItems { get; private set; }
         public WKManagerBaseOptionsReadOnly Options { get; }
         public PlugInManager PM { get; }
+        public IDictionary<string, IWKConfig> RegisteredUserConfigs { get; }
         public ImageList SmallImageList { get; }
 
         #region Constructor
 
-        private WKManagerBase(WKManagerBaseOptionsReadOnly optionsRO, PlugInManager pm) {
+        private WKManagerBase(WKManagerBaseOptionsReadOnly optionsRO) {
+            GlobalConfig = new(optionsRO.MainConfigFilePath);
             GlobalResourceManager = DefaultResourceManager;
             LargeImageList = new() { ColorDepth = optionsRO.DefaultImageListColorDepth, ImageSize = optionsRO.LargeImageListSize };
             MenuItems = Array.Empty<(string Name, string DisplayName)>();
             Options = optionsRO;
-            PM = pm;
+            PM = new(optionsRO.PlugInsMenuControlType, optionsRO.PlugInsSearchPaths);
             SmallImageList = new() { ColorDepth = optionsRO.DefaultImageListColorDepth, ImageSize = optionsRO.SmallImageListSize };
+            RegisteredUserConfigs = new Dictionary<string, IWKConfig>();
+
+            HttpClient = optionsRO.HttpClientProxy != null
+                ? new(new HttpClientHandler() { UseProxy = true, Proxy = optionsRO.HttpClientProxy }, true)
+                : new(new HttpClientHandler() { UseProxy = false }, true);
         }
 
         #endregion Constructor
@@ -65,12 +75,8 @@ namespace wK_Manager {
         public static async Task<WKManagerBase> Initialize(WKManagerBaseOptions options) {
             WKManagerBaseOptionsReadOnly optionsRO = new(options);
 
-            ConfigProvider.Global.ConfigFilePath = File.Exists(optionsRO.MainConfigFilePath)
-                ? optionsRO.MainConfigFilePath
-                : throw new FileNotFoundException("Configuration file not found!", optionsRO.MainConfigFilePath);
-            bool configLoaded = await ConfigProvider.Global.Load();
-
-            WKManagerBase @base = new(optionsRO, new());
+            WKManagerBase @base = new(optionsRO);
+            bool configLoaded = await @base.GlobalConfig.Load();
             await @base.PM.Initialize(ref @base);
 
             IEnumerable<Type> nonPlugInControls = !string.IsNullOrWhiteSpace(optionsRO.NonPlugInsMenuControlsNamespace)
@@ -110,7 +116,7 @@ namespace wK_Manager {
             });
 
             if (configLoaded)
-                applyGlobalConfig(optionsRO.MasterTabControl);
+                applyGlobalConfig(optionsRO.MasterTabControl, @base.GlobalConfig);
 
             IEnumerable<ImageList> imageLists = optionsRO.ImageListsToFill.Concat(new[] { @base.LargeImageList, @base.SmallImageList });
             await FillImageLists(imageLists, @base.GlobalResourceManager);
@@ -134,14 +140,48 @@ namespace wK_Manager {
             return svgArr is byte[] buffer ? getImage(buffer, rasterSize) : null;
         }
 
-        private static void applyGlobalConfig(TabControl masterTabControl) {
-            if (!ConfigProvider.Global.StartupWindowName.IsNull())
-                masterTabControl.SelectTab(ConfigProvider.Global.StartupWindowName);
+        public T? GetUserConfig<T>(string identifier) where T : IWKConfig
+            => (T?)GetUserConfig(identifier);
+
+        public IWKConfig? GetUserConfig(string identifier)
+            => RegisteredUserConfigs.ContainsKey(identifier) ? RegisteredUserConfigs[identifier] : null;
+
+        public string? RegisterUserConfig(IWKConfig configInstance) {
+            Type baseType = configInstance.GetType();
+            FieldInfo? cfnField = baseType.GetField(nameof(IWKConfig.ConfigFileName));
+            PropertyInfo? cfpProperty = baseType.GetProperty(nameof(IWKConfig.ConfigFilePath));
+
+            if (cfnField != null && cfpProperty != null) {
+                string cfnValue = (string?)cfnField.GetValue(null) ?? string.Empty;
+                string cfpValue = (string?)cfpProperty.GetValue(configInstance) ?? string.Empty;
+
+                if (!cfnValue.IsNull() && cfnValue != IWKConfig.ConfigFileName && cfpValue == IWKConfig.AutoDetect_ConfigFilePath) {
+                    cfpProperty.SetValue(configInstance, GlobalConfig.GetUserConfigFilePath(cfnValue));
+                    string configIdentifier = HashingProvider.SHA256_Simple(baseType.FullName + ";" + cfnValue);
+
+                    if (RegisteredUserConfigs.TryAdd(configIdentifier, configInstance))
+                        return configIdentifier;
+                }
+            }
+
+            return null;
+        }
+
+        public void SetUserConfig(string identifier, IWKConfig data) {
+            if (!RegisteredUserConfigs.ContainsKey(identifier))
+                return;
+
+            RegisteredUserConfigs[identifier] = data;
+        }
+
+        private static void applyGlobalConfig(TabControl masterTabControl, MainConfig config) {
+            if (!config.StartupWindowName.IsNull())
+                masterTabControl.SelectTab(config.StartupWindowName);
             else
                 masterTabControl.SelectedIndex = 0;
 
-            if (!ConfigProvider.Global.UserConfigDirectory.IsNull() && !Path.Exists(ConfigProvider.Global.UserConfigDirectory)) {
-                DirectoryInfo configDir = new(ConfigProvider.Global.UserConfigDirectory);
+            if (!config.UserConfigDirectory.IsNull() && !Path.Exists(config.UserConfigDirectory)) {
+                DirectoryInfo configDir = new(config.UserConfigDirectory);
                 configDir.CreateAnyway();
             }
         }
@@ -225,7 +265,7 @@ namespace wK_Manager {
         private void dispose(bool disposing) {
             if (disposing) {
                 PM.Dispose();
-                NetworkingProvider.HttpClient.Dispose();
+                HttpClient.Dispose();
                 Images.ResourceManager.ReleaseAllResources();
             }
         }
@@ -233,10 +273,11 @@ namespace wK_Manager {
         #endregion Methods
     }
 
-    #region WKManagerBaseStartupOptions
+    #region WKManagerBaseOptions
 
     public class WKManagerBaseOptions {
         public ColorDepth DefaultImageListColorDepth { get; set; }
+        public IWebProxy? HttpClientProxy { get; set; }
         public IEnumerable<ImageList> ImageListsToFill { get; set; }
         public Size LargeImageListSize { get; set; }
         public string? MainConfigFilePath { get; set; }
@@ -247,6 +288,8 @@ namespace wK_Manager {
         public ListViewGroup NonPlugInsListViewGroup { get; set; }
         public string? NonPlugInsMenuControlsNamespace { get; set; }
         public ListViewGroup PlugInsListViewGroup { get; set; }
+        public Type? PlugInsMenuControlType { get; set; }
+        public IEnumerable<string>? PlugInsSearchPaths { get; set; }
         public Size SmallImageListSize { get; set; }
 
         public WKManagerBaseOptions() {
@@ -262,15 +305,26 @@ namespace wK_Manager {
     public sealed class WKManagerBaseOptionsReadOnly : WKManagerBaseOptions {
         private const string DefaultNullExceptionMessage = " is not set!";
 
+        public new ColorDepth DefaultImageListColorDepth { get; }
+        public new IWebProxy? HttpClientProxy { get; }
+        public new IEnumerable<ImageList> ImageListsToFill { get; }
+        public new Size LargeImageListSize { get; }
         public new string MainConfigFilePath { get; }
         public new Assembly MasterAssembly { get; }
         public new Form MasterForm { get; }
         public new ListView MasterListView { get; }
         public new TabControl MasterTabControl { get; }
+        public new ListViewGroup NonPlugInsListViewGroup { get; }
+        public new string? NonPlugInsMenuControlsNamespace { get; }
+        public new ListViewGroup PlugInsListViewGroup { get; }
+        public new Type? PlugInsMenuControlType { get; }
+        public new IEnumerable<string>? PlugInsSearchPaths { get; }
+        public new Size SmallImageListSize { get; }
 
         internal WKManagerBaseOptionsReadOnly(WKManagerBaseOptions options) {
             DefaultImageListColorDepth = options.DefaultImageListColorDepth;
             ImageListsToFill = options.ImageListsToFill;
+            HttpClientProxy = options.HttpClientProxy;
             LargeImageListSize = options.LargeImageListSize;
             MainConfigFilePath = options.MainConfigFilePath ?? throw new ArgumentException(nameof(options.MainConfigFilePath) + DefaultNullExceptionMessage, nameof(options));
             MasterAssembly = options.MasterAssembly ?? throw new ArgumentException(nameof(options.MasterAssembly) + DefaultNullExceptionMessage, nameof(options));
@@ -280,9 +334,11 @@ namespace wK_Manager {
             NonPlugInsListViewGroup = options.NonPlugInsListViewGroup;
             NonPlugInsMenuControlsNamespace = options.NonPlugInsMenuControlsNamespace;
             PlugInsListViewGroup = options.PlugInsListViewGroup;
+            PlugInsMenuControlType = options.PlugInsMenuControlType;
+            PlugInsSearchPaths = options.PlugInsSearchPaths;
             SmallImageListSize = options.SmallImageListSize;
         }
     }
 
-    #endregion WKManagerBaseStartupOptions
+    #endregion WKManagerBaseOptions
 }

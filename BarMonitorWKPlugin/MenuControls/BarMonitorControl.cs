@@ -1,15 +1,13 @@
-﻿using wK_Manager.Base;
-using wK_Manager.Forms;
-using System.Net.Http.Headers;
-using SharpRambo.ExtensionsLib;
+﻿using BarMonitorWKPlugIn.Base;
 using BarMonitorWKPlugIn.Forms;
 using DotNet.Basics.SevenZip;
-using BarMonitorWKPlugIn.Base;
+using SharpRambo.ExtensionsLib;
+using System.Net.Http.Headers;
 using WindowsDisplayAPI;
+using wK_Manager.Base;
 using wK_Manager.Base.Extensions;
-using wK_Manager.Base.Providers;
 
-namespace wK_Manager.PlugIns.MenuControls {
+namespace BarMonitorWKPlugIn.MenuControls {
 
     public partial class BarMonitorControl : WKMenuControl {
         private const string DisplayButtonPrefix = "display_";
@@ -18,10 +16,13 @@ namespace wK_Manager.PlugIns.MenuControls {
         private readonly FolderBrowserDialog fbd = new();
         private readonly OpenFileDialog ofd = new();
         private readonly BarMonitorWKPlugIn plugIn;
-        private BarMonitorControlConfig config = new();
         private PresenterForm? presenter;
 
-        public override IWKMenuControlConfig Config { get => config; set => config = value as BarMonitorControlConfig ?? new(); }
+        public override IWKConfig Config {
+            get => Base.GetUserConfig(plugIn.ConfigIdentifier) ?? throw new Exception("Could not find user config with identifier \"" + plugIn.ConfigIdentifier + "\"!");
+            set => Base.SetUserConfig(plugIn.ConfigIdentifier, value as BarMonitorWKConfig ?? throw new Exception("Data has wrong Type!"));
+        }
+
         public IEnumerable<string> VisibleMonitorIdentifiers { get; private set; } = Enumerable.Empty<string>();
 
         #region Constructor
@@ -48,23 +49,27 @@ namespace wK_Manager.PlugIns.MenuControls {
 
         #region Overrides
 
-        public override IWKMenuControlConfig? ConfigFromControls() {
-            DisplayTarget? targetInfo = getSelectedDisplay();
+        public override IWKConfig? ConfigFromControls() {
+            if (Config is BarMonitorWKConfig bmcc) {
+                DisplayTarget? targetInfo = getSelectedDisplay();
 
-            config.DisplayTarget = targetInfo?.Identifier;
-            config.LocalDiashowPath = localPathTextBox.Text;
-            config.RemoteDiashowPath = remotePathTextBox.Text;
-            config.AutoObtainDiashow = autoObtainCheckBox.Checked;
-            config.Interval = (uint)intervalNumericUpDown.Value;
-            config.Repeat = repeatCheckBox.Checked;
-            config.Shuffle = shuffleCheckBox.Checked;
-            config.LockedConfig = lockSettingsCheckBox.Checked;
+                bmcc.DisplayTarget = targetInfo?.Identifier;
+                bmcc.LocalDiashowPath = localPathTextBox.Text;
+                bmcc.RemoteDiashowPath = remotePathTextBox.Text;
+                bmcc.AutoObtainDiashow = autoObtainCheckBox.Checked;
+                bmcc.Interval = (uint)intervalNumericUpDown.Value;
+                bmcc.Repeat = repeatCheckBox.Checked;
+                bmcc.Shuffle = shuffleCheckBox.Checked;
+                bmcc.LockedConfig = lockSettingsCheckBox.Checked;
 
-            return config;
+                return bmcc;
+            }
+
+            return null;
         }
 
-        public override void ConfigToControls(IWKMenuControlConfig config) {
-            if (config is BarMonitorControlConfig conf) {
+        public override void ConfigToControls(IWKConfig config) {
+            if (config is BarMonitorWKConfig conf) {
                 _ = selectMonitorFromConfig(conf.DisplayTarget);
 
                 localPathTextBox.Text = conf.LocalDiashowPath;
@@ -83,9 +88,9 @@ namespace wK_Manager.PlugIns.MenuControls {
         #region Methods
 
         private static string getDisplayButtonName(string? displayName)
-                    => DisplayButtonPrefix + displayName;
+            => DisplayButtonPrefix + displayName;
 
-        private static async Task<(bool Status, string? ContentType, Exception? Error)?> validateRemotePath(string remotePath) {
+        private async Task<(bool Status, string? ContentType, Exception? Error)?> validateRemotePath(string remotePath) {
             (bool Status, string? ContentType, Exception? Error)? result = new() {
                 Status = false,
                 ContentType = string.Empty,
@@ -97,7 +102,7 @@ namespace wK_Manager.PlugIns.MenuControls {
                 using HttpRequestMessage request = new(HttpMethod.Head, uri);
 
                 try {
-                    using HttpResponseMessage response = await NetworkingProvider.HttpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
+                    using HttpResponseMessage response = await Base.HttpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
                     MediaTypeHeaderValue? contentType = response.Content.Headers.ContentType;
 
                     result = new() {
@@ -167,7 +172,7 @@ namespace wK_Manager.PlugIns.MenuControls {
                         obtainProgressBar.Value = 0;
                         obtainProgressBar.Visible = true;
 
-                        await NetworkingProvider.HttpClient.DownloadAsync(uri.AbsoluteUri, fStream, downloadProgress);
+                        await Base.HttpClient.DownloadAsync(uri.AbsoluteUri, fStream, downloadProgress);
                         await fStream.FlushAsync();
                         fStream.Close();
 
@@ -349,7 +354,9 @@ namespace wK_Manager.PlugIns.MenuControls {
 
         private async void reloadMonitorsPictureBox_Click(object sender, EventArgs e) {
             await createDisplayTargets();
-            await selectMonitorFromConfig(config.DisplayTarget);
+
+            if (Config is BarMonitorWKConfig bmcc)
+                await selectMonitorFromConfig(bmcc.DisplayTarget);
         }
 
         private async void remotePathTextBox_TextChanged(object sender, EventArgs e) {

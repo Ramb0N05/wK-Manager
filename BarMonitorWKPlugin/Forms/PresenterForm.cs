@@ -48,7 +48,7 @@ namespace BarMonitorWKPlugIn.Forms {
                 await diashowDir.GetFiles().ForEachAsync(async (file) => {
                     string mime = MimeMapping.MimeUtility.GetMimeMapping(file.Extension);
 
-                    if (wK_Manager.PlugIns.BarMonitorWKPlugIn.AcceptedDiashowContentTypes.Contains(mime))
+                    if (BarMonitorWKPlugIn.AcceptedDiashowContentTypes.Contains(mime))
                         diashowFiles = diashowFiles.Append(file.FullName);
 
                     await Task.CompletedTask;

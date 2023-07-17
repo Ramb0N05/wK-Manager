@@ -1,6 +1,7 @@
-﻿using wK_Manager.Base;
+﻿using wK_Manager;
+using wK_Manager.Base;
 
-namespace wK_Manager.PlugIns {
+namespace BarMonitorWKPlugIn {
 
     public class BarMonitorWKPlugIn : WKPlugIn {
 
@@ -29,10 +30,12 @@ namespace wK_Manager.PlugIns {
         public override string Description => "Bar Monitor PlugIn";
         public override string ImageKey => "device_tv";
         public override string Name => "Bar Monitor";
+        public override string ConfigIdentifier { get; }
 
         #region Constructor
 
         public BarMonitorWKPlugIn(string directoryPath, WKManagerBase @base) : base(directoryPath, @base) {
+            ConfigIdentifier = Base.RegisterUserConfig(new BarMonitorWKConfig()) ?? throw new Exception("Config could not be registered!");
         }
 
         #endregion Constructor

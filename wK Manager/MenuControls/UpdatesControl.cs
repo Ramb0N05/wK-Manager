@@ -12,7 +12,7 @@ namespace wK_Manager.MenuControls {
 
         private readonly string updateManifestURL = Properties.Settings.Default.updateManifestURL;
 
-        public override IWKMenuControlConfig Config { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public override IWKConfig Config { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
         #region Constructor
 
@@ -31,7 +31,7 @@ namespace wK_Manager.MenuControls {
             updateStatusLabel.Text = "Prüfe auf updates ...";
             updateProgressBar.Visible = false;
             updateProgressLabel.Visible = false;
-            VersionData? versionData = await VersionData.GetCurrent(updateManifestURL, NetworkingProvider.HttpClient);
+            VersionData? versionData = await VersionData.GetCurrent(updateManifestURL, Base.HttpClient);
 
             if (versionData != null) {
                 Version? assemblyVersion = Assembly.GetExecutingAssembly().GetName().Version;
@@ -116,7 +116,7 @@ namespace wK_Manager.MenuControls {
                     });
 
                     (bool Status, Exception? Error, DirectoryInfo? ExtractionDirectory)
-                        = await versionData.Download(destinationFile, downloadProgress, extractProgress, NetworkingProvider.HttpClient);
+                        = await versionData.Download(destinationFile, downloadProgress, extractProgress, Base.HttpClient);
 
                     if (Status) {
                         button.Text = "Anwenden ↪";

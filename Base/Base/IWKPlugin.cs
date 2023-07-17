@@ -6,6 +6,7 @@
         public const string UndefinedVersion = "<v:undefined>";
         public const string UnknownVersion = "<v:unknown>";
 
+        public abstract string ConfigIdentifier { get; }
         public abstract string Description { get; }
         public abstract string DirectoryPath { get; }
         public abstract string Identifier { get; }

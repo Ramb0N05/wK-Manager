@@ -1,4 +1,4 @@
-﻿namespace wK_Manager.Forms {
+﻿namespace BarMonitorWKPlugIn.Forms {
 
     public partial class DisplayIdentifierForm : Form {
         public const int DEFAULT_VIEW_TIMEOUT = 3000;

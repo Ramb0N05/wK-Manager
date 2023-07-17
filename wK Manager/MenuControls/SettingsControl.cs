@@ -2,7 +2,6 @@
 using System.Security.AccessControl;
 using wK_Manager.Base;
 using wK_Manager.Base.Extensions;
-using wK_Manager.Base.Providers;
 
 namespace wK_Manager.MenuControls {
 
@@ -10,7 +9,7 @@ namespace wK_Manager.MenuControls {
         private readonly FolderBrowserDialog fbd = new();
         private readonly OpenFileDialog ofd = new();
 
-        public override IWKMenuControlConfig Config { get => ConfigProvider.Global; set => ConfigProvider.Global.SetData(value); }
+        public override IWKConfig Config { get => Base.GlobalConfig; set => Base.GlobalConfig.SetData(value); }
 
         #region Constructor
 
@@ -34,13 +33,13 @@ namespace wK_Manager.MenuControls {
         #region Methods
 
         public override MainConfig ConfigFromControls() {
-            ConfigProvider.Global.UserConfigDirectory = userConfigPathTextBox.Text;
-            ConfigProvider.Global.StartupWindowName = Base.MenuItems.FirstOrDefault((i) => i.DisplayName == startWindowComboBox.SelectedItem.ToString()).Name;
+            Base.GlobalConfig.UserConfigDirectory = userConfigPathTextBox.Text;
+            Base.GlobalConfig.StartupWindowName = Base.MenuItems.FirstOrDefault((i) => i.DisplayName == startWindowComboBox.SelectedItem.ToString()).Name;
 
-            return ConfigProvider.Global;
+            return Base.GlobalConfig;
         }
 
-        public override void ConfigToControls(IWKMenuControlConfig config) {
+        public override void ConfigToControls(IWKConfig config) {
             if (config is MainConfig conf) {
                 userConfigPathTextBox.Text = conf.UserConfigDirectory ?? string.Empty;
 
@@ -52,7 +51,7 @@ namespace wK_Manager.MenuControls {
         }
 
         public override Task<bool> LoadConfig() {
-            ConfigToControls(ConfigProvider.Global);
+            ConfigToControls(Base.GlobalConfig);
             return new Task<bool>(() => true);
         }
 

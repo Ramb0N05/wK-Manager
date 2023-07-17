@@ -6,7 +6,7 @@ using wK_Manager.Base.NativeCode;
 namespace wK_Manager.MenuControls {
 
     public partial class PlugInsControl : WKMenuControl {
-        public override IWKMenuControlConfig Config { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public override IWKConfig Config { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
         private IWKPlugIn? lastSelectedPlugIn;
 

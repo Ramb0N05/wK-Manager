@@ -6,7 +6,7 @@ using wK_Manager.Base.Providers;
 namespace wK_Manager.Base {
 
     [JsonObject(MemberSerialization.OptOut)]
-    public class MainConfig : WKMenuControlConfig {
+    public class MainConfig : WKConfig {
 
         [JsonIgnore]
         public override string ConfigFilePath { get; set; } = string.Empty;
@@ -23,15 +23,13 @@ namespace wK_Manager.Base {
 #pragma warning disable CS8618 // Ein Non-Nullable-Feld muss beim Beenden des Konstruktors einen Wert ungleich NULL enthalten. Erwägen Sie die Deklaration als Nullable.
 
         public MainConfig(string configFilePath) {
-            ConfigFilePath = !configFilePath.IsNull() && File.Exists(configFilePath)
+            ConfigFilePath = !configFilePath.IsNull()
                 ? configFilePath
-                : throw new ArgumentException("Invalid config file path!", nameof(configFilePath));
+                : throw new ArgumentException("Empty config file path!", nameof(configFilePath));
         }
 
         [JsonConstructor]
         internal MainConfig() {
-            if (ConfigProvider.Global?.ConfigFilePath.IsNull() == false)
-                ConfigFilePath = ConfigProvider.Global.ConfigFilePath;
         }
 
 #pragma warning restore CS8618 // Ein Non-Nullable-Feld muss beim Beenden des Konstruktors einen Wert ungleich NULL enthalten. Erwägen Sie die Deklaration als Nullable.
