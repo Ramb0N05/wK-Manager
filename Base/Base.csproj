@@ -25,6 +25,7 @@
 
   <ItemGroup>
     <PackageReference Include="DotNet.Basics.SevenZip" Version="22.1.4" />
+    <PackageReference Include="Downloader" Version="3.0.6" />
     <PackageReference Include="ExtensionsLib" Version="1.0.1" />
     <PackageReference Include="MimeMapping" Version="2.0.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />

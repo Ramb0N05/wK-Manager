@@ -1,5 +1,7 @@
 ﻿using DotNet.Basics.SevenZip;
+using Downloader;
 using Newtonsoft.Json;
+using System.Net;
 using System.Net.Http.Headers;
 using wK_Manager.Base.Extensions;
 using wK_Manager.Base.Models;
@@ -62,32 +64,14 @@ namespace wK_Manager.Base {
             if (!Uri.IsWellFormedUriString(versionFileUrl, UriKind.Absolute))
                 return null;
 
-            Uri updateManifestUri = new(versionFileUrl);
-            using HttpRequestMessage request = new(HttpMethod.Get, updateManifestUri);
-            bool newHttpClient = httpClient == null;
-            httpClient ??= new HttpClient(new HttpClientHandler() { UseProxy = false });
+            DownloadConfiguration dlCfg = new() { RequestConfiguration = { Accept = MimeMapping.KnownMimeTypes.Json } };
+            DownloadService dl = new(dlCfg);
 
-            try {
-                using HttpResponseMessage respone = await httpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
-                MediaTypeHeaderValue? contentType = respone.Content.Headers.ContentType;
+            using StreamReader versionDataSR = new(await dl.DownloadFileTaskAsync(versionFileUrl));
+            string versionDataJson = await versionDataSR.ReadToEndAsync();
+            VersionDataModel? versionDataModel = JsonConvert.DeserializeObject<VersionDataModel>(versionDataJson);
 
-                if (!respone.IsSuccessStatusCode || contentType == null || contentType.MediaType != MimeMapping.KnownMimeTypes.Json)
-                    return null;
-
-                using StreamReader versionDataStream = new(await respone.Content.ReadAsStreamAsync());
-                string versionDataJson = await versionDataStream.ReadToEndAsync();
-                VersionDataModel? versionDataModel = JsonConvert.DeserializeObject<VersionDataModel>(versionDataJson);
-
-                if (newHttpClient)
-                    httpClient.Dispose();
-
-                return versionDataModel != null ? new VersionData(versionDataModel) : null;
-            } catch (Exception) {
-                if (newHttpClient)
-                    httpClient.Dispose();
-
-                return null;
-            }
+            return versionDataModel != null ? new VersionData(versionDataModel) : null;
         }
 
         public async Task<(bool Status, Exception? Error, DirectoryInfo? ExtractionDirectory)> Download(FileInfo destinationFile) => await Download(destinationFile, null, null, null);
@@ -97,6 +81,8 @@ namespace wK_Manager.Base {
         public async Task<(bool Status, Exception? Error, DirectoryInfo? ExtractionDirectory)> Download(FileInfo destinationFile, IProgress<float> downloadProgress, IProgress<int> extractProgress) => await Download(destinationFile, downloadProgress, extractProgress, null);
 
         public async Task<(bool Status, Exception? Error, DirectoryInfo? ExtractionDirectory)> Download(FileInfo destinationFile, IProgress<float>? downloadProgress, IProgress<int>? extractProgress, HttpClient? httpClient) {
+            //TODO: Use DownloaderLib
+
             httpClient ??= this.httpClient ?? new(new HttpClientHandler() { UseProxy = false });
             using HttpRequestMessage request = new(HttpMethod.Get, Uri);
             DirectoryInfo extractDir = destinationFile.Directory ?? new DirectoryInfo(FallbackUpdateExtractDirectory);
